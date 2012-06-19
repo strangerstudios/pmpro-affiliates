@@ -11,6 +11,7 @@ Author URI: http://www.strangerstudios.com
 /*
 	Story
 	* Admin creates affiliate account and code.
+	* Fields: id, code, company, affiliate_user, tracking_code, cookie_length, enabled
 	* If affiliate code is passed as a parameter, a cookie is set for the specified number of days.
 	* If a cookie is present after checkout, the order is awarded to the affiliate.
 	* On the confirmation page, if an order has an affiliate id, show the cooresponding tracking code.
@@ -20,8 +21,58 @@ Author URI: http://www.strangerstudios.com
 	Questions
 	* Allow setting of fees?
 	* Track recurring orders?
-	* Affiliate reports in front end or back end? How much to show affiliates.
+	* Affiliate reports in front end or back end? How much to show affiliates.	
 */
+
+//setup options
+function pmpro_affiliates_getOptions()
+{
+	global $pmpro_affiliates_options;
+	$pmpro_affiliates_options = get_option("pmpro_affiliates_options", array("db_version"=>0));
+}
+add_action("init", "pmpro_affiliates_getOptions");
+
+//setup db
+function pmpro_affiliates_checkDB()
+{
+	global $pmpro_affiliates_options;
+	$db_version = $pmpro_affiliates_options['db_version'];
+	
+	//if we can't find the DB tables, reset db_version to 0
+	global $wpdb, $table_prefix;
+	$wpdb->hide_errors();
+	$wpdb->pmpro_affiliates = $table_prefix . 'pmpro_affiliates';
+	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_affiliates . "'");	
+	if(!$table_exists)		
+		$db_version = 0;
+		
+	if($db_version < .1)
+	{
+		//add the db table		
+		$sqlQuery = "		
+			CREATE TABLE `" . $wpdb->pmpro_affiliates . "` (		  
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `code` varchar(32) NOT NULL,
+			  `company` varchar(255) NOT NULL,
+			  `affiliateuser` varchar(255) NOT NULL,
+			  `trackingcode` mediumtext NOT NULL,	  
+			  `cookiedays` int(11) NOT NULL DEFAULT '30',
+			  `enabled` tinyint(4) NOT NULL DEFAULT '1',
+			  PRIMARY KEY (`id`),
+			  KEY `affiliateid` (`code`),
+			  KEY `affiliateuser` (`affiliateuser`),
+			  KEY `enabled` (`enabled`)
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
+		";
+		$wpdb->query($sqlQuery);		
+		
+		//save the db version
+		$db_version = .1;
+		$pmpro_affiliates_options['db_version'] = $db_version;
+		update_option("pmpro_affiliates_options", $pmpro_affiliates_options);
+	}
+}
+add_action("init", "pmpro_affiliates_checkDB", 20);
 
 //check for affiliate code
 function pmpro_affiliates_wp_head()
@@ -91,11 +142,15 @@ function pmpro_affiliates_pmpro_after_checkout($user_id)
 add_action("pmpro_after_checkout", "pmpro_affiliates_pmpro_after_checkout");
 
 //add affiliates page to admin
+function pmpro_affiliates_add_pages()
+{
+	add_submenu_page('pmpro-membershiplevels', 'Affiliates', 'Affiliates', 'manage_options', 'pmpro-affiliates', 'pmpro_affiliates_adminpage');
+}
+add_action('admin_menu', 'pmpro_affiliates_add_pages', 20);
 
 //affiliates page (add new)
-
-//affiliates page (view)
-
-//affiliates page (report)
-
+function pmpro_affiliates_adminpage()
+{
+	require_once(dirname(__FILE__) . "/adminpages/affiliates.php");
+}
 
