@@ -24,6 +24,21 @@ Author URI: http://www.strangerstudios.com
 	* Affiliate reports in front end or back end? How much to show affiliates.	
 */
 
+//require Paid Memberships Pro
+function pmpro_affiliates_dependencies()
+{
+	include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+	if(function_exists("is_plugin_active"))
+	{
+		if(!is_plugin_active('paid-memberships-pro/paid-memberships-pro.php'))
+		{
+			$plugin = plugin_basename(__FILE__);
+			deactivate_plugins($plugin);
+		}
+	}
+}
+add_action("init", "pmpro_affiliates_dependencies");
+
 //setup options
 function pmpro_affiliates_getOptions()
 {
