@@ -1,7 +1,7 @@
 === PMPro Affiliates ===
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
-Requires at least: 3.0
+Requires at least: 3.1
 Tested up to: 3.4
 Stable tag: .1
 
