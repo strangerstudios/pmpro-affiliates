@@ -11,7 +11,7 @@ Author URI: http://www.strangerstudios.com
 /*
 	Story
 	* Admin creates affiliate account and code.
-	* Fields: id, code, company, affiliate_user, tracking_code, cookie_length, enabled
+	* Fields: id, code, name, affiliate_user, tracking_code, cookie_length, enabled
 	* If affiliate code is passed as a parameter, a cookie is set for the specified number of days.
 	* If a cookie is present after checkout, the order is awarded to the affiliate.
 	* On the confirmation page, if an order has an affiliate id, show the cooresponding tracking code.
@@ -53,7 +53,7 @@ function pmpro_affiliates_checkDB()
 			CREATE TABLE `" . $wpdb->pmpro_affiliates . "` (		  
 			  `id` int(11) NOT NULL AUTO_INCREMENT,
 			  `code` varchar(32) NOT NULL,
-			  `company` varchar(255) NOT NULL,
+			  `name` varchar(255) NOT NULL,
 			  `affiliateuser` varchar(255) NOT NULL,
 			  `trackingcode` mediumtext NOT NULL,	  
 			  `cookiedays` int(11) NOT NULL DEFAULT '30',
@@ -88,16 +88,16 @@ function pmpro_affiliates_wp_head()
 		global $wpdb;
 		
 		//check that the code is enabled
-		$affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+		$affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($pmpro_affiliate_code) . "' LIMIT 1");
 		if(!empty($affiliate_enabled))
 		{
 			//build cookie string
-            $cookiestring = $affiliate_code;
-            if($affiliate_subid)
-                    $cookiestring .= "," . $affiliate_subid;
+            $cookiestring = $pmpro_affiliate_code;
+            if(!empty($pmpro_affiliate_subid))
+				$cookiestring .= "," . $pmpro_affiliate_subid;
 
             //how long?
-            $cookielength = $wpdb->get_var("SELECT cookiedays FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+            $cookielength = $wpdb->get_var("SELECT cookiedays FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($pmpro_affiliate_code) . "' LIMIT 1");
             ?>
             <script type="text/javascript" language="javascript">
                     var today = new Date();
@@ -136,10 +136,51 @@ function pmpro_affiliates_pmpro_after_checkout($user_id)
        	}
        	
        	//update order in the database
-       	//!!!
+       	$order = new MemberOrder();
+		$order->getLastMemberOrder($user_id);
+		if(!empty($order->id))
+		{
+			$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET affiliate_id = '" . $affiliate_id . "', affiliate_subid = '" . $affiliate_subid . "' WHERE id = " . $order->id . " LIMIT 1";
+			$wpdb->query($sqlQuery);
+		}
 	}
 }
 add_action("pmpro_after_checkout", "pmpro_affiliates_pmpro_after_checkout");
+
+//add tracking code to confirmation page
+function pmpro_affiliates_pmpro_confirmation_message($message)
+{
+	if(!empty($_COOKIE['pmpro_affiliate']))
+	{
+		$parts = split(",", $_COOKIE['pmpro_affiliate']);
+		$affiliate_code = $parts[0];
+		
+		if(!empty($affiliate_code))
+		{
+			global $current_user, $wpdb;
+			
+			$affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+			if($affiliate_enabled)
+			{
+				$tracking_code = $wpdb->get_var("SELECT trackingcode FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+				if(!empty($tracking_code))
+				{
+					//filter
+					$order = new MemberOrder();
+					$order->getLastMemberOrder();
+					$tracking_code = str_replace("!!ORDER_ID!!", $order->code, $tracking_code);
+					$tracking_code = str_replace("!!LEVEL_NAME!!", $current_user->membership_level->name, $tracking_code);
+					
+					//add to message
+					$message .= "\n" . stripslashes($tracking_code);
+				}
+			}
+		}
+	}
+	
+	return $message;
+}
+add_filter("pmpro_confirmation_message", "pmpro_affiliates_pmpro_confirmation_message");
 
 //add affiliates page to admin
 function pmpro_affiliates_add_pages()
@@ -154,3 +195,27 @@ function pmpro_affiliates_adminpage()
 	require_once(dirname(__FILE__) . "/adminpages/affiliates.php");
 }
 
+//get a new random code for affiliate codes
+function pmpro_affiliates_getNewCode()
+{
+	global $wpdb;
+	
+	while(empty($code))
+	{
+		$scramble = md5(AUTH_KEY . time() . SECURE_AUTH_KEY);			
+		$code = substr($scramble, 0, 10);
+		$check = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_affiliates WHERE code = '$code' LIMIT 1");				
+		if($check || is_numeric($code))
+			$code = NULL;
+	}
+	
+	return strtoupper($code);
+}
+
+function pmpro_affiliates_yesorno($var)
+{
+	if(!empty($var))
+		return "Yes";
+	else
+		return "No";
+}
