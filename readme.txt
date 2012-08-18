@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 3.1
 Tested up to: 3.4
-Stable tag: .1
+Stable tag: .2
 
 Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
 
@@ -41,5 +41,9 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= .2 =
+* Now adds the affiliate id to any order after is is "added" via the pmpro_added_order hook. This means that recurring payment orders will be marked with the affiliate id if you have your IPN handler, Silent Post URL, or Stripe Web Hook setup properly.
+* Affiliate codes are now linked to discount codes with the same code. If an affiliate code is passed, it will automatically use the discount code with the same value. If a discount code is used, it will apply the affiliate code with the same value (unless another affiliate code is already being used).
+
 = .1 =
 * Initial release.

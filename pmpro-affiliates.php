@@ -24,6 +24,22 @@ Author URI: http://www.strangerstudios.com
 	* Affiliate reports in front end or back end? How much to show affiliates.	
 */
 
+/*
+	Saving an order to test.
+*/
+function pmproa_test()
+{
+	$lastorder = new MemberOrder();
+	$lastorder->getLastMemberOrder();
+	if(!empty($lastorder->id))
+	{
+		$lastorder->id = NULL;
+		$lastorder->code = NULL;		
+		$lastorder->saveOrder();	//new order
+	}
+}
+//add_action("init", "pmproa_test", 30);
+	
 //require Paid Memberships Pro
 function pmpro_affiliates_dependencies()
 {
@@ -127,40 +143,56 @@ function pmpro_affiliates_wp_head()
 }
 add_action("wp_head", "pmpro_affiliates_wp_head");
 
-//update order if cookie is present
-function pmpro_affiliates_pmpro_after_checkout($user_id)
+//update order if cookie is present or the last order in this subscription used an affiliate
+function pmpro_affiliates_pmpro_added_order($order)
 {
+	global $wpdb;
+	
+	$user_id = $order->user_id;
+		
+	//check for an order for this subscription with an affiliate id
+	if(!empty($order->subscription_transaction_id))
+	{
+		$lastorder = $wpdb->get_row("SELECT affiliate_id, affiliate_subid FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $wpdb->escape($order->subscription_transaction_id) . "' ORDER BY id DESC LIMIT 1, 1");
+		
+		if(!empty($lastorder->affiliate_id))
+		{
+			$affiliate_id = $lastorder->affiliate_id;
+			$affiliate_subid = $lastorder->affiliate_subid;
+			
+			$affiliate_code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_affiliates WHERE id = '" . $wpdb->escape($affiliate_id) . "' LIMIT 1");
+		}
+	}
+		
 	//check for cookie
-	if(!empty($_COOKIE['pmpro_affiliate']))
-	{		
-		global $wpdb;       
-       
-        $parts = split(",", $_COOKIE['pmpro_affiliate']);
-        $affiliate_code = $parts[0];
-
+	if(empty($affiliate_code) && !empty($_COOKIE['pmpro_affiliate']))
+	{				
+		$parts = split(",", $_COOKIE['pmpro_affiliate']);
+		$affiliate_code = $parts[0];
+		$affiliate_subid = $parts[1];
+		$affiliate_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+	}
+			
+	if(!empty($affiliate_code))
+	{
        	//check that it is enabled
         $affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
-        if($affiliate_enabled)
-        {
-                $affiliate_subid = $parts[1];
-                $affiliate_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+        if(!$affiliate_enabled)
+        {						
+			return;	//don't do anything
        	}
-        else
-        {
-                $affiliate_code = NULL;
-       	}
-       	
-       	//update order in the database
-       	$order = new MemberOrder();
-		$order->getLastMemberOrder($user_id);
-		if(!empty($order->id))
+       	else
 		{
-			$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET affiliate_id = '" . $affiliate_id . "', affiliate_subid = '" . $affiliate_subid . "' WHERE id = " . $order->id . " LIMIT 1";
-			$wpdb->query($sqlQuery);
+			//update order in the database       	
+			if(!empty($order->id))
+			{
+				$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET affiliate_id = '" . $affiliate_id . "', affiliate_subid = '" . $affiliate_subid . "' WHERE id = " . $order->id . " LIMIT 1";
+				$wpdb->query($sqlQuery);								
+			}
 		}
 	}
 }
-add_action("pmpro_after_checkout", "pmpro_affiliates_pmpro_after_checkout");
+add_action("pmpro_added_order", "pmpro_affiliates_pmpro_added_order");
 
 //add tracking code to confirmation page
 function pmpro_affiliates_pmpro_confirmation_message($message)
@@ -234,3 +266,46 @@ function pmpro_affiliates_yesorno($var)
 	else
 		return "No";
 }
+
+/*
+	This next function connects affiliate codes to discount codes with the same code. If one is set, the other will be set.
+	
+	If an affiliate code was passed or is already saved in a cookie and a discount code is used, the previous affiliate takes precedence. 
+*/
+function pmpro_affiliates_set_discount_code()
+{
+	global $wpdb;
+	
+	//checkout page
+	if(!isset($_REQUEST['discount_code']) && (!empty($_COOKIE['pmpro_affiliate']) || !empty($_REQUEST['pa'])))
+	{
+		if(!empty($_COOKIE['pmpro_affiliate']))
+			$affiliate_code = $_COOKIE['pmpro_affiliate'];
+		else
+			$affiliate_code = $_REQUEST['pa'];
+	
+		//set the discount code if there is an affiliate cookie			
+		$exists = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+		if(!empty($exists))
+		{
+			//check that the code is applicable for this level
+			$codecheck = pmpro_checkDiscountCode($affiliate_code, $_REQUEST['level']);
+			if($codecheck)
+				$_REQUEST['discount_code'] = $affiliate_code;
+		}
+	}
+	elseif(!empty($_REQUEST['discount_code']) && empty($_REQUEST['pa']) && empty($_COOKIE['pmpro_affiliate']))
+	{
+		//set the affiliate id to the discount code			
+		$exists = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($_REQUEST['discount_code']) . "' LIMIT 1");
+		if(!empty($exists))
+		{
+			//set the affiliate id passed in to the discount code
+			$_REQUEST['pa'] = $_REQUEST['discount_code'];
+									
+			//set the cookie to the discount code
+			$_COOKIE['pmpro_affiliate'] = $_REQUEST['discount_code'];
+		}	
+	}			
+}
+add_action("init", "pmpro_affiliates_set_discount_code", 30);
