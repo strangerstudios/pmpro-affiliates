@@ -3,7 +3,7 @@
 Plugin Name: PMPro Affiliates
 Plugin URI: http://www.paidmembershipspro.com/pmpro-affiliates/
 Description: Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
-Version: .1
+Version: .2.2
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -144,16 +144,17 @@ function pmpro_affiliates_wp_head()
 add_action("wp_head", "pmpro_affiliates_wp_head");
 
 //update order if cookie is present or the last order in this subscription used an affiliate
-function pmpro_affiliates_pmpro_added_order($order)
+function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 {
-	global $wpdb;
+	global $wpdb, $pmpro_affiliates_saved_order;
+	$pmpro_affiliates_saved_order = true;
 	
 	$user_id = $order->user_id;
 		
 	//check for an order for this subscription with an affiliate id
 	if(!empty($order->subscription_transaction_id))
 	{
-		$lastorder = $wpdb->get_row("SELECT affiliate_id, affiliate_subid FROM $wpdb->pmpro_membership_orders WHERE subscription_transaction_id = '" . $wpdb->escape($order->subscription_transaction_id) . "' ORDER BY id DESC LIMIT 1, 1");
+		$lastorder = $wpdb->get_row("SELECT affiliate_id, affiliate_subid FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $wpdb->escape($order->user_id) . "' ORDER BY id DESC LIMIT 1, 1");
 		
 		if(!empty($lastorder->affiliate_id))
 		{
@@ -183,6 +184,10 @@ function pmpro_affiliates_pmpro_added_order($order)
        	}
        	else
 		{
+			//save first?			
+			if($savefirst)
+				$order->saveOrder();
+			
 			//update order in the database       	
 			if(!empty($order->id))
 			{
@@ -193,6 +198,37 @@ function pmpro_affiliates_pmpro_added_order($order)
 	}
 }
 add_action("pmpro_added_order", "pmpro_affiliates_pmpro_added_order");
+
+/*
+	If we get to the after_checkout hook without $pmpro_affiliates_saved_order set, let's add a $0 order
+*/
+function pmpro_affiliates_no_order_checkout($user_id)
+{
+	global $pmpro_affiliates_saved_order;
+	
+	//if an order was added, we're good already
+	if($pmpro_affiliates_saved_order)
+		return;
+		
+	//get some info
+	$user = get_userdata($user_id);
+	$pmpro_level = pmpro_getMembershipLevelForUser($user_id);
+
+	//setup an order
+	$morder = new MemberOrder();	
+	$morder->membership_id = $pmpro_level->id;
+	$morder->membership_name = $pmpro_level->name;	
+	$morder->InitialPayment = 0;	
+	$morder->user_id = $user_id;
+	$morder->Email = $user->user_email;
+	$morder->gateway = "check";
+	$morder->Gateway = NULL;
+	$morder->getMembershipLevel();
+	
+	//now pass through the function above
+	return pmpro_affiliates_pmpro_added_order($morder, true);		//will create an order if there is an affiliate id
+}
+add_action("pmpro_after_checkout", "pmpro_affiliates_no_order_checkout");
 
 //add tracking code to confirmation page
 function pmpro_affiliates_pmpro_confirmation_message($message)
