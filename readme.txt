@@ -43,6 +43,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 == Changelog ==
 = .2.2 =
 * Will add a $0 invoice if someone checks out for a free level with an affiliate code set.
+* Added a check to the notification code in the settings header so it wouldn't display NULL in the notification space if WP passes that back.
 
 = .2.1 =
 * When checking for an affiliate id on a previous order, checking by user_id instead of subscription_transaction_id. This means that affiliates will be given credit when users upgrade... not just recurring invoices from the original subscription.

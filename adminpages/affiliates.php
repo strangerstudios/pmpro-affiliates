@@ -136,7 +136,8 @@
 	</div>
 	<script>
 		jQuery.get('<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
-		  jQuery('#pmpro_notifications').html(data);		 
+			if(data && data != 'NULL')
+				jQuery('#pmpro_notifications').html(data);		 
 		});
 	</script>
 	
