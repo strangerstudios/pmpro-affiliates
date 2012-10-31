@@ -24,22 +24,6 @@ Author URI: http://www.strangerstudios.com
 	* Affiliate reports in front end or back end? How much to show affiliates.	
 */
 
-/*
-	Saving an order to test.
-*/
-function pmproa_test()
-{
-	$lastorder = new MemberOrder();
-	$lastorder->getLastMemberOrder();
-	if(!empty($lastorder->id))
-	{
-		$lastorder->id = NULL;
-		$lastorder->code = NULL;		
-		$lastorder->saveOrder();	//new order
-	}
-}
-//add_action("init", "pmproa_test", 30);
-	
 //require Paid Memberships Pro
 function pmpro_affiliates_dependencies()
 {
@@ -154,7 +138,7 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 	//check for an order for this subscription with an affiliate id
 	if(!empty($order->subscription_transaction_id))
 	{
-		$lastorder = $wpdb->get_row("SELECT affiliate_id, affiliate_subid FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $wpdb->escape($order->user_id) . "' ORDER BY id DESC LIMIT 1, 1");
+		$lastorder = $wpdb->get_row("SELECT affiliate_id, affiliate_subid FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $wpdb->escape($order->user_id) . "' ORDER BY id DESC LIMIT 1");
 		
 		if(!empty($lastorder->affiliate_id))
 		{
