@@ -29,6 +29,8 @@ Questions
 1. Upload the `pmpro-affiliates` directory to the `/wp-content/plugins/` directory of your site.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Manage affiliates through the "affiliates" admin page added under Memberships.
+1. Affiliate URLs will look like http://site.com/?pa=AFFILIATECODE
+1. You can add a "subid" to the URL on the fly for more granular tracking http://site.com/?pa=AFFILIATECODE&subid=TEST1
 
 == Frequently Asked Questions ==
 
