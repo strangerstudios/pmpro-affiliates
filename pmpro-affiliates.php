@@ -3,7 +3,7 @@
 Plugin Name: PMPro Affiliates
 Plugin URI: http://www.paidmembershipspro.com/pmpro-affiliates/
 Description: Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
-Version: .2.2
+Version: .2.3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -154,7 +154,10 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 	{				
 		$parts = split(",", $_COOKIE['pmpro_affiliate']);
 		$affiliate_code = $parts[0];
-		$affiliate_subid = $parts[1];
+		if(isset($parts[1]))
+			$affiliate_subid = $parts[1];
+		else
+			$affiliate_subid = "";
 		$affiliate_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
 	}
 			
@@ -261,6 +264,19 @@ function pmpro_affiliates_adminpage()
 {
 	require_once(dirname(__FILE__) . "/adminpages/affiliates.php");
 }
+
+//add page to admin bar
+function pmpro_affiliates_admin_bar_menu() {
+	global $wp_admin_bar;
+	if ( !is_super_admin() || !is_admin_bar_showing() )
+		return;	
+	$wp_admin_bar->add_menu( array(
+	'id' => 'pmpro-affiliates',
+	'parent' => 'paid-memberships-pro',
+	'title' => __( 'Affiliates', 'pmpro'),
+	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-affiliates') ) );	
+}
+add_action('admin_bar_menu', 'pmpro_affiliates_admin_bar_menu', 1000);
 
 //get a new random code for affiliate codes
 function pmpro_affiliates_getNewCode()
