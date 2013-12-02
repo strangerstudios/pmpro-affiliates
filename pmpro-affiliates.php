@@ -24,6 +24,8 @@ Author URI: http://www.strangerstudios.com
 	* Affiliate reports in front end or back end? How much to show affiliates.	
 */
 
+require_once(dirname(__FILE__) . "/pages/report.php");
+
 //require Paid Memberships Pro
 function pmpro_affiliates_dependencies()
 {
@@ -44,8 +46,11 @@ function pmpro_affiliates_getOptions()
 {
 	global $pmpro_affiliates_options;
 	$pmpro_affiliates_options = get_option("pmpro_affiliates_options", array("db_version"=>0));
+	
+	global $wpdb, $table_prefix;
+	$wpdb->pmpro_affiliates = $table_prefix . 'pmpro_affiliates';
 }
-add_action("init", "pmpro_affiliates_getOptions");
+add_action("init", "pmpro_affiliates_getOptions", 5);
 
 //setup db
 function pmpro_affiliates_checkDB()
@@ -87,7 +92,7 @@ function pmpro_affiliates_checkDB()
 		update_option("pmpro_affiliates_options", $pmpro_affiliates_options);
 	}
 }
-add_action("init", "pmpro_affiliates_checkDB", 20);
+add_action("admin_init", "pmpro_affiliates_checkDB", 20);
 
 //check for affiliate code
 function pmpro_affiliates_wp_head()
@@ -345,3 +350,41 @@ function pmpro_affiliates_set_discount_code()
 	}			
 }
 add_action("init", "pmpro_affiliates_set_discount_code", 30);
+
+//service for csv export
+function pmpro_wp_ajax_affiliates_report_csv()
+{
+	require_once(dirname(__FILE__) . "/adminpages/report-csv.php");	
+	exit;	
+}
+add_action('wp_ajax_affiliates_report_csv', 'pmpro_wp_ajax_affiliates_report_csv');
+
+//check if a user is an affiliate
+function pmpro_affiliates_getAffiliatesForUser($user_id = NULL)
+{
+	if(empty($user_id))
+	{
+		if(!is_user_logged_in())
+			return array();
+			
+		global $current_user;
+		$user_id = $current_user->ID;
+		$user_login = $current_user->user_login;
+	}
+	else
+	{
+		$user = get_userdata($user_id);
+		$user_login = $user->user_login;
+	}
+	
+	if(empty($user_login))
+		return array();
+	
+	global $wpdb;
+	$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates WHERE affiliateuser = '" . esc_sql($user_login) . "' LIMIT 1");
+		
+	if(!empty($affiliates))
+		return $affiliates;
+	else
+		return array();
+}

@@ -232,61 +232,7 @@
 	
 	<?php } elseif($report) { ?>	
 			
-		<?php if(!empty($name)) { ?>
-			<h2>
-				Affiliate Report: <?php echo stripslashes($name) . " (" . stripslashes($code) . ")"; ?>
-		<?php } else { ?>
-			<h2>
-				Affiliate Report: All Affiliates								
-		<?php } ?>
-			<a href="admin.php?page=pmpro-affiliates" class="button add-new-h2">Back to Affiliates &raquo;</a>
-		</h2>
-	
-		<table class="widefat">
-		<thead>
-			<tr>				
-				<th>Code</th>
-				<th>Sub-ID</th>				
-				<th>Name</th>		
-				<th>Member</th>						
-				<th>Date</th>				
-				<th>Order Total</th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php
-				$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
-				if($report != "all")
-					$sqlQuery .= " AND a.id = '" . $wpdb->escape($report) . "' ";
-				$affiliate_orders = $wpdb->get_results($sqlQuery);
-				if(empty($affiliate_orders))
-				{
-				?>
-					<tr><td colspan="6" class="pmpro_pad20">					
-						<p>No affiliate signups have been tracked yet.</p>
-					</td></tr>
-				<?php
-				}
-				else
-				{
-					global $pmpro_currency_symbol;
-					foreach($affiliate_orders as $order)
-					{
-					?>
-					<tr>
-						<td><?php echo $order->code;?></td>
-						<td><?php echo $order->subid;?></td>
-						<td><?php echo stripslashes($order->name);?></td>
-						<td><?php echo $order->user_login;?></td>
-						<td><?php echo date(get_option("date_format"), $order->timestamp);?></td>
-						<td><?php echo $pmpro_currency_symbol . $order->total;?></td>
-					</tr>
-					<?php
-					}
-				}
-			?>
-		</tbody>
-		</table>
+		<?php require_once("report.php"); ?>
 	
 	<?php } else { ?>	
 	
@@ -349,7 +295,8 @@
 						<td>
 							<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">Report</a> &nbsp;
 							<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">Edit</a> &nbsp;
-							<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a>													
+							<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a> &nbsp;
+							<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a>								
 						</td>										
 					</tr>
 					<?php
