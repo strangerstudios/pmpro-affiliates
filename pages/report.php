@@ -63,11 +63,10 @@
 			}
 			
 			?>
-			<h2>
-				<?php echo $affiliate->code;?>
-				<small><a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $affiliate->id;?>" class="button add-new-h2">Export CSV</a></small>
-			</h2>
-			<table class="widefat">
+			<div class="alignright"><small><a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $affiliate->id;?>" class="button add-new-h2">Export CSV</a></small></div>
+			<div class="pmpro_clear"></div>
+			<h3>Viewing report for code: <?php echo $affiliate->code;?></h3>
+			<table class="pmpro_affiliate_report" width="100%" cellpadding="0" cellspacing="0">
 			<thead>
 				<tr>				
 					<th>Code</th>
@@ -112,13 +111,15 @@
 				?>
 			</tbody>
 			</table>
+			<p><a href="<?php echo get_permalink($affiliate_report_post_id); ?>">View All Affiliate Codes</a></p>
 			<?php
 		}
 		else
 		{		
 			//show affiliates		
 			?>
-			<h2>Your Affiliate Codes</h2>
+			<h3>Your Affiliate Codes</h3>
+			<p>Select an affiliate code to view the report.</p>			
 			<ul>
 				<?php foreach($pmpro_affiliates as $affiliate) { ?>
 					<li><a href="<?php echo get_permalink($post->ID);?>?report=<?php echo $affiliate->id;?>"><?php echo $affiliate->code;?></a></li>
