@@ -3,7 +3,7 @@
 Plugin Name: PMPro Affiliates
 Plugin URI: http://www.paidmembershipspro.com/pmpro-affiliates/
 Description: Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
-Version: .2.3
+Version: .2.4
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */

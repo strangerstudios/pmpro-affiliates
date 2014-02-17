@@ -96,7 +96,7 @@
 		}
 		else
 		{
-			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (id, code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('', '" . $wpdb->escape($code) . "', '" . $wpdb->escape($name) . "', '" . $wpdb->escape($affiliateuser) . "', '" . $wpdb->escape($trackingcode) . "', '" . $wpdb->escape($cookiedays) . "', '" . $wpdb->escape($enabled) . "')";
+			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . $wpdb->escape($code) . "', '" . $wpdb->escape($name) . "', '" . $wpdb->escape($affiliateuser) . "', '" . $wpdb->escape($trackingcode) . "', '" . intval($cookiedays) . "', '" . $wpdb->escape($enabled) . "')";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				//all good

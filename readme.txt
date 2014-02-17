@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 3.1
 Tested up to: 3.4
-Stable tag: .2.3
+Stable tag: .2.4
 
 Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
 
@@ -44,6 +44,10 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+
+= .2.4 =
+* Fixed SQL bug that came up on some setups (typically Windows-based) where affiliates wouldn't insert. (Thanks, Jose Fernandez)
+
 = .2.3 =
 * Added affiliates link to admin bar.
 * Affiliate report export to CSV.
