@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 3.1
-Tested up to: 3.4
+Tested up to: 3.8.1
 Stable tag: .2.4
 
 Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
