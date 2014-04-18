@@ -31,7 +31,7 @@ Questions
 1. Manage affiliates through the "affiliates" admin page added under Memberships.
 1. Affiliate URLs will look like http://site.com/?pa=AFFILIATECODE
 1. You can add a "subid" to the URL on the fly for more granular tracking http://site.com/?pa=AFFILIATECODE&subid=TEST1
-1. Create a page with the [pmpro_affiliate_report] shortcode and direct your affiliate users to that page.
+1. Create a page with the [pmpro_affiliates_report] shortcode and direct your affiliate users to that page.
 
 == Frequently Asked Questions ==
 
