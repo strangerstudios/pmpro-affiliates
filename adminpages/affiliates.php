@@ -79,7 +79,7 @@
 		//updating or new?
 		if($edit > 0)
 		{
-			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . $wpdb->escape($code) . "', name = '" . $wpdb->escape($name) . "', affiliateuser = '" . $wpdb->escape($affiliateuser) . "', trackingcode = '" . $wpdb->escape($trackingcode) . "', cookiedays = '" . $wpdb->escape($cookiedays) . "', enabled = '" . $wpdb->escape($enabled) . "' WHERE id = '" . $edit . "' LIMIT 1";
+			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . $edit . "' LIMIT 1";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				//all good
@@ -96,7 +96,7 @@
 		}
 		else
 		{
-			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . $wpdb->escape($code) . "', '" . $wpdb->escape($name) . "', '" . $wpdb->escape($affiliateuser) . "', '" . $wpdb->escape($trackingcode) . "', '" . intval($cookiedays) . "', '" . $wpdb->escape($enabled) . "')";
+			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql($code) . "', '" . esc_sql($name) . "', '" . esc_sql($affiliateuser) . "', '" . esc_sql($trackingcode) . "', '" . intval($cookiedays) . "', '" . esc_sql($enabled) . "')";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				//all good

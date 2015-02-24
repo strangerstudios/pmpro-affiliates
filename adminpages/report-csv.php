@@ -32,7 +32,7 @@
 	
 	$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, u.display_name as display_name, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
 	if($report != "all")
-		$sqlQuery .= " AND a.id = '" . $wpdb->escape($report) . "' ";
+		$sqlQuery .= " AND a.id = '" . esc_sql($report) . "' ";
 	$affiliate_orders = $wpdb->get_results($sqlQuery);
 	
 	//begin output

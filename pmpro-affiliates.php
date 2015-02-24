@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: PMPro Affiliates
+Plugin Name: Paid Memberships Pro - Affiliates Add On
 Plugin URI: http://www.paidmembershipspro.com/pmpro-affiliates/
 Description: Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
-Version: .2.4
+Version: .2.4.1
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -388,3 +388,30 @@ function pmpro_affiliates_getAffiliatesForUser($user_id = NULL)
 	else
 		return array();
 }
+
+/*
+Function to add links to the plugin action links
+*/
+function pmpro_affiliates_add_action_links($links) {	
+	$new_links = array(
+			'<a href="' . get_admin_url(NULL, 'admin.php?page=pmpro-affiliates') . '">Settings</a>',
+	);
+	return array_merge($new_links, $links);
+}
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'pmpro_affiliates_add_action_links');
+
+/*
+Function to add links to the plugin row meta
+*/
+function pmpro_affiliates_plugin_row_meta($links, $file) {
+	if(strpos($file, 'pmpro-affiliates.php') !== false)
+	{
+		$new_links = array(
+			'<a href="' . esc_url('http://www.paidmembershipspro.com/add-ons/plugins-on-github/pmpro-lightweight-affiliate-tracking/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+		);
+		$links = array_merge($links, $new_links);
+	}
+	return $links;
+}
+add_filter('plugin_row_meta', 'pmpro_affiliates_plugin_row_meta', 10, 2);
