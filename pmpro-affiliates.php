@@ -69,23 +69,23 @@ function pmpro_affiliates_checkDB()
 	//SQL for the affiliates table	
 	$sqlQuery = "
 		CREATE TABLE `" . $wpdb->pmpro_affiliates . "` (
-		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-		  `code` varchar(32) NOT NULL,
-		  `name` varchar(255) NOT NULL,
-		  `affiliateuser` varchar(255) NOT NULL,
-		  `trackingcode` mediumtext NOT NULL,	  
-		  `cookiedays` int(11) NOT NULL DEFAULT '30',
-		  `enabled` tinyint(4) NOT NULL DEFAULT '1',
-		  `visits` int(11) unsigned,
-		  PRIMARY KEY (`id`),
-		  KEY `affiliateid` (`code`),
-		  KEY `affiliateuser` (`affiliateuser`),
-		  KEY `enabled` (`enabled`)
+		  id int(11) unsigned NOT NULL AUTO_INCREMENT,
+		  code varchar(32) NOT NULL,
+		  name varchar(255) NOT NULL,
+		  affiliateuser varchar(255) NOT NULL,
+		  trackingcode mediumtext NOT NULL,	  
+		  cookiedays int(11) NOT NULL DEFAULT '30',
+		  enabled tinyint(4) NOT NULL DEFAULT '1',
+		  visits int(11) unsigned NOT NULL DEFAULT '0',
+		  PRIMARY KEY (id),
+		  KEY affiliateid (code),
+		  KEY affiliateuser (affiliateuser),
+		  KEY enabled (enabled)
 		) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
 	";
 
 	//update it if need be
-	if($db_version < .2 || false)
+	if($db_version < .2)
 	{
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sqlQuery);	
@@ -112,21 +112,26 @@ function pmpro_affiliates_wp_head()
 		global $wpdb;
 		
 		//check that the code is enabled
-		$affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($pmpro_affiliate_code) . "' LIMIT 1");
+		$affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql($pmpro_affiliate_code) . "' LIMIT 1");
 		if(!empty($affiliate_enabled))
 		{
-			//track the visit
-			if(empty($_COOKIE['pmpro_affiliate'])) {
-				$wpdb->query("UPDATE $wpdb->pmpro_affiliates SET visits = visits + 1 WHERE code = '" . $wpdb->escape($pmpro_affiliate_code) . "' LIMIT 1");
-			}
-
 			//build cookie string
             $cookiestring = $pmpro_affiliate_code;
             if(!empty($pmpro_affiliate_subid))
 				$cookiestring .= "," . $pmpro_affiliate_subid;
 
+			d($_COOKIE);
+			d($pmpro_affiliate_code);
+			d($cookiestring);
+
+			//track the visit
+			if(empty($_COOKIE['pmpro_affiliate'])) {
+				echo "trying";
+				$wpdb->query("UPDATE $wpdb->pmpro_affiliates SET visits = visits + 1 WHERE code = '" . esc_sql($pmpro_affiliate_code) . "' LIMIT 1");
+			}
+
             //how long?
-            $cookielength = $wpdb->get_var("SELECT cookiedays FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($pmpro_affiliate_code) . "' LIMIT 1");
+            $cookielength = $wpdb->get_var("SELECT cookiedays FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql($pmpro_affiliate_code) . "' LIMIT 1");
             ?>
             <script type="text/javascript" language="javascript">
                     var today = new Date();
@@ -152,14 +157,14 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 	//check for an order for this subscription with an affiliate id
 	if(!empty($order->subscription_transaction_id))
 	{
-		$lastorder = $wpdb->get_row("SELECT affiliate_id, affiliate_subid FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . $wpdb->escape($order->user_id) . "' ORDER BY id DESC LIMIT 1");
+		$lastorder = $wpdb->get_row("SELECT affiliate_id, affiliate_subid FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql($order->user_id) . "' ORDER BY id DESC LIMIT 1");
 		
 		if(!empty($lastorder->affiliate_id))
 		{
 			$affiliate_id = $lastorder->affiliate_id;
 			$affiliate_subid = $lastorder->affiliate_subid;
 			
-			$affiliate_code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_affiliates WHERE id = '" . $wpdb->escape($affiliate_id) . "' LIMIT 1");
+			$affiliate_code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_affiliates WHERE id = '" . esc_sql($affiliate_id) . "' LIMIT 1");
 		}
 	}
 		
@@ -172,13 +177,13 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 			$affiliate_subid = $parts[1];
 		else
 			$affiliate_subid = "";
-		$affiliate_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+		$affiliate_id = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql($affiliate_code) . "' LIMIT 1");
 	}
 			
 	if(!empty($affiliate_code))
 	{
        	//check that it is enabled
-        $affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+        $affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql($affiliate_code) . "' LIMIT 1");
         if(!$affiliate_enabled)
         {						
 			return;	//don't do anything
@@ -243,10 +248,10 @@ function pmpro_affiliates_pmpro_confirmation_message($message)
 		{
 			global $current_user, $wpdb;
 			
-			$affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+			$affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql($affiliate_code) . "' LIMIT 1");
 			if($affiliate_enabled)
 			{
-				$tracking_code = $wpdb->get_var("SELECT trackingcode FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+				$tracking_code = $wpdb->get_var("SELECT trackingcode FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql($affiliate_code) . "' LIMIT 1");
 				if(!empty($tracking_code))
 				{
 					//filter
@@ -335,7 +340,7 @@ function pmpro_affiliates_set_discount_code()
 			$affiliate_code = $_REQUEST['pa'];
 	
 		//set the discount code if there is an affiliate cookie			
-		$exists = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . $wpdb->escape($affiliate_code) . "' LIMIT 1");
+		$exists = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql($affiliate_code) . "' LIMIT 1");
 		if(!empty($exists))
 		{
 			//check that the code is applicable for this level
@@ -347,7 +352,7 @@ function pmpro_affiliates_set_discount_code()
 	elseif(!empty($_REQUEST['discount_code']) && empty($_REQUEST['pa']) && empty($_COOKIE['pmpro_affiliate']))
 	{
 		//set the affiliate id to the discount code			
-		$exists = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($_REQUEST['discount_code']) . "' LIMIT 1");
+		$exists = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql($_REQUEST['discount_code']) . "' LIMIT 1");
 		if(!empty($exists))
 		{
 			//set the affiliate id passed in to the discount code

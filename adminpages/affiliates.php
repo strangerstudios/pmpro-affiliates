@@ -62,7 +62,7 @@
 			$cookiedays = $affiliate->cookiedays;
 			$enabled = $affiliate->enabled;
 		}
-	}	
+	}
 	else
 	{
 		//defaults
@@ -117,7 +117,20 @@
 	//are we deleting?
 	if(!empty($delete))
 	{
-		
+		$sqlQuery = "DELETE FROM $wpdb->pmpro_affiliates WHERE id=" . esc_sql($delete) . " LIMIT 1";
+		if($wpdb->query($sqlQuery) !== false)
+		{
+			//all good
+			$delete = false;
+			$pmpro_msg = "Affiliate deleted successfully.";
+			$pmpro_msgt = "success";
+		}
+		else
+		{
+			//error
+			$pmpro_msg = "There was an error deleting the affiliate.";
+			$pmpro_msgt = "error";
+		}
 	}
 ?>
 <div class="wrap pmpro_admin">	
@@ -268,6 +281,7 @@
 				<th>Visits</th>
 				<th>Conversion %</th>
 				<th>Earnings</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -294,16 +308,10 @@
 						<td><?php echo stripslashes($affiliate->name)?></td>
 						<td><?php echo $affiliate->cookiedays?></td>
 						<td><?php echo pmpro_affiliates_yesorno($affiliate->enabled)?></td>
-						<td>
-							<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">Report</a> &nbsp;
-							<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">Edit</a> &nbsp;
-							<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a> &nbsp;
-							<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a>								
-						</td>
 						<td><?php echo intval($affiliate->visits);?></td>
 						<td>
 							<?php
-								$norders = $wpdb->get_var("SELECT COUNT(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . $wpdb->escape($affiliate->code) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+								$norders = $wpdb->get_var("SELECT COUNT(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->code) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
 								if(empty($affiliate->visits))
 									echo "0%";
 								else
@@ -312,10 +320,17 @@
 						</td>
 						<td>
 							<?php
-								$earnings = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . $wpdb->escape($affiliate->code) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+								$earnings = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->code) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
 
 								echo pmpro_formatPrice($earnings);
 							?>
+						</td>
+						<td>
+							<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">Report</a> &nbsp;
+							<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">Edit</a> &nbsp;
+							<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a> &nbsp;
+							<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a> &nbsp;
+							<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", "pmpro"), str_replace("'", "", $affiliate->id)));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo $affiliate->id;?>'); void(0);"><?php _e('Delete', 'pmpro');?></a>
 						</td>
 					</tr>
 					<?php
