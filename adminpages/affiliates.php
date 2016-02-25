@@ -62,7 +62,7 @@
 			$cookiedays = $affiliate->cookiedays;
 			$enabled = $affiliate->enabled;
 		}
-	}	
+	}
 	else
 	{
 		//defaults
@@ -117,7 +117,20 @@
 	//are we deleting?
 	if(!empty($delete))
 	{
-		
+		$sqlQuery = "DELETE FROM $wpdb->pmpro_affiliates WHERE id=$delete";
+		if($wpdb->query($sqlQuery) !== false)
+		{
+			//all good
+			$delete = false;
+			$pmpro_msg = "Affiliate deleted successfully.";
+			$pmpro_msgt = "success";
+		}
+		else
+		{
+			//error
+			$pmpro_msg = "There was an error deleting the affiliate.";
+			$pmpro_msgt = "error";
+		}
 	}
 ?>
 <div class="wrap pmpro_admin">	
@@ -296,7 +309,8 @@
 							<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">Report</a> &nbsp;
 							<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">Edit</a> &nbsp;
 							<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a> &nbsp;
-							<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a>								
+							<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a> &nbsp;
+							<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", "pmpro"), str_replace("'", "", $affiliate->id)));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo $affiliate->id;?>'); void(0);"><?php _e('Delete', 'pmpro');?></a>
 						</td>										
 					</tr>
 					<?php
