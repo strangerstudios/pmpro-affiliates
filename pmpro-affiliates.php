@@ -157,7 +157,7 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 	//check for cookie
 	if(empty($affiliate_code) && !empty($_COOKIE['pmpro_affiliate']))
 	{				
-		$parts = split(",", $_COOKIE['pmpro_affiliate']);
+		$parts = explode(",", $_COOKIE['pmpro_affiliate']);
 		$affiliate_code = $parts[0];
 		if(isset($parts[1]))
 			$affiliate_subid = $parts[1];
@@ -227,7 +227,7 @@ function pmpro_affiliates_pmpro_confirmation_message($message)
 {
 	if(!empty($_COOKIE['pmpro_affiliate']))
 	{
-		$parts = split(",", $_COOKIE['pmpro_affiliate']);
+		$parts = explode(",", $_COOKIE['pmpro_affiliate']);
 		$affiliate_code = $parts[0];
 		
 		if(!empty($affiliate_code))
