@@ -195,7 +195,7 @@
                         <th scope="row" valign="top"><label for="trackingcode">Tracking Code:</label></th>
                         <td>
 							<textarea id="trackingcode" name="trackingcode" rows="6" cols="60"><?php if(!empty($trackingcode)) echo esc_textarea(stripslashes($trackingcode));?></textarea>
-							<br /><small>This code is run on the confirmation page after checkout. Variables: !!ORDER_ID!!, !!LEVEL_NAME!!</small>
+							<br /><small>(Optional) If you are tracking this affiliate through another system, you can add HTML/JS code here to run on the confirmation page after checkout. Variables: !!ORDER_ID!!, !!LEVEL_NAME!!</small>
 						</td>
                     </tr>
 					
@@ -265,7 +265,9 @@
 				<th>Name</th>		
 				<th>Cookie Length</th>						
 				<th>Enabled</th>				
-				<th></th>
+				<th>Visits</th>
+				<th>Conversion %</th>
+				<th>Earnings</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -297,7 +299,24 @@
 							<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">Edit</a> &nbsp;
 							<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a> &nbsp;
 							<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a>								
-						</td>										
+						</td>
+						<td><?php echo intval($affiliate->visits);?></td>
+						<td>
+							<?php
+								$norders = $wpdb->get_var("SELECT COUNT(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . $wpdb->escape($affiliate->code) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+								if(empty($affiliate->visits))
+									echo "0%";
+								else
+									echo round($norders / $affiliate->visits, 2) . "%";
+							?>
+						</td>
+						<td>
+							<?php
+								$earnings = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . $wpdb->escape($affiliate->code) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+
+								echo pmpro_formatPrice($earnings);
+							?>
+						</td>
 					</tr>
 					<?php
 					}

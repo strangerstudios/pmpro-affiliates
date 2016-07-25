@@ -35,10 +35,10 @@
 <thead>
 	<tr>				
 		<th>Code</th>
-		<th>Sub-ID</th>				
-		<th>Name</th>		
-		<th>Member</th>						
-		<th>Date</th>				
+		<th>Sub-ID</th>
+		<th>Name</th>
+		<th>Member</th>
+		<th>Date</th>
 		<th>Order Total</th>
 	</tr>
 </thead>

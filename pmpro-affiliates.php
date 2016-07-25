@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Affiliates Add On
 Plugin URI: http://www.paidmembershipspro.com/pmpro-affiliates/
 Description: Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
-Version: .2.4.1
+Version: .3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -65,29 +65,33 @@ function pmpro_affiliates_checkDB()
 	$table_exists = $wpdb->query("SHOW TABLES LIKE '" . $wpdb->pmpro_affiliates . "'");	
 	if(!$table_exists)		
 		$db_version = 0;
-		
-	if($db_version < .1)
+	
+	//SQL for the affiliates table	
+	$sqlQuery = "
+		CREATE TABLE `" . $wpdb->pmpro_affiliates . "` (
+		  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+		  `code` varchar(32) NOT NULL,
+		  `name` varchar(255) NOT NULL,
+		  `affiliateuser` varchar(255) NOT NULL,
+		  `trackingcode` mediumtext NOT NULL,	  
+		  `cookiedays` int(11) NOT NULL DEFAULT '30',
+		  `enabled` tinyint(4) NOT NULL DEFAULT '1',
+		  `visits` int(11) unsigned,
+		  PRIMARY KEY (`id`),
+		  KEY `affiliateid` (`code`),
+		  KEY `affiliateuser` (`affiliateuser`),
+		  KEY `enabled` (`enabled`)
+		) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
+	";
+
+	//update it if need be
+	if($db_version < .2 || false)
 	{
-		//add the db table		
-		$sqlQuery = "		
-			CREATE TABLE `" . $wpdb->pmpro_affiliates . "` (		  
-			  `id` int(11) NOT NULL AUTO_INCREMENT,
-			  `code` varchar(32) NOT NULL,
-			  `name` varchar(255) NOT NULL,
-			  `affiliateuser` varchar(255) NOT NULL,
-			  `trackingcode` mediumtext NOT NULL,	  
-			  `cookiedays` int(11) NOT NULL DEFAULT '30',
-			  `enabled` tinyint(4) NOT NULL DEFAULT '1',
-			  PRIMARY KEY (`id`),
-			  KEY `affiliateid` (`code`),
-			  KEY `affiliateuser` (`affiliateuser`),
-			  KEY `enabled` (`enabled`)
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
-		";
-		$wpdb->query($sqlQuery);		
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sqlQuery);	
 		
 		//save the db version
-		$db_version = .1;
+		$db_version = .2;
 		$pmpro_affiliates_options['db_version'] = $db_version;
 		update_option("pmpro_affiliates_options", $pmpro_affiliates_options);
 	}
@@ -111,6 +115,11 @@ function pmpro_affiliates_wp_head()
 		$affiliate_enabled = $wpdb->get_var("SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . $wpdb->escape($pmpro_affiliate_code) . "' LIMIT 1");
 		if(!empty($affiliate_enabled))
 		{
+			//track the visit
+			if(empty($_COOKIE['pmpro_affiliate'])) {
+				$wpdb->query("UPDATE $wpdb->pmpro_affiliates SET visits = visits + 1 WHERE code = '" . $wpdb->escape($pmpro_affiliate_code) . "' LIMIT 1");
+			}
+
 			//build cookie string
             $cookiestring = $pmpro_affiliate_code;
             if(!empty($pmpro_affiliate_subid))
