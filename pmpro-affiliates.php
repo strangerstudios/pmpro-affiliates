@@ -120,10 +120,6 @@ function pmpro_affiliates_wp_head()
             if(!empty($pmpro_affiliate_subid))
 				$cookiestring .= "," . $pmpro_affiliate_subid;
 
-			d($_COOKIE);
-			d($pmpro_affiliate_code);
-			d($cookiestring);
-
 			//track the visit
 			if(empty($_COOKIE['pmpro_affiliate'])) {
 				echo "trying";

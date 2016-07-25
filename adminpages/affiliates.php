@@ -311,17 +311,16 @@
 						<td><?php echo intval($affiliate->visits);?></td>
 						<td>
 							<?php
-								$norders = $wpdb->get_var("SELECT COUNT(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->code) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+								$norders = $wpdb->get_var("SELECT COUNT(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
 								if(empty($affiliate->visits))
 									echo "0%";
 								else
-									echo round($norders / $affiliate->visits, 2) . "%";
+									echo round($norders / $affiliate->visits * 100, 2) . "%";
 							?>
 						</td>
 						<td>
 							<?php
-								$earnings = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->code) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
-
+								$earnings = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
 								echo pmpro_formatPrice($earnings);
 							?>
 						</td>
