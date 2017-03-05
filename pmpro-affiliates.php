@@ -122,7 +122,6 @@ function pmpro_affiliates_wp_head()
 
 			//track the visit
 			if(empty($_COOKIE['pmpro_affiliate'])) {
-				echo "trying";
 				$wpdb->query("UPDATE $wpdb->pmpro_affiliates SET visits = visits + 1 WHERE code = '" . esc_sql($pmpro_affiliate_code) . "' LIMIT 1");
 			}
 
