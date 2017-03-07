@@ -6,12 +6,22 @@
 		$edit = $_REQUEST['edit'];
 	else
 		$edit = false;
-		
+	
 	if(isset($_REQUEST['report']))	
 		$report = $_REQUEST['report'];
 	else
 		$report = false;
-		
+	
+	if(isset($_REQUEST['settings']))	
+		$settings = $_REQUEST['settings'];
+	else
+		$settings = false;
+	
+	if(isset($_REQUEST['s']))	
+		$s = $_REQUEST['s'];
+	else
+		$s = false;
+
 	if(isset($_REQUEST['copy']))	
 		$copy = $_REQUEST['copy'];
 	else
@@ -132,38 +142,38 @@
 			$pmpro_msgt = "error";
 		}
 	}
+
+	//get settings for default term names
+	global $pmpro_affiliates_settings;
+	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates"));
+	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
+	$pmpro_affiliates_plural_name = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
 ?>
-<div class="wrap pmpro_admin">	
-	<div class="pmpro_banner">		
-		<a class="pmpro_logo" title="Paid Memberships Pro - Membership Plugin for WordPress" target="_blank" href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>"><img src="<?php echo PMPRO_URL?>/images/Paid-Memberships-Pro.png" width="350" height="75" border="0" alt="Paid Memberships Pro(c) - All Rights Reserved" /></a>
-		<div class="pmpro_tagline">Membership Plugin for WordPress</div>
-		
-		<div class="pmpro_meta"><a href="<?php echo pmpro_https_filter("http://www.paidmembershipspro.com")?>">Plugin Support</a> | <a href="http://www.paidmembershipspro.com/forums/">User Forum</a> | <strong>Version <?php echo PMPRO_VERSION?></strong></div>
-	</div>
-	<br style="clear:both;" />
-	
-	<?php
-		//include(pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION));
+<?php
+	require_once( PMPRO_DIR . "/adminpages/admin_header.php" );
 	?>
-	<div id="pmpro_notifications">
-	</div>
-	<script>
-		jQuery.get('<?php echo pmpro_https_filter("http://www.paidmembershipspro.com/notifications/?v=" . PMPRO_VERSION)?>', function(data) {
-			if(data && data != 'NULL')
-				jQuery('#pmpro_notifications').html(data);		 
-		});
-	</script>
+	<h2>
+		<?php echo sprintf('%s Add On: Lightweight %s Tracking', ucwords($pmpro_affiliates_plural_name), ucwords($pmpro_affiliates_plural_name), 'pmpro_affiliates'); ?>
+	</h2>
 	
-	<?php if($edit) { ?>
-		
+	<h2 class="nav-tab-wrapper">
+		<a href="admin.php?page=pmpro-affiliates" class="nav-tab<?php if(empty($report) && empty($settings)) { ?> nav-tab-active<?php } ?>">Manage <?php echo ucwords($pmpro_affiliates_plural_name); ?></a>
+		<a href="admin.php?page=pmpro-affiliates&report=all" class="nav-tab<?php if(!empty($report)) { ?> nav-tab-active<?php } ?>">Reports</a>
+		<a href="admin.php?page=pmpro-affiliates&settings=1" class="nav-tab<?php if(!empty($settings)) { ?> nav-tab-active<?php } ?>">Settings</a>
+	</h2>
+	<br class="clear" />
+	<?php
+	
+	if($edit) 
+	{
+		?>
 		<h2>
 			<?php
 				if($edit > 0)
-					echo "Edit Affiliate";
+					echo "Edit " . ucwords($pmpro_affiliates_singular_name);
 				else
-					echo "Add New Affiliate";
+					echo "Add New " . ucwords($pmpro_affiliates_singular_name);
 			?>
-			<a href="admin.php?page=pmpro-affiliates" class="button add-new-h2">Back to Affiliates &raquo;</a>
 		</h2>
 		
 		<?php if(!empty($pmpro_msg)) { ?>
@@ -175,60 +185,60 @@
 			<form action="" method="post">
 				<input name="saveid" type="hidden" value="<?php echo $edit?>" />
 				<table class="form-table">
-                <tbody>
-                    <tr>
-                        <th scope="row" valign="top"><label>ID:</label></th>
-                        <td class="pmpro_lite"><?php if(!empty($affiliate->id)) echo $affiliate->id; else echo "This will be generated when you save.";?></td>
-                    </tr>								                
-                    
-                    <tr>
-                        <th scope="row" valign="top"><label for="code">Code:</label></th>
-                        <td>
-							<input id="code" name="code" type="text" size="20" value="<?php if(!empty($code)) echo esc_attr($code);?>" />
-							<small>Value added to the site URL to designate an affiliate link. (e.g. "&pa=CODE" or "?pa=CODE")</small>
-						</td>
-                    </tr>
-
+				<tbody>
 					<tr>
-                        <th scope="row" valign="top"><label for="name">Business/Contact Name:</label></th>
-                        <td>
+						<th scope="row" valign="top"><label><?php _e('ID:', 'pmpro_affiliates'); ?></label></th>
+						<td class="pmpro_lite"><?php if(!empty($affiliate->id)) echo $affiliate->id; else echo "This will be generated when you save.";?></td>
+					</tr>								                
+					
+					<tr>
+						<th scope="row" valign="top"><label for="code"><?php _e('Code:', 'pmpro_affiliates'); ?></label></th>
+						<td>
+							<input id="code" name="code" type="text" size="20" value="<?php if(!empty($code)) echo esc_attr($code);?>" />
+							<small>Value added to the site URL to designate the <?php echo $pmpro_affiliates_singular_name; ?> link. (e.g. "&pa=CODE" or "?pa=CODE")</small>
+						</td>
+					</tr>
+	
+					<tr>
+						<th scope="row" valign="top"><label for="name"><?php _e('Business/Contact Name:', 'pmpro_affiliates'); ?></label></th>
+						<td>
 							<input id="name" name="name" type="text" size="40" value="<?php if(!empty($name)) echo esc_attr(stripslashes($name));?>" />
 						</td>
-                    </tr>
-
+					</tr>
+	
 					<tr>
-                        <th scope="row" valign="top"><label for="affiliateuser">Affiliate User:</label></th>
-                        <td>
+						<th scope="row" valign="top"><label for="affiliateuser"><?php echo sprintf('%s User:', ucwords($pmpro_affiliates_singular_name), 'pmpro_affiliates'); ?></label></th>
+						<td>
 							<input id="affiliateuser" name="affiliateuser" type="text" size="20" value="<?php if(!empty($affiliateuser)) echo esc_attr($affiliateuser);?>" />
-							<small>The username of a WordPress user in your site who should have access to affiliate reports.</small>
+							<small>The username of a WordPress user in your site who should have access to <?php echo $pmpro_affiliates_singular_name; ?> reports.</small>
 						</td>
-                    </tr>
+					</tr>
 					
 					<tr>
-                        <th scope="row" valign="top"><label for="trackingcode">Tracking Code:</label></th>
-                        <td>
+						<th scope="row" valign="top"><label for="trackingcode"><?php _e('Tracking Code:', 'pmpro_affiliates'); ?></label></th>
+						<td>
 							<textarea id="trackingcode" name="trackingcode" rows="6" cols="60"><?php if(!empty($trackingcode)) echo esc_textarea(stripslashes($trackingcode));?></textarea>
-							<br /><small>(Optional) If you are tracking this affiliate through another system, you can add HTML/JS code here to run on the confirmation page after checkout. Variables: !!ORDER_ID!!, !!LEVEL_NAME!!</small>
+							<br /><small>(Optional) If you are tracking this <?php echo $pmpro_affiliates_singular_name; ?> through another system, you can add HTML/JS code here to run on the confirmation page after checkout. Variables: !!ORDER_ID!!, !!LEVEL_NAME!!</small>
 						</td>
-                    </tr>
+					</tr>
 					
 					<tr>
-                        <th scope="row" valign="top"><label for="cookiedays">Cookie Length:</label></th>
-                        <td>
+						<th scope="row" valign="top"><label for="cookiedays"><?php _e('Cookie Length:', 'pmpro_affiliates'); ?></label></th>
+						<td>
 							<input name="cookiedays" type="text" size="5" value="<?php if(!empty($cookiedays)) echo esc_attr($cookiedays);?>" />
 							<small>In days.</small>
 						</td>
-                    </tr>
+					</tr>
 					
 					<tr>
-                        <th scope="row" valign="top"><label for="enabled">Enabled:</label></th>
-                        <td id="enabled">
+						<th scope="row" valign="top"><label for="enabled"><?php _e('Enabled:', 'pmpro_affiliates'); ?></label></th>
+						<td id="enabled">
 							<input type="radio" name="enabled" value="1" <?php if(!empty($enabled)) { ?>checked="checked"<?php } ?>>Yes
 							&nbsp;
 							<input type="radio" name="enabled" value="0" <?php if(empty($enabled)) { ?>checked="checked"<?php } ?>>No
 						</td>
-                    </tr>
-                    					
+					</tr>
+										
 				</tbody>
 			</table>
 			
@@ -237,31 +247,40 @@
 			<p class="submit topborder">				
 				<input name="edit" type="hidden" value="<?php if(!empty($edit)) echo $edit?>" />
 				<input name="save" type="hidden" value="1" />
-				<input type="submit" class="button-primary" value="Save Code" /> 					
-				<input name="cancel" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-affiliates')?>';" />
+				<input type="submit" class="button-primary" value="<?php echo sprintf('Save %s', ucwords($pmpro_affiliates_singular_name), 'pmpro_affiliates'); ?>" /> 					
+				<input name="cancel" class="button" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-affiliates'); ?>';" />
 			</p>
 			</form>
 		</div>
+
+		<?php 
+	}
+	elseif($settings)
+	{
+		//show the settings for affiliate add ons
+		require_once("settings.php");
+	} 
+	elseif($report)
+	{
+		//show the report for affiliate activity
+		require_once("report.php");
+	} 
+	else 
+	{ 
+		?>
+		<h1>
+			<?php echo ucwords($pmpro_affiliates_plural_name); ?>
+			<a href="admin.php?page=pmpro-affiliates&edit=-1" class="add-new-h2">Add New <?php echo ucwords($pmpro_affiliates_singular_name); ?></a>
+			<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2">View <?php echo ucwords($pmpro_affiliates_plural_name); ?> Report</a>
+		</h1>		
 	
-	<?php } elseif($report) { ?>	
-			
-		<?php require_once("report.php"); ?>
-	
-	<?php } else { ?>	
-	
-		<h2>
-			Affiliates
-			<a href="admin.php?page=pmpro-affiliates&edit=-1" class="button add-new-h2">Add New Affiliate</a>
-			<a href="admin.php?page=pmpro-affiliates&report=all" class="button add-new-h2">View All Affiliate Orders</a>
-		</h2>		
-		
 		<?php if(!empty($pmpro_msg)) { ?>
 			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo $pmpro_msg?></p></div>
 		<?php } ?>
 		
-		<form id="posts-filter" method="get" action="">			
+		<form id="posts-filter" method="get" action="">
 			<p class="search-box">
-				<label class="screen-reader-text" for="post-search-input">Search Affiliates:</label>
+				<label class="screen-reader-text" for="post-search-input"><?php echo sprintf('Search %s:', ucwords($pmpro_affiliates_plural_name), 'pmpro_affiliates'); ?></label>
 				<input type="hidden" name="page" value="pmpro-affiliates" />
 				<input id="post-search-input" type="text" value="<?php if(!empty($s)) echo $s;?>" name="s" size="30" />
 				<input class="button" type="submit" value="Search" id="search-submit "/>
@@ -273,15 +292,16 @@
 		<table class="widefat">
 		<thead>
 			<tr>
-				<th>ID</th>
-				<th>Code</th>				
-				<th>Name</th>		
-				<th>Cookie Length</th>						
-				<th>Enabled</th>				
-				<th>Visits</th>
-				<th>Conversion %</th>
-				<th>Earnings</th>
-				<th></th>
+				<th><?php _e('ID', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('Code', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('Name', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('User', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('Cookie', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('Enabled', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('Visits', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('Conversion %', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('Earnings', 'pmpro_affiliates'); ?></th>
+				<th><?php _e('', 'pmpro_affiliates'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -291,7 +311,7 @@
 				{
 				?>
 					<tr><td colspan="6" class="pmpro_pad20">					
-						<p>Use affiliates to track orders coming in from different sales campaigns and partners. <a href="admin.php?page=pmpro-affiliates&edit=-1">Create your first affiliate now</a>.</p>
+						<p>Use <?php echo $pmpro_affiliates_plural_name; ?> to track orders coming in from different sales campaigns and partners. <a href="admin.php?page=pmpro-affiliates&edit=-1">Create your first <?php echo $pmpro_affiliates_singular_name; ?>  now</a>.</p>
 					</td></tr>
 				<?php
 				}
@@ -305,9 +325,10 @@
 						<td>
 							<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>"><?php echo $affiliate->code?></a>
 						</td>
-						<td><?php echo stripslashes($affiliate->name)?></td>
-						<td><?php echo $affiliate->cookiedays?></td>
-						<td><?php echo pmpro_affiliates_yesorno($affiliate->enabled)?></td>
+						<td><?php echo stripslashes($affiliate->name); ?></td>
+						<td><?php echo stripslashes($affiliate->affiliateuser); ?></td>
+						<td><?php echo $affiliate->cookiedays . " days"; ?></td>
+						<td><?php echo pmpro_affiliates_yesorno($affiliate->enabled); ?></td>
 						<td><?php echo intval($affiliate->visits);?></td>
 						<td>
 							<?php
@@ -325,11 +346,11 @@
 							?>
 						</td>
 						<td>
-							<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">Report</a> &nbsp;
-							<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">Edit</a> &nbsp;
-							<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a> &nbsp;
-							<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a> &nbsp;
-							<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", "pmpro"), str_replace("'", "", $affiliate->id)));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo $affiliate->id;?>'); void(0);"><?php _e('Delete', 'pmpro');?></a>
+							<a class="button-primary" href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">report</a>
+							<a class="button" href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">edit</a>
+							<a class="button" href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">copy</a>
+							<a class="button" target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">link</a>
+							<a class="button" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", "pmpro"), str_replace("'", "", $affiliate->id)));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo $affiliate->id;?>'); void(0);"><?php _e('delete', 'pmpro');?></a>
 						</td>
 					</tr>
 					<?php
@@ -338,7 +359,11 @@
 				?>
 		</tbody>
 		</table>
-		
-	<?php } ?>
-	
-</div>
+	<?php 
+	} 
+	?>
+	<hr />
+	<p><a href="https://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-lightweight-affiliate-tracking/" target="_blank"><?php _e('Documentation', 'pmpro_affiliates'); ?></a> | <a href="https://www.paidmembershipspro.com/support/" target="_blank"><?php _e('Support', 'pmpro_affiliates'); ?></a></p>
+	<?php
+	require_once( PMPRO_DIR . "/adminpages/admin_footer.php" );
+?>

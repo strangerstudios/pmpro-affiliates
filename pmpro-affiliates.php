@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Affiliates Add On
 Plugin URI: http://www.paidmembershipspro.com/pmpro-affiliates/
 Description: Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
-Version: .2.5
+Version: .3
 Author: Stranger Studios
 Author URI: http://www.strangerstudios.com
 */
@@ -46,16 +46,46 @@ function pmpro_affiliates_getOptions()
 {
 	global $pmpro_affiliates_options;
 	$pmpro_affiliates_options = get_option("pmpro_affiliates_options", array("db_version"=>0));
-	
+	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates"));
+
 	global $wpdb, $table_prefix;
 	$wpdb->pmpro_affiliates = $table_prefix . 'pmpro_affiliates';
 }
 add_action("init", "pmpro_affiliates_getOptions", 5);
 
+//Add page setting for the frontend Affiliate Report page
+function pmpro_affiliates_extra_page_settings($pages) {
+	global $pmpro_affiliates_settings;
+	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates"));
+	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
+
+	$pages['affiliate_report'] = array('title'=>ucwords($pmpro_affiliates_singular_name) . ' Report', 'content'=>'[pmpro_affiliates_report]', 'hint'=>'Include the shortcode [pmpro_affiliates_report].');
+	return $pages;
+}
+add_action('pmpro_extra_page_settings', 'pmpro_affiliates_extra_page_settings');
+
+//Add links to the bottom of the list
+function pmpro_affiliates_member_links_bottom()
+{
+	//Check if the user has affiliate codes
+	global $pmpro_affiliates, $pmpro_pages;
+	$pmpro_affiliates = pmpro_affiliates_getAffiliatesForUser();		
+	$pmpro_pages_affiliate_report = $pmpro_pages['affiliate_report'];
+	
+	//If the user has affiliates codes, add the link
+	if(!empty($pmpro_affiliates) && !empty($pmpro_pages_affiliate_report) )
+	{
+		?>
+		<li><a href="<?php echo get_permalink($pmpro_pages_affiliate_report); ?>"><?php echo get_the_title($pmpro_pages['affiliate_report']); ?></a></li>
+		<?php
+	}
+}
+add_filter('pmpro_member_links_bottom','pmpro_affiliates_member_links_bottom');
+
 //setup db
 function pmpro_affiliates_checkDB()
 {
-	global $pmpro_affiliates_options;
+	global $pmpro_affiliates_options, $pmpro_affiliates_settings;
 	$db_version = $pmpro_affiliates_options['db_version'];
 	
 	//if we can't find the DB tables, reset db_version to 0
@@ -95,6 +125,14 @@ function pmpro_affiliates_checkDB()
 		$pmpro_affiliates_options['db_version'] = $db_version;
 		update_option("pmpro_affiliates_options", $pmpro_affiliates_options);
 	}
+
+	/*
+	if(empty($pmpro_affiliates_settings))
+	{
+		//save the default settings
+		update_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates") );
+	}
+	*/
 }
 add_action("admin_init", "pmpro_affiliates_checkDB", 20);
 
@@ -121,8 +159,7 @@ function pmpro_affiliates_wp_head()
 				$cookiestring .= "," . $pmpro_affiliate_subid;
 
 			//track the visit
-			if(empty($_COOKIE['pmpro_affiliate'])) {
-				echo "trying";
+			if(empty($_COOKIE['pmpro_affiliate'])) {				
 				$wpdb->query("UPDATE $wpdb->pmpro_affiliates SET visits = visits + 1 WHERE code = '" . esc_sql($pmpro_affiliate_code) . "' LIMIT 1");
 			}
 
@@ -230,11 +267,32 @@ function pmpro_affiliates_no_order_checkout($user_id)
 	//now pass through the function above
 	return pmpro_affiliates_pmpro_added_order($morder, true);		//will create an order if there is an affiliate id
 }
-add_action("pmpro_after_checkout", "pmpro_affiliates_no_order_checkout");
+add_action( 'pmpro_after_checkout', 'pmpro_affiliates_no_order_checkout' );
+
+/*
+	If the level is set to create an affiliate, let's create it.
+*/
+function pmpro_affiliates_generate_affiliate_after_checkout( $user_id ) {
+	global $wpdb;
+
+	//get some info
+	$user = get_userdata($user_id);
+	$pmpro_level = pmpro_getMembershipLevelForUser($user_id);
+
+	//generate the affiliate after membership checkout	
+	$pmpro_create_affiliate_level = get_option('pmpro_create_affiliate_level_' . $pmpro_level->id);
+	$code = pmpro_affiliates_getNewCode();	
+	if( !empty($pmpro_create_affiliate_level) ) {
+		$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql($code) . "', '" . esc_sql($user->display_name) . "', '" . esc_sql($user->user_login) . "', '', '30', '1')";
+		$wpdb->query($sqlQuery);
+	};
+}
+add_action( 'pmpro_after_checkout', 'pmpro_affiliates_generate_affiliate_after_checkout' );
 
 //add tracking code to confirmation page
 function pmpro_affiliates_pmpro_confirmation_message($message)
 {
+	global $current_user, $wpdb, $pmpro_affiliates, $pmpro_pages;
 	if(!empty($_COOKIE['pmpro_affiliate']))
 	{
 		$parts = explode(",", $_COOKIE['pmpro_affiliate']);
@@ -261,8 +319,16 @@ function pmpro_affiliates_pmpro_confirmation_message($message)
 				}
 			}
 		}
-	}
+	}	
 	
+	$pmpro_affiliates = pmpro_affiliates_getAffiliatesForUser( $current_user->ID );		
+	$pmpro_pages_affiliate_report = $pmpro_pages['affiliate_report'];
+
+	//If the user has affiliates codes, add the link
+	if(!empty($pmpro_affiliates) && !empty($pmpro_pages_affiliate_report) )
+	{
+		$message .= '<p><a href="' . get_permalink($pmpro_pages_affiliate_report) . '">' . get_the_title($pmpro_pages_affiliate_report) . '</a></p>';
+	}
 	return $message;
 }
 add_filter("pmpro_confirmation_message", "pmpro_affiliates_pmpro_confirmation_message");
@@ -391,8 +457,8 @@ function pmpro_affiliates_getAffiliatesForUser($user_id = NULL)
 		return array();
 	
 	global $wpdb;
-	$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates WHERE affiliateuser = '" . esc_sql($user_login) . "' LIMIT 1");
-		
+	$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates WHERE affiliateuser = '" . esc_sql($user_login) . "' and enabled = '1' ");
+	
 	if(!empty($affiliates))
 		return $affiliates;
 	else
@@ -400,11 +466,54 @@ function pmpro_affiliates_getAffiliatesForUser($user_id = NULL)
 }
 
 /*
+	Add checkbox to automatically create an affiliate code for members of this level.
+*/
+//show the checkbox on the edit level page
+function pmpro_affiliates_pmpro_membership_level_after_other_settings()
+{	
+	global $pmpro_affiliates_settings;
+	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates"));
+	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
+
+	$level_id = intval($_REQUEST['edit']);
+	if($level_id > 0)
+		$pmpro_create_affiliate_level = get_option('pmpro_create_affiliate_level_' . $level_id);	
+	else
+		$pmpro_create_affiliate_level = false;
+?>
+<h3 class="topborder"><?php echo ucwords($pmpro_affiliates_singular_name); ?> Settings</h3>
+<table>
+<tbody class="form-table">
+	<tr>
+		<th scope="row" valign="top"><label for="pmpro_create_affiliate_level"><?php echo sprintf('Automatically create %s code?', $pmpro_affiliates_singular_name, 'pmpro_affiliates');?></label></th>
+		<td>
+			<input type="checkbox" id="pmpro_create_affiliate_level" name="pmpro_create_affiliate_level" value="1" <?php checked($pmpro_create_affiliate_level, 1);?> />
+			<label for="pmpro_create_affiliate_level"><?php echo sprintf('Check this if you want to automatically create the %s code for members of this level.',  $pmpro_affiliates_singular_name, 'pmpro_affiliates');?></label>
+		</td>
+	</tr>
+</tbody>
+</table>
+<?php
+}
+add_action('pmpro_membership_level_after_other_settings', 'pmpro_affiliates_pmpro_membership_level_after_other_settings');
+
+//save affiliate auto-creationg setting when the level is saved/added
+function pmpro_affiliate_pmpro_save_membership_level($level_id)
+{
+	if(isset($_REQUEST['pmpro_create_affiliate_level']))
+		$pmpro_create_affiliate_level = intval($_REQUEST['pmpro_create_affiliate_level']);
+	else
+		$pmpro_create_affiliate_level = 0;
+	update_option('pmpro_create_affiliate_level_' . $level_id, $pmpro_create_affiliate_level);
+}
+add_action('pmpro_save_membership_level', 'pmpro_affiliate_pmpro_save_membership_level');
+
+/*
 Function to add links to the plugin action links
 */
 function pmpro_affiliates_add_action_links($links) {	
 	$new_links = array(
-			'<a href="' . get_admin_url(NULL, 'admin.php?page=pmpro-affiliates') . '">Settings</a>',
+			'<a href="' . get_admin_url(NULL, 'admin.php?page=pmpro-affiliates') . '">Manage Affiliates</a>',
 	);
 	return array_merge($new_links, $links);
 }
@@ -417,7 +526,7 @@ function pmpro_affiliates_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-affiliates.php') !== false)
 	{
 		$new_links = array(
-			'<a href="' . esc_url('http://www.paidmembershipspro.com/add-ons/plugins-on-github/pmpro-lightweight-affiliate-tracking/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-lightweight-affiliate-tracking/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
 			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
 		);
 		$links = array_merge($links, $new_links);

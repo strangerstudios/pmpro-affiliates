@@ -1,9 +1,13 @@
 <?php	
+	global $pmpro_affiliates_settings;
+	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
+	$pmpro_affiliates_plural_name = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
+
 	if(isset($_REQUEST['report']))	
 		$report = $_REQUEST['report'];
 	else
 		$report = false;
-		
+	
 	if($report && $report != "all")
 	{
 		//get values from DB
@@ -20,26 +24,40 @@
 		}
 	}	
 ?>
-<?php if(!empty($name)) { ?>
 	<h2>
-		Affiliate Report: <?php echo stripslashes($name) . " (" . stripslashes($code) . ")"; ?>
-<?php } else { ?>
-	<h2>
-		Affiliate Report: All Affiliates								
-<?php } ?>
-	<a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $report;?>" class="button add-new-h2">Export CSV</a> &nbsp;
-	<a href="admin.php?page=pmpro-affiliates" class="button add-new-h2">Back to Affiliates &raquo;</a>
-</h2>
-
+		<?php echo ucwords($pmpro_affiliates_singular_name); ?> Report
+		<?php 
+			if(empty($affiliate_id))
+				echo "for All " . ucwords($pmpro_affiliates_plural_name);
+			else
+				echo "for Code " . stripslashes($code);
+		?>
+		<a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $report;?>" class="add-new-h2">Export to CSV</a>
+		<?php 
+			if(!empty($affiliate_id))
+			{
+				?>
+				<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2">View All <?php echo ucwords($pmpro_affiliates_plural_name); ?> Report</a>
+				<?php
+			}
+		?>
+	</h2>
+<?php
+	if(!empty($name))
+		echo "<p>Business/Contact Name: " . stripslashes($name) . "</p>";
+	if(!empty($affiliateuser))
+		echo "<p>" . ucwords($pmpro_affiliates_singular_name) . " User: " . stripslashes($affiliateuser) . "</p>";
+?>
+	
 <table class="widefat">
 <thead>
 	<tr>				
-		<th>Code</th>
-		<th>Sub-ID</th>
-		<th>Name</th>
-		<th>Member</th>
-		<th>Date</th>
-		<th>Order Total</th>
+		<th><?php _e('Code', 'pmpro_affiliates'); ?></th>
+		<th><?php _e('Sub-ID', 'pmpro_affiliates'); ?></th>
+		<th><?php _e('Name', 'pmpro_affiliates'); ?></th>
+		<th><?php _e('Member', 'pmpro_affiliates'); ?></th>
+		<th><?php _e('Date', 'pmpro_affiliates'); ?></th>
+		<th><?php _e('Order Total', 'pmpro_affiliates'); ?></th>
 	</tr>
 </thead>
 <tbody>
@@ -52,7 +70,7 @@
 		{
 		?>
 			<tr><td colspan="6" class="pmpro_pad20">					
-				<p>No affiliate signups have been tracked yet.</p>
+				<p><?php echo sprintf('No %s signups have been tracked yet.', $pmpro_affiliates_singular_name, 'pmpro_affiliates'); ?></p>
 			</td></tr>
 		<?php
 		}

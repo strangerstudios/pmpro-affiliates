@@ -44,6 +44,11 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= .3 =
+* ENHANCEMENT: Now set a membership level to generate an affiliate for the user after membership checkout.
+* ENHANCEMENT: Set the frontend "Affiliate Report" page under Memberships > Page Settings.
+* ENHANCEMENT: Now you can customize the name your "program" (i.e. Affiliates, Referrals, Invitations), from the Memberships > Affiliates admin page.
+
 = .2.5 =
 * ENHANCEMENT: Now tracks visits as well as conversions.
 * ENHANCEMENT: Added Delete link to Affiliates admin page.
