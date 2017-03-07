@@ -48,6 +48,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * ENHANCEMENT: Now set a membership level to generate an affiliate for the user after membership checkout.
 * ENHANCEMENT: Set the frontend "Affiliate Report" page under Memberships > Page Settings.
 * ENHANCEMENT: Now you can customize the name your "program" (i.e. Affiliates, Referrals, Invitations), from the Memberships > Affiliates admin page.
+* ENHANCEMENT: Added row alternate coloring in admin report views.
 
 = .2.5 =
 * ENHANCEMENT: Now tracks visits as well as conversions.

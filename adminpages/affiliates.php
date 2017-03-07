@@ -305,7 +305,8 @@
 			</tr>
 		</thead>
 		<tbody>
-			<?php				
+			<?php
+				$count = 0;
 				$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates");
 				if(empty($affiliates))
 				{
@@ -320,7 +321,7 @@
 					foreach($affiliates as $affiliate)
 					{
 					?>
-					<tr>
+					<tr<?php if($count++ % 2 == 1) { ?> class="alternate"<?php } ?>>
 						<td><?php echo $affiliate->id?></td>
 						<td>
 							<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>"><?php echo $affiliate->code?></a>

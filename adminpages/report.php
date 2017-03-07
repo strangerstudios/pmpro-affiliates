@@ -62,6 +62,7 @@
 </thead>
 <tbody>
 	<?php
+		$count = 0;
 		$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
 		if($report != "all")
 			$sqlQuery .= " AND a.id = '" . esc_sql($report) . "' ";
@@ -80,7 +81,7 @@
 			foreach($affiliate_orders as $order)
 			{
 			?>
-			<tr>
+			<tr<?php if($count++ % 2 == 1) { ?> class="alternate"<?php } ?>>
 				<td><?php echo $order->code;?></td>
 				<td><?php echo $order->subid;?></td>
 				<td><?php echo stripslashes($order->name);?></td>
