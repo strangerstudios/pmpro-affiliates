@@ -7,7 +7,8 @@
 		if(!is_admin())
 		{
 			global $post, $current_user;
-			if(!empty($post->post_content) && strpos($post->post_content, "[pmpro_affiliates_report") !== false)
+			if((!empty($post->post_content) && strpos($post->post_content, "[pmpro_affiliates_report]") !== false)
+				|| (!empty($post->post_content_filtered) && strpos($post->post_content_filtered, "[pmpro_affiliates_report]") !== false))
 			{
 				/*
 					Preheader operations here.
