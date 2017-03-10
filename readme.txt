@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 4.5
-Tested up to: 4.5.3
-Stable tag: .2.5
+Tested up to: 4.7.3
+Stable tag: .3
 
 Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
 
@@ -45,6 +45,8 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 
 == Changelog ==
 = .3 =
+* BUG: Removed "trying" from the frontend affiliates page. (Thanks, ttshivers on GitHub)
+* BUG/ENHANCEMENT: Now also checking the $post->post_content_filtered value when looking for the pmpro_affiliates_report shortcode. This helps with certain themes (e.g. Layers) that may have empty post_content. (Thanks, ttshivers on GitHub)
 * ENHANCEMENT: Now set a membership level to generate an affiliate for the user after membership checkout.
 * ENHANCEMENT: Set the frontend "Affiliate Report" page under Memberships > Page Settings.
 * ENHANCEMENT: Now you can customize the name your "program" (i.e. Affiliates, Referrals, Invitations), from the Memberships > Affiliates admin page.
