@@ -283,7 +283,8 @@ function pmpro_affiliates_generate_affiliate_after_checkout( $user_id ) {
 	$pmpro_create_affiliate_level = get_option('pmpro_create_affiliate_level_' . $pmpro_level->id);
 	$code = pmpro_affiliates_getNewCode();	
 	if( !empty($pmpro_create_affiliate_level) ) {
-		$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql($code) . "', '" . esc_sql($user->display_name) . "', '" . esc_sql($user->user_login) . "', '', '30', '1')";
+		$days = intval( apply_filter( 'pmproaf_default_cookie_length', 30, $user_id, $pmpro_level ) );
+		$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql($code) . "', '" . esc_sql($user->display_name) . "', '" . esc_sql($user->user_login) . "', '', $days, '1')";
 		$wpdb->query($sqlQuery);
 	};
 }
