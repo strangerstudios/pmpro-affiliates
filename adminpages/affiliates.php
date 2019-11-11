@@ -364,7 +364,7 @@
 	} 
 	?>
 	<hr />
-	<p><a href="https://www.paidmembershipspro.com/add-ons/plus-add-ons/pmpro-lightweight-affiliate-tracking/" target="_blank"><?php _e('Documentation', 'pmpro_affiliates'); ?></a> | <a href="https://www.paidmembershipspro.com/support/" target="_blank"><?php _e('Support', 'pmpro_affiliates'); ?></a></p>
+	<p><a href="https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/?utm_source=plugin&utm_medium=pmpro-affiliates-admin&utm_campaign=add-ons" target="_blank"><?php _e('Documentation', 'pmpro_affiliates'); ?></a> | <a href="https://www.paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-affiliates-admin&utm_campaign=support" target="_blank"><?php _e('Support', 'pmpro_affiliates'); ?></a></p>
 	<?php
 	require_once( PMPRO_DIR . "/adminpages/admin_footer.php" );
 ?>
