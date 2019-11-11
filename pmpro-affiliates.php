@@ -318,12 +318,21 @@ function pmpro_affiliates_pmpro_confirmation_message($message)
 }
 add_filter("pmpro_confirmation_message", "pmpro_affiliates_pmpro_confirmation_message");
 
-//add affiliates page to admin
-function pmpro_affiliates_add_pages()
-{
-	add_submenu_page('pmpro-membershiplevels', 'Affiliates', 'Affiliates', 'manage_options', 'pmpro-affiliates', 'pmpro_affiliates_adminpage');
+/*
+ * Add Menu Item for "Affiliates".
+ */
+function pmpro_affiliates_add_pages() {
+	if ( ! defined( 'PMPRO_VERSION' ) ) {
+        return;
+    }
+	
+	if( version_compare( PMPRO_VERSION, '2.0' ) >= 0 ) {
+		add_submenu_page( 'pmpro-dashboard', 'Affiliates', 'Affiliates', 'manage_options', 'pmpro-affiliates', 'pmpro_affiliates_adminpage' );
+	} else {
+		add_submenu_page( 'pmpro-membershiplevels', 'Affiliates', 'Affiliates', 'manage_options', 'pmpro-affiliates', 'pmpro_affiliates_adminpage' );
+	}
 }
-add_action('admin_menu', 'pmpro_affiliates_add_pages', 20);
+add_action( 'admin_menu', 'pmpro_affiliates_add_pages', 20 );
 
 //affiliates page (add new)
 function pmpro_affiliates_adminpage()
