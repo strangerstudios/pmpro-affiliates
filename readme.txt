@@ -47,12 +47,13 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 == Changelog ==
 
 = .3.1 =
+* BUG/ENHANCEMENT: Updating the "Affiliates" submenu page to support PMPro v2.0+ Dashboard menu.
 * ENHANCEMENT: Adding filter 'pmproaf_default_cookie_duration' for adjusting default cookie duration.
 * ENHANCEMENT: Updated Plugin URI, Author, and internal links to documentation pages.
 
 = .3 =
-* BUG: Removed "trying" from the frontend affiliates page. (Thanks, ttshivers on GitHub)
-* BUG/ENHANCEMENT: Now also checking the $post->post_content_filtered value when looking for the pmpro_affiliates_report shortcode. This helps with certain themes (e.g. Layers) that may have empty post_content. (Thanks, ttshivers on GitHub)
+* BUG FIX: Removed "trying" from the frontend affiliates page. (Thanks, ttshivers on GitHub)
+* BUG FIX/ENHANCEMENT: Now also checking the $post->post_content_filtered value when looking for the pmpro_affiliates_report shortcode. This helps with certain themes (e.g. Layers) that may have empty post_content. (Thanks, ttshivers on GitHub)
 * ENHANCEMENT: Now set a membership level to generate an affiliate for the user after membership checkout.
 * ENHANCEMENT: Set the frontend "Affiliate Report" page under Memberships > Page Settings.
 * ENHANCEMENT: Now you can customize the name your "program" (i.e. Affiliates, Referrals, Invitations), from the Memberships > Affiliates admin page.
@@ -63,26 +64,26 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * ENHANCEMENT: Added Delete link to Affiliates admin page.
 
 = .2.4.1 =
-* Replaced $wpdb->escape calls with esc_sql to avoid notice.
+* BUG FIX: Replaced $wpdb->escape calls with esc_sql to avoid notice.
 
 = .2.4 =
-* Fixed SQL bug that came up on some setups (typically Windows-based) where affiliates wouldn't insert. (Thanks, Jose Fernandez)
+* BUG FIX: Fixed SQL bug that came up on some setups (typically Windows-based) where affiliates wouldn't insert. (Thanks, Jose Fernandez)
 
 = .2.3 =
-* Added affiliates link to admin bar.
-* Affiliate report export to CSV.
-* Frontend report for designated affiliate users.
+* ENHANCEMENT: Added affiliates link to admin bar.
+* ENHANCEMENT: Affiliate report export to CSV.
+* ENHANCEMENT: Frontend report for designated affiliate users.
 
 = .2.2 =
-* Will add a $0 invoice if someone checks out for a free level with an affiliate code set.
-* Added a check to the notification code in the settings header so it wouldn't display NULL in the notification space if WP passes that back.
+* BUG FIX/ENHANCEMENT: Added a check to the notification code in the settings header so it wouldn't display NULL in the notification space if WP passes that back.
+* ENHANCEMENT: Will add a $0 invoice if someone checks out for a free level with an affiliate code set.
 
 = .2.1 =
-* When checking for an affiliate id on a previous order, checking by user_id instead of subscription_transaction_id. This means that affiliates will be given credit when users upgrade... not just recurring invoices from the original subscription.
+* BUG FIX/ENHANCEMENT: When checking for an affiliate id on a previous order, checking by user_id instead of subscription_transaction_id. This means that affiliates will be given credit when users upgrade... not just recurring invoices from the original subscription.
 
 = .2 =
-* Now adds the affiliate id to any order after is is "added" via the pmpro_added_order hook. This means that recurring payment orders will be marked with the affiliate id if you have your IPN handler, Silent Post URL, or Stripe Web Hook setup properly.
-* Affiliate codes are now linked to discount codes with the same code. If an affiliate code is passed, it will automatically use the discount code with the same value. If a discount code is used, it will apply the affiliate code with the same value (unless another affiliate code is already being used).
+* ENHANCEMENT: Now adds the affiliate id to any order after is is "added" via the pmpro_added_order hook. This means that recurring payment orders will be marked with the affiliate id if you have your IPN handler, Silent Post URL, or Stripe Web Hook setup properly.
+* ENHANCEMENT: Affiliate codes are now linked to discount codes with the same code. If an affiliate code is passed, it will automatically use the discount code with the same value. If a discount code is used, it will apply the affiliate code with the same value (unless another affiliate code is already being used).
 
 = .1 =
 * Initial release.
