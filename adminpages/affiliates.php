@@ -323,8 +323,27 @@
 					?>
 					<tr<?php if($count++ % 2 == 1) { ?> class="alternate"<?php } ?>>
 						<td><?php echo $affiliate->id?></td>
-						<td>
+						<td class="affiliate_code column-affiliate_code has-row-actions">
 							<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>"><?php echo $affiliate->code?></a>
+							<br />
+							<div class="row-actions">
+								<span class="report">
+									<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">Report</a>
+								</span> |
+								<span class="edit">
+									<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">Edit</a>
+								</span> |
+								<span class="copy">
+									<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a>
+								</span> |
+								<span class="link">
+									<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a>
+								</span> |
+								<span class="delete">
+									<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", "pmpro"), str_replace("'", "", $affiliate->id)));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo $affiliate->id;?>'); void(0);">Delete</a>
+								</span>
+							</div>
+						</td>
 						</td>
 						<td><?php echo stripslashes($affiliate->name); ?></td>
 						<td><?php echo stripslashes($affiliate->affiliateuser); ?></td>
@@ -345,13 +364,6 @@
 								$earnings = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
 								echo pmpro_formatPrice($earnings);
 							?>
-						</td>
-						<td>
-							<a class="button-primary" href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">report</a>
-							<a class="button" href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">edit</a>
-							<a class="button" href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">copy</a>
-							<a class="button" target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">link</a>
-							<a class="button" href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", "pmpro"), str_replace("'", "", $affiliate->id)));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo $affiliate->id;?>'); void(0);"><?php _e('delete', 'pmpro');?></a>
 						</td>
 					</tr>
 					<?php
