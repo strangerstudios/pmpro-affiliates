@@ -170,17 +170,20 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 	$pmpro_affiliates_saved_order = true;
 	
 	$user_id = $order->user_id;
-		
 	//check for an order for this subscription with an affiliate id
-	if(!empty($order->subscription_transaction_id))
-	{
-		$lastorder = $wpdb->get_row("SELECT affiliate_id, affiliate_subid FROM $wpdb->pmpro_membership_orders WHERE user_id = '" . esc_sql($order->user_id) . "' ORDER BY id DESC LIMIT 1");
-		
-		if(!empty($lastorder->affiliate_id))
-		{
+	if ( ! empty( $order->subscription_transaction_id ) ) {
+		$lastorder = $wpdb->get_row(
+			"SELECT affiliate_id, affiliate_subid
+			FROM $wpdb->pmpro_membership_orders
+			WHERE user_id = '" . esc_sql( $order->user_id ) . "'
+			AND subscription_transaction_id = '" . esc_sql( $order->subscription_transaction_id ) . "'
+			AND affiliate_id <> ''
+			ORDER BY id DESC LIMIT 1"
+		);
+		if ( ! empty( $lastorder ) ) {
 			$affiliate_id = $lastorder->affiliate_id;
 			$affiliate_subid = $lastorder->affiliate_subid;
-			
+
 			$affiliate_code = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_affiliates WHERE id = '" . esc_sql($affiliate_id) . "' LIMIT 1");
 		}
 	}
