@@ -34,7 +34,7 @@
 	function pmpro_affiliates_report_shortcode($atts, $content=null, $code="")
 	{			
 		global $pmpro_affiliates, $pmpro_affiliates_settings, $post, $wpdb, $current_user;
-		
+
 		extract(shortcode_atts(array(
 			'back_link' => '1',
 			'export' => '1',
@@ -64,6 +64,8 @@
 			Page Template HTML/ETC
 		*/
 
+		$pmpro_affiliates = pmpro_affiliates_getAffiliatesForUser();
+
 		$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates"));
 		$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 		$pmpro_affiliates_plural_name = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
@@ -72,10 +74,11 @@
 			$report = intval($_REQUEST['report']);
 		else
 			$report = NULL;
-		
-		if(count($pmpro_affiliates) == 1)
+
+		if ( count($pmpro_affiliates) == 1 ) {
 			$report = $pmpro_affiliates[0]->id;
-		
+		}
+
 		if($report)
 		{
 			//show report
