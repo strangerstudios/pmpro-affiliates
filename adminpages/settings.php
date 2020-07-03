@@ -34,13 +34,13 @@ if ( isset( $_REQUEST['pmpro_affiliates_recurring'] ) ) {
 
 //get form values
 if(!empty($save))
-{	
+{
 	$pmpro_affiliates_settings = array(
 		'pmpro_affiliates_singular_name' => $pmpro_affiliates_singular_name,
 		'pmpro_affiliates_plural_name' => $pmpro_affiliates_plural_name,
 		'pmpro_affiliates_recurring' => $pmpro_affiliates_recurring,
 	);
-	update_option("pmpro_affiliates_settings", $pmpro_affiliates_settings);	
+	update_option("pmpro_affiliates_settings", $pmpro_affiliates_settings);
 }
 ?>
 
@@ -74,7 +74,7 @@ if(!empty($save))
 	</tbody>
 	</table>
 
-	<p class="submit">	
+	<p class="submit">
 		<input name="save" type="hidden" value="1" />
 		<input type="submit" class="button button-primary" value="<?php _e('Save Settings', 'pmpro_affiliates'); ?>" />
 	</p>
