@@ -299,6 +299,7 @@ function pmpro_affiliates_pmpro_confirmation_message($message)
 					//filter
 					$order = new MemberOrder();
 					$order->getLastMemberOrder();
+					$tracking_code = str_replace("!!ORDER_AMOUNT!!", $order->total, $tracking_code);
 					$tracking_code = str_replace("!!ORDER_ID!!", $order->code, $tracking_code);
 					$tracking_code = str_replace("!!LEVEL_NAME!!", $current_user->membership_level->name, $tracking_code);
 

@@ -218,7 +218,7 @@
 						<th scope="row" valign="top"><label for="trackingcode"><?php _e('Tracking Code:', 'pmpro_affiliates'); ?></label></th>
 						<td>
 							<textarea id="trackingcode" name="trackingcode" rows="6" cols="60"><?php if(!empty($trackingcode)) echo esc_textarea(stripslashes($trackingcode));?></textarea>
-							<br /><small>(Optional) If you are tracking this <?php echo $pmpro_affiliates_singular_name; ?> through another system, you can add HTML/JS code here to run on the confirmation page after checkout. Variables: !!ORDER_ID!!, !!LEVEL_NAME!!</small>
+							<br /><small>(Optional) If you are tracking this <?php echo $pmpro_affiliates_singular_name; ?> through another system, you can add HTML/JS code here to run on the confirmation page after checkout. Variables: !!ORDER_ID!!, !!ORDER_AMOUNT!!, !!LEVEL_NAME!!</small>
 						</td>
 					</tr>
 
