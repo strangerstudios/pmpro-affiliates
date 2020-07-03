@@ -95,7 +95,7 @@ function pmpro_affiliates_checkDB()
 		  KEY affiliateid (code),
 		  KEY affiliateuser (affiliateuser),
 		  KEY enabled (enabled)
-		) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;
+		);
 	";
 
 	//update it if need be
