@@ -30,7 +30,7 @@ function pmpro_affiliates_getOptions()
 {
 	global $pmpro_affiliates_options;
 	$pmpro_affiliates_options = get_option("pmpro_affiliates_options", array("db_version"=>0));
-	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates"));
+	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates", 'pmpro_affiliates_recurring'=>'0'));
 
 	global $wpdb, $table_prefix;
 	$wpdb->pmpro_affiliates = $table_prefix . 'pmpro_affiliates';
@@ -40,7 +40,7 @@ add_action("init", "pmpro_affiliates_getOptions", 5);
 //Add page setting for the frontend Affiliate Report page
 function pmpro_affiliates_extra_page_settings($pages) {
 	global $pmpro_affiliates_settings;
-	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates"));
+	$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 
 	$pages['affiliate_report'] = array('title'=>ucwords($pmpro_affiliates_singular_name) . ' Report', 'content'=>'[pmpro_affiliates_report]', 'hint'=>'Include the shortcode [pmpro_affiliates_report].');
@@ -69,7 +69,10 @@ add_filter('pmpro_member_links_bottom','pmpro_affiliates_member_links_bottom');
 //setup db
 function pmpro_affiliates_checkDB()
 {
-	global $pmpro_affiliates_options, $pmpro_affiliates_settings;
+	global $pmpro_affiliates_options;
+
+	$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
+
 	$db_version = $pmpro_affiliates_options['db_version'];
 
 	//if we can't find the DB tables, reset db_version to 0
@@ -109,14 +112,6 @@ function pmpro_affiliates_checkDB()
 		$pmpro_affiliates_options['db_version'] = $db_version;
 		update_option("pmpro_affiliates_options", $pmpro_affiliates_options);
 	}
-
-	/*
-	if(empty($pmpro_affiliates_settings))
-	{
-		//save the default settings
-		update_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates") );
-	}
-	*/
 }
 add_action("admin_init", "pmpro_affiliates_checkDB", 20);
 
@@ -168,10 +163,12 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 {
 	global $wpdb, $pmpro_affiliates_saved_order;
 	$pmpro_affiliates_saved_order = true;
+	$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
+	$pmpro_affiliates_recurring = $pmpro_affiliates_settings['pmpro_affiliates_recurring'];
 
 	$user_id = $order->user_id;
 	//check for an order for this subscription with an affiliate id
-	if ( ! empty( $order->subscription_transaction_id ) ) {
+	if ( ! empty( $order->subscription_transaction_id ) && ! empty( $pmpro_affiliates_recurring ) ) {
 		$lastorder = $wpdb->get_row(
 			"SELECT affiliate_id, affiliate_subid
 			FROM $wpdb->pmpro_membership_orders

@@ -1,5 +1,5 @@
 <?php	
-	global $pmpro_affiliates_settings;
+	$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 	$pmpro_affiliates_plural_name = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
 

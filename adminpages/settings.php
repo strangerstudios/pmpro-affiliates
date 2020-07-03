@@ -1,5 +1,4 @@
 <?php
-
 function register_pmpro_affiliates_settings() {
 	//register our settings
 	register_setting( 'pmpro-affiliates-settings-group', 'pmpro_affiliates_singular_name' );
@@ -8,8 +7,7 @@ function register_pmpro_affiliates_settings() {
 }
 add_action( 'admin_init', 'register_pmpro_affiliates_settings' );
 
-global $pmpro_affiliates_settings;
-$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates","pmpro_affiliates_recurring"=>"0"));
+$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
 
 if(!empty($_REQUEST['save']))
 	$save = true;
