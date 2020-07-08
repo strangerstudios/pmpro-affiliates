@@ -7,7 +7,7 @@ function register_pmpro_affiliates_settings() {
 }
 add_action( 'admin_init', 'register_pmpro_affiliates_settings' );
 
-$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
+$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 
 if(!empty($_REQUEST['save']))
 	$save = true;

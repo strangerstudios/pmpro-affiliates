@@ -26,21 +26,32 @@ function pmpro_affiliates_dependencies()
 add_action("init", "pmpro_affiliates_dependencies");
 
 //setup options
-function pmpro_affiliates_getOptions()
-{
-	global $pmpro_affiliates_options;
-	$pmpro_affiliates_options = get_option("pmpro_affiliates_options", array("db_version"=>0));
-	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates", 'pmpro_affiliates_recurring'=>'0'));
-
+function pmpro_affiliates_set_wpdb() {
 	global $wpdb, $table_prefix;
 	$wpdb->pmpro_affiliates = $table_prefix . 'pmpro_affiliates';
 }
-add_action("init", "pmpro_affiliates_getOptions", 5);
+add_action("init", "pmpro_affiliates_set_wpdb", 5);
+
+//Get options
+function pmpro_affiliates_get_options() {
+	$default_options = array( 'db_version' => 0 );
+	
+	return get_option( 'pmpro_affiliates_options', $default_options );
+}
+
+//Get settings
+function pmpro_affiliates_get_settings() {
+	$default_settings = array( 
+		'pmpro_affiliates_singular_name' => 'affiliate',
+		'pmpro_affiliates_plural_name' => 'affiliates',
+		'pmpro_affiliates_recurring' => '0' );
+	
+	return get_option( 'pmpro_affiliates_settings', $default_settings );
+}
 
 //Add page setting for the frontend Affiliate Report page
 function pmpro_affiliates_extra_page_settings($pages) {
-	global $pmpro_affiliates_settings;
-	$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
+	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 
 	$pages['affiliate_report'] = array('title'=>ucwords($pmpro_affiliates_singular_name) . ' Report', 'content'=>'[pmpro_affiliates_report]', 'hint'=>'Include the shortcode [pmpro_affiliates_report].');
@@ -69,9 +80,8 @@ add_filter('pmpro_member_links_bottom','pmpro_affiliates_member_links_bottom');
 //setup db
 function pmpro_affiliates_checkDB()
 {
-	global $pmpro_affiliates_options;
-
-	$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
+	$pmpro_affiliates_options = pmpro_affiliates_get_options();
+	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 
 	$db_version = $pmpro_affiliates_options['db_version'];
 
@@ -163,7 +173,7 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 {
 	global $wpdb, $pmpro_affiliates_saved_order;
 	$pmpro_affiliates_saved_order = true;
-	$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
+	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 	$pmpro_affiliates_recurring = $pmpro_affiliates_settings['pmpro_affiliates_recurring'];
 
 	$user_id = $order->user_id;
@@ -464,10 +474,8 @@ function pmpro_affiliates_getAffiliatesForUser($user_id = NULL)
 	Add checkbox to automatically create an affiliate code for members of this level.
 */
 //show the checkbox on the edit level page
-function pmpro_affiliates_pmpro_membership_level_after_other_settings()
-{
-	global $pmpro_affiliates_settings;
-	$pmpro_affiliates_settings = get_option("pmpro_affiliates_settings", array("pmpro_affiliates_singular_name"=>"affiliate","pmpro_affiliates_plural_name"=>"affiliates"));
+function pmpro_affiliates_pmpro_membership_level_after_other_settings() {
+	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 
 	$level_id = intval($_REQUEST['edit']);
@@ -493,8 +501,7 @@ function pmpro_affiliates_pmpro_membership_level_after_other_settings()
 add_action('pmpro_membership_level_after_other_settings', 'pmpro_affiliates_pmpro_membership_level_after_other_settings');
 
 //save affiliate auto-creationg setting when the level is saved/added
-function pmpro_affiliate_pmpro_save_membership_level($level_id)
-{
+function pmpro_affiliate_pmpro_save_membership_level($level_id) {
 	if(isset($_REQUEST['pmpro_create_affiliate_level']))
 		$pmpro_create_affiliate_level = intval($_REQUEST['pmpro_create_affiliate_level']);
 	else

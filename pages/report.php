@@ -36,7 +36,7 @@
 		global $post, $wpdb, $current_user;
 
 		$pmpro_affiliates = pmpro_affiliates_getAffiliatesForUser();
-		$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
+		$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 
 		extract(shortcode_atts(array(
 			'back_link' => '1',

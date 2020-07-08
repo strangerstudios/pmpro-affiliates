@@ -144,8 +144,7 @@
 	}
 
 	//get settings for default term names
-	global $pmpro_affiliates_settings;
-	$pmpro_affiliates_settings = get_option( 'pmpro_affiliates_settings' );
+	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 	$pmpro_affiliates_plural_name = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
 ?>
