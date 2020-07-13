@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 4.5
-Tested up to: 4.7.3
-Stable tag: .3.1
+Tested up to: 5.4.2
+Stable tag: 0.4
 
 Create affiliate accounts with unique referrer URLs to track membership checkouts.
 
@@ -45,6 +45,13 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 0.4 =
+* BUG FIX: Fixed issue where recurring orders weren't tracked as affiliate sales even if you set an affiliate to get credit for renewals.
+* BUG FIX: No longer overriding the default character set when adding the DB tables on install.
+* ENHANCEMENT: Moved some links on the affiliates page in the dashboard to "row actions".
+* ENHANCEMENT: Added an !!ORDER_AMOUNT!! variable to use in the tracking code.
+* REFACTOR: Created functions to get options and settings, avoiding warnings in different versions of PHP.
 
 = .3.1 =
 * BUG/ENHANCEMENT: Updating the "Affiliates" submenu page to support PMPro v2.0+ Dashboard menu.
