@@ -46,7 +46,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 
 == Changelog ==
 
-= 0.4 =
+= 0.4 - 2020-07-13 =
 * BUG FIX: Fixed issue where recurring orders weren't tracked as affiliate sales even if you set an affiliate to get credit for renewals.
 * BUG FIX: No longer overriding the default character set when adding the DB tables on install.
 * ENHANCEMENT: Moved some links on the affiliates page in the dashboard to "row actions".
