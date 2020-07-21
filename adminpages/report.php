@@ -56,6 +56,7 @@
 		<th><?php _e('Sub-ID', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Name', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Member', 'pmpro_affiliates'); ?></th>
+		<th><?php _e('Membership Level', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Date', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Order Total', 'pmpro_affiliates'); ?></th>
 	</tr>
@@ -63,7 +64,7 @@
 <tbody>
 	<?php
 		$count = 0;
-		$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
+		$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
 		if($report != "all")
 			$sqlQuery .= " AND a.id = '" . esc_sql($report) . "' ";
 		$affiliate_orders = $wpdb->get_results($sqlQuery);
@@ -80,14 +81,16 @@
 			global $pmpro_currency_symbol;
 			foreach($affiliate_orders as $order)
 			{
+				$level = pmpro_getLevel( $order->membership_id );
 			?>
 			<tr<?php if($count++ % 2 == 1) { ?> class="alternate"<?php } ?>>
 				<td><?php echo $order->code;?></td>
 				<td><?php echo $order->subid;?></td>
 				<td><?php echo stripslashes($order->name);?></td>
 				<td><?php echo $order->user_login;?></td>
+				<td><?php echo $level->name; ?></td>
 				<td><?php echo date(get_option("date_format"), $order->timestamp);?></td>
-				<td><?php echo $pmpro_currency_symbol . $order->total;?></td>
+				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
 			</tr>
 			<?php
 			}
