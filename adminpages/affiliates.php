@@ -94,13 +94,13 @@
 			{
 				//all good
 				$edit = false;
-				$pmpro_msg = "Affiliate saved successfully.";
+				$pmpro_msg = __("Affiliate saved successfully.", "pmpro_affiliates");
 				$pmpro_msgt = "success";
 			}
 			else
 			{
 				//error
-				$pmpro_msg = "There was an error saving the affiliate.";
+				$pmpro_msg = __("There was an error saving the affiliate.", "pmpro_affiliates");
 				$pmpro_msgt = "error";
 			}
 		}
@@ -111,13 +111,13 @@
 			{
 				//all good
 				$edit = false;
-				$pmpro_msg = "Affiliate added successfully.";
+				$pmpro_msg = __("Affiliate added successfully.", "pmpro_affiliates");
 				$pmpro_msgt = "success";
 			}
 			else
 			{
 				//error
-				$pmpro_msg = "There was an error adding the affiliate.";
+				$pmpro_msg = __("There was an error adding the affiliate.", "pmpro_affiliates");
 				$pmpro_msgt = "error";
 			}
 		}
@@ -132,13 +132,13 @@
 		{
 			//all good
 			$delete = false;
-			$pmpro_msg = "Affiliate deleted successfully.";
+			$pmpro_msg = __("Affiliate deleted successfully.", "pmpro_affiliates" );
 			$pmpro_msgt = "success";
 		}
 		else
 		{
 			//error
-			$pmpro_msg = "There was an error deleting the affiliate.";
+			$pmpro_msg = __("There was an error deleting the affiliate.", "pmpro_affiliates" );
 			$pmpro_msgt = "error";
 		}
 	}
@@ -152,13 +152,13 @@
 	require_once( PMPRO_DIR . "/adminpages/admin_header.php" );
 	?>
 	<h2>
-		<?php echo sprintf('%s Add On: Lightweight %s Tracking', ucwords($pmpro_affiliates_plural_name), ucwords($pmpro_affiliates_plural_name), 'pmpro_affiliates'); ?>
+		<?php echo sprintf( __('%s Add On: Lightweight %s Tracking', 'pmpro_affiliates' ), ucwords($pmpro_affiliates_plural_name), ucwords($pmpro_affiliates_plural_name) ); ?>
 	</h2>
 
 	<h2 class="nav-tab-wrapper">
-		<a href="admin.php?page=pmpro-affiliates" class="nav-tab<?php if(empty($report) && empty($settings)) { ?> nav-tab-active<?php } ?>">Manage <?php echo ucwords($pmpro_affiliates_plural_name); ?></a>
-		<a href="admin.php?page=pmpro-affiliates&report=all" class="nav-tab<?php if(!empty($report)) { ?> nav-tab-active<?php } ?>">Reports</a>
-		<a href="admin.php?page=pmpro-affiliates&settings=1" class="nav-tab<?php if(!empty($settings)) { ?> nav-tab-active<?php } ?>">Settings</a>
+		<a href="admin.php?page=pmpro-affiliates" class="nav-tab<?php if(empty($report) && empty($settings)) { ?> nav-tab-active<?php } ?>"><?php _e('Manage', 'pmpro_affiliates' ); ?> <?php echo ucwords($pmpro_affiliates_plural_name); ?></a>
+		<a href="admin.php?page=pmpro-affiliates&report=all" class="nav-tab<?php if(!empty($report)) { ?> nav-tab-active<?php } ?>"><?php _e('Reports', 'pmpro_affiliates' ); ?></a>
+		<a href="admin.php?page=pmpro-affiliates&settings=1" class="nav-tab<?php if(!empty($settings)) { ?> nav-tab-active<?php } ?>"><?php _e('Settings', 'pmpro_affiliates' ); ?></a>
 	</h2>
 	<br class="clear" />
 	<?php
@@ -169,9 +169,9 @@
 		<h2>
 			<?php
 				if($edit > 0)
-					echo "Edit " . ucwords($pmpro_affiliates_singular_name);
+					echo __("Edit", "pmpro_affiliates")." " . ucwords($pmpro_affiliates_singular_name);
 				else
-					echo "Add New " . ucwords($pmpro_affiliates_singular_name);
+					echo __("Add New", "pmpro_affiliates")." " . ucwords($pmpro_affiliates_singular_name);
 			?>
 		</h2>
 
@@ -187,14 +187,14 @@
 				<tbody>
 					<tr>
 						<th scope="row" valign="top"><label><?php _e('ID:', 'pmpro_affiliates'); ?></label></th>
-						<td class="pmpro_lite"><?php if(!empty($affiliate->id)) echo $affiliate->id; else echo "This will be generated when you save.";?></td>
+						<td class="pmpro_lite"><?php if(!empty($affiliate->id)) echo $affiliate->id; else _e("This will be generated when you save.", "pmpro_affiliates"); ?></td>
 					</tr>
 
 					<tr>
 						<th scope="row" valign="top"><label for="code"><?php _e('Code:', 'pmpro_affiliates'); ?></label></th>
 						<td>
 							<input id="code" name="code" type="text" size="20" value="<?php if(!empty($code)) echo esc_attr($code);?>" />
-							<small>Value added to the site URL to designate the <?php echo $pmpro_affiliates_singular_name; ?> link. (e.g. "&pa=CODE" or "?pa=CODE")</small>
+							<small><?php echo sprintf( __('Value added to the site URL to designate the %s link. (e.g. "&pa=CODE" or "?pa=CODE")', 'pmpro_affiliates' ), $pmpro_affiliates_singular_name ); ?></small>
 						</td>
 					</tr>
 
@@ -209,7 +209,7 @@
 						<th scope="row" valign="top"><label for="affiliateuser"><?php echo sprintf('%s User:', ucwords($pmpro_affiliates_singular_name), 'pmpro_affiliates'); ?></label></th>
 						<td>
 							<input id="affiliateuser" name="affiliateuser" type="text" size="20" value="<?php if(!empty($affiliateuser)) echo esc_attr($affiliateuser);?>" />
-							<small>The username of a WordPress user in your site who should have access to <?php echo $pmpro_affiliates_singular_name; ?> reports.</small>
+							<small><?php echo sprintf( __('The username of a WordPress user in your site who should have access to %s reports.', 'pmpro_affiliates'), $pmpro_affiliates_singular_name ); ?></small>
 						</td>
 					</tr>
 
@@ -217,7 +217,7 @@
 						<th scope="row" valign="top"><label for="trackingcode"><?php _e('Tracking Code:', 'pmpro_affiliates'); ?></label></th>
 						<td>
 							<textarea id="trackingcode" name="trackingcode" rows="6" cols="60"><?php if(!empty($trackingcode)) echo esc_textarea(stripslashes($trackingcode));?></textarea>
-							<br /><small>(Optional) If you are tracking this <?php echo $pmpro_affiliates_singular_name; ?> through another system, you can add HTML/JS code here to run on the confirmation page after checkout. Variables: !!ORDER_ID!!, !!ORDER_AMOUNT!!, !!LEVEL_NAME!!</small>
+							<br /><small><?php echo sprintf( __("(Optional) If you are tracking this %s through another system, you can add HTML/JS code here to run on the confirmation page after checkout. Variables:", "pmpro_affiliates" ), $pmpro_affiliates_singular_name ); ?> !!ORDER_ID!!, !!ORDER_AMOUNT!!, !!LEVEL_NAME!!</small>
 						</td>
 					</tr>
 
@@ -225,16 +225,16 @@
 						<th scope="row" valign="top"><label for="cookiedays"><?php _e('Cookie Length:', 'pmpro_affiliates'); ?></label></th>
 						<td>
 							<input name="cookiedays" type="text" size="5" value="<?php if(!empty($cookiedays)) echo esc_attr($cookiedays);?>" />
-							<small>In days.</small>
+							<small><?php _e( 'In days.', 'pmpro_affiliates' ); ?></small>
 						</td>
 					</tr>
 
 					<tr>
 						<th scope="row" valign="top"><label for="enabled"><?php _e('Enabled:', 'pmpro_affiliates'); ?></label></th>
 						<td id="enabled">
-							<input type="radio" name="enabled" value="1" <?php if(!empty($enabled)) { ?>checked="checked"<?php } ?>>Yes
+							<input type="radio" name="enabled" value="1" <?php if(!empty($enabled)) { ?>checked="checked"<?php } ?>><?php _e( 'Yes', 'pmpro_affiliates'); ?>
 							&nbsp;
-							<input type="radio" name="enabled" value="0" <?php if(empty($enabled)) { ?>checked="checked"<?php } ?>>No
+							<input type="radio" name="enabled" value="0" <?php if(empty($enabled)) { ?>checked="checked"<?php } ?>><?php _e( 'No', 'pmpro_affiliates'); ?>
 						</td>
 					</tr>
 
@@ -246,7 +246,7 @@
 			<p class="submit topborder">
 				<input name="edit" type="hidden" value="<?php if(!empty($edit)) echo $edit?>" />
 				<input name="save" type="hidden" value="1" />
-				<input type="submit" class="button-primary" value="<?php echo sprintf('Save %s', ucwords($pmpro_affiliates_singular_name), 'pmpro_affiliates'); ?>" />
+				<input type="submit" class="button-primary" value="<?php echo sprintf(__('Save %s','pmpro_affiliates'), ucwords($pmpro_affiliates_singular_name) ); ?>" />
 				<input name="cancel" class="button" type="button" value="Cancel" onclick="location.href='<?php echo get_admin_url(NULL, '/admin.php?page=pmpro-affiliates'); ?>';" />
 			</p>
 			</form>
@@ -269,8 +269,8 @@
 		?>
 		<h1>
 			<?php echo ucwords($pmpro_affiliates_plural_name); ?>
-			<a href="admin.php?page=pmpro-affiliates&edit=-1" class="add-new-h2">Add New <?php echo ucwords($pmpro_affiliates_singular_name); ?></a>
-			<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2">View <?php echo ucwords($pmpro_affiliates_plural_name); ?> Report</a>
+			<a href="admin.php?page=pmpro-affiliates&edit=-1" class="add-new-h2"><?php _e('Add New', 'pmpro_affiliates'); ?> <?php echo ucwords($pmpro_affiliates_singular_name); ?></a>
+			<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2"><?php _e('View', 'pmpro_affiliates'); ?> <?php echo ucwords($pmpro_affiliates_plural_name); ?> <?php _e('Report', 'pmpro_affiliates'); ?></a>
 		</h1>
 
 		<?php if(!empty($pmpro_msg)) { ?>
@@ -311,7 +311,7 @@
 				{
 				?>
 					<tr><td colspan="6" class="pmpro_pad20">
-						<p>Use <?php echo $pmpro_affiliates_plural_name; ?> to track orders coming in from different sales campaigns and partners. <a href="admin.php?page=pmpro-affiliates&edit=-1">Create your first <?php echo $pmpro_affiliates_singular_name; ?>  now</a>.</p>
+						<p><?php echo sprintf( __('Use %s to track orders coming in from different sales campaigns and partners.', 'pmpro_affiliates'), $pmpro_affiliates_plural_name ); ?> <a href="admin.php?page=pmpro-affiliates&edit=-1"><?php echo sprintf( __( 'Create your first %s now', 'pmpro_affiliates' ), $pmpro_affiliates_singular_name ); ?></a>.</p>
 					</td></tr>
 				<?php
 				}
@@ -327,19 +327,19 @@
 							<br />
 							<div class="row-actions">
 								<span class="report">
-									<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>">Report</a>
+									<a href="?page=pmpro-affiliates&report=<?php echo $affiliate->id?>"><?php _e('Report', 'pmpro_affiliates'); ?></a>
 								</span> |
 								<span class="edit">
-									<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>">Edit</a>
+									<a href="?page=pmpro-affiliates&edit=<?php echo $affiliate->id?>"><?php _e('Edit', 'pmpro_affiliates'); ?></a>
 								</span> |
 								<span class="copy">
-									<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>">Copy</a>
+									<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo $affiliate->id?>"><?php _e('Copy', 'pmpro_affiliates'); ?></a>
 								</span> |
 								<span class="link">
-									<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>">Link</a>
+									<a target="_blank" href="<?php echo pmpro_url("levels", "?pa=" . $affiliate->code);?>"><?php _e('Link', 'pmpro_affiliates'); ?></a>
 								</span> |
 								<span class="delete">
-									<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", "pmpro"), str_replace("'", "", $affiliate->id)));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo $affiliate->id;?>'); void(0);">Delete</a>
+									<a href="javascript:askfirst('<?php echo str_replace("'", "\'", sprintf(__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", "pmpro_affiliates"), str_replace("'", "", $affiliate->id)));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo $affiliate->id;?>'); void(0);"><?php _e('Delete', 'pmpro_affiliates'); ?></a>
 								</span>
 							</div>
 						</td>

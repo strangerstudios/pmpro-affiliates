@@ -100,9 +100,9 @@
 			
 			?>
 			<?php if(!empty($export)) { ?>
-				<span class="pmpro_a-right"><a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $affiliate->id;?>">Export CSV</a></span>
+				<span class="pmpro_a-right"><a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $affiliate->id;?>"><?php _e('Export CSV', 'pmpro_affiliates'); ?></a></span>
 			<?php } ?>
-			<h2><?php echo ucwords($pmpro_affiliates_singular_name); ?> Report for Code: <?php echo $affiliate->code;?></h2>
+			<h2><?php echo ucwords($pmpro_affiliates_singular_name); ?> <?php echo __('Report for Code:', 'pmpro_affiliates') .' '. $affiliate->code; ?></h2>
 			<?php
 				$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.membership_id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
 				if($report != "all")
@@ -184,11 +184,19 @@
 			?>		
 			<?php if(!empty($help)) { ?>
 			<div class="pmpro_content_message">
-				<h3>How to Create Links for this Code</h2>
-				<p>Add the string <code>?pa=<?php echo $affiliate->code;?></code> or <code>&amp;pa=<?php echo $affiliate->code;?></code> to any link to this site. If you would like to track against specific campaigns, you can add the parameter <code>?subid=CAMPAIGN_NAME</code> or <code>&subid=CAMPAIGN_NAME</code> to your URL. Some example links are included below.</p>
-				<p><strong>Homepage:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code;?>" /></p>
-				<p><strong>Membership Levels:</strong> <input type="text" style="width:100%;" readonly value="<?php echo pmpro_url("levels"); ?>?pa=<?php echo $affiliate->code;?>" /></p>
-				<p><strong>Homepage with Campaign Tracking:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code;?>&subid=FACEBOOK" /></p>
+				<h3><?php _e('How to Create Links for this Code', 'pmpro_affilliates'); ?></h2>
+				
+				<p><?php echo sprintf( 
+					__( 'Add the string %s or %s to any link to this site. If you would like to track against specific campaigns, you can add the parameter %s or to your URL. Some example links are included below.', 'pmpro_affiliates' ),
+					'<code>?pa='.$affiliate->code.'</code>',
+					'<code>&amp;pa='.$affiliate->code.'</code>',
+					'<code>?subid=CAMPAIGN_NAME</code>',
+					'<code>&subid=CAMPAIGN_NAME</code>'
+				); ?></p>				 
+
+				<p><strong><?php _e('Homepage', 'pmpro_affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code;?>" /></p>
+				<p><strong><?php _e('Membership Levels', 'pmpro_affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo pmpro_url("levels"); ?>?pa=<?php echo $affiliate->code;?>" /></p>
+				<p><strong><?php _e('Homepage with Campaign Tracking', 'pmpro_affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code;?>&subid=FACEBOOK" /></p>
 			</div>
 			<?php } ?>
 			<?php
@@ -197,7 +205,7 @@
 		{		
 			//show affiliates		
 			?>
-			<h2>Select a Code</h2>
+			<h2><?php _e('Select a Code', 'pmpro_affiliates'); ?></h2>
 			<ul>
 				<?php foreach($pmpro_affiliates as $affiliate) { ?>
 					<li><a href="<?php echo get_permalink($post->ID);?>?report=<?php echo $affiliate->id;?>"><?php echo $affiliate->code;?></a></li>
@@ -212,11 +220,11 @@
 			<hr />
 			<nav id="nav-below" class="navigation" role="navigation">
 				<div class="nav-next alignright">
-					<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'pmpro');?></a>
+					<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'pmpro_affiliates');?></a>
 				</div>
 				<?php if(!empty($report)) { ?>
 					<div class="nav-prev alignleft">
-						<a href="<?php echo get_permalink($affiliate_report_post_id); ?>"><?php _e('&larr; View All Affiliate Codes', 'pmpro');?></a>
+						<a href="<?php echo get_permalink($affiliate_report_post_id); ?>"><?php _e('&larr; View All Affiliate Codes', 'pmpro_affiliates');?></a>
 					</div>
 				<?php } ?>
 			</nav>
