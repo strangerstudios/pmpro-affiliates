@@ -379,6 +379,10 @@ function pmpro_affiliates_getNewCode()
 	}
 
 	return strtoupper($code);
+
+	$code = apply_filters('pmpro_affiliates_newcode', $code );
+
+	return $code;
 }
 
 function pmpro_affiliates_yesorno($var)
