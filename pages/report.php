@@ -100,9 +100,9 @@
 			
 			?>
 			<?php if(!empty($export)) { ?>
-				<span class="pmpro_a-right"><a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $affiliate->id;?>"><?php _e('Export CSV', 'pmpro_affiliates'); ?></a></span>
+				<span class="pmpro_a-right"><a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $affiliate->id;?>"><?php _e('Export CSV', 'pmpro-affiliates'); ?></a></span>
 			<?php } ?>
-			<h2><?php echo ucwords($pmpro_affiliates_singular_name); ?> <?php echo __('Report for Code:', 'pmpro_affiliates') .' '. $affiliate->code; ?></h2>
+			<h2><?php echo ucwords($pmpro_affiliates_singular_name); ?> <?php echo __('Report for Code:', 'pmpro-affiliates') .' '. $affiliate->code; ?></h2>
 			<?php
 				$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.membership_id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
 				if($report != "all")
@@ -115,25 +115,25 @@
 					<thead>
 						<tr>
 							<?php if(in_array('code', $fields)) { ?>
-								<th><?php _e('Code', 'pmpro_affiliates'); ?></th>
+								<th><?php _e('Code', 'pmpro-affiliates'); ?></th>
 							<?php } ?>					
 							<?php if(in_array('subid', $fields)) { ?>
-								<th><?php _e('Sub-ID', 'pmpro_affiliates'); ?></th>				
+								<th><?php _e('Sub-ID', 'pmpro-affiliates'); ?></th>				
 							<?php } ?>					
 							<?php if(in_array('name', $fields)) { ?>
-								<th><?php _e('Name', 'pmpro_affiliates'); ?></th>		
+								<th><?php _e('Name', 'pmpro-affiliates'); ?></th>		
 							<?php } ?>					
 							<?php if(in_array('user_login', $fields)) { ?>
-								<th><?php _e('Member', 'pmpro_affiliates'); ?></th>						
+								<th><?php _e('Member', 'pmpro-affiliates'); ?></th>						
 							<?php } ?>					
 							<?php if(in_array('date', $fields)) { ?>
-								<th><?php _e('Date', 'pmpro_affiliates'); ?></th>				
+								<th><?php _e('Date', 'pmpro-affiliates'); ?></th>				
 							<?php } ?>					
 							<?php if(in_array('membership_level', $fields)) { ?>
-								<th><?php _e('Membership Level', 'pmpro_affiliates'); ?></th>
+								<th><?php _e('Membership Level', 'pmpro-affiliates'); ?></th>
 							<?php } ?>
 							<?php if(in_array('total', $fields)) { ?>
-								<th><?php _e('Order Total', 'pmpro_affiliates'); ?></th>
+								<th><?php _e('Order Total', 'pmpro-affiliates'); ?></th>
 							<?php } ?>					
 						</tr>
 					</thead>
@@ -178,25 +178,27 @@
 				{
 					//there are no orders for this code
 					?>
-					<p><?php echo sprintf('No %s signups have been tracked yet.', $pmpro_affiliates_singular_name, 'pmpro_affiliates'); ?></p>
+					<p><?php echo sprintf('No %s signups have been tracked yet.', $pmpro_affiliates_singular_name, 'pmpro-affiliates'); ?></p>
 					<?php
 				}
 			?>		
 			<?php if(!empty($help)) { ?>
 			<div class="pmpro_content_message">
-				<h3><?php _e('How to Create Links for this Code', 'pmpro_affilliates'); ?></h2>
+				<h3><?php _e('How to Create Links for this Code', 'pmpro-affiliates'); ?></h2>
 				
-				<p><?php echo sprintf( 
-					__( 'Add the string %s or %s to any link to this site. If you would like to track against specific campaigns, you can add the parameter %s or to your URL. Some example links are included below.', 'pmpro_affiliates' ),
+				<p><?php 
+				// translators: variables for affiliate codes
+				echo sprintf( 
+					__( 'Add the string %s or %s to any link to this site. If you would like to track against specific campaigns, you can add the parameter %s or to your URL. Some example links are included below.', 'pmpro-affiliates' ),
 					'<code>?pa='.$affiliate->code.'</code>',
 					'<code>&amp;pa='.$affiliate->code.'</code>',
 					'<code>?subid=CAMPAIGN_NAME</code>',
 					'<code>&subid=CAMPAIGN_NAME</code>'
 				); ?></p>				 
 
-				<p><strong><?php _e('Homepage', 'pmpro_affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code;?>" /></p>
-				<p><strong><?php _e('Membership Levels', 'pmpro_affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo pmpro_url("levels"); ?>?pa=<?php echo $affiliate->code;?>" /></p>
-				<p><strong><?php _e('Homepage with Campaign Tracking', 'pmpro_affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code;?>&subid=FACEBOOK" /></p>
+				<p><strong><?php _e('Homepage', 'pmpro-affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code;?>" /></p>
+				<p><strong><?php _e('Membership Levels', 'pmpro-affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo pmpro_url("levels"); ?>?pa=<?php echo $affiliate->code;?>" /></p>
+				<p><strong><?php _e('Homepage with Campaign Tracking', 'pmpro-affiliates'); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code;?>&subid=FACEBOOK" /></p>
 			</div>
 			<?php } ?>
 			<?php
@@ -205,7 +207,7 @@
 		{		
 			//show affiliates		
 			?>
-			<h2><?php _e('Select a Code', 'pmpro_affiliates'); ?></h2>
+			<h2><?php _e('Select a Code', 'pmpro-affiliates'); ?></h2>
 			<ul>
 				<?php foreach($pmpro_affiliates as $affiliate) { ?>
 					<li><a href="<?php echo get_permalink($post->ID);?>?report=<?php echo $affiliate->id;?>"><?php echo $affiliate->code;?></a></li>
@@ -220,11 +222,11 @@
 			<hr />
 			<nav id="nav-below" class="navigation" role="navigation">
 				<div class="nav-next alignright">
-					<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'pmpro_affiliates');?></a>
+					<a href="<?php echo pmpro_url("account")?>"><?php _e('View Your Membership Account &rarr;', 'pmpro-affiliates');?></a>
 				</div>
 				<?php if(!empty($report)) { ?>
 					<div class="nav-prev alignleft">
-						<a href="<?php echo get_permalink($affiliate_report_post_id); ?>"><?php _e('&larr; View All Affiliate Codes', 'pmpro_affiliates');?></a>
+						<a href="<?php echo get_permalink($affiliate_report_post_id); ?>"><?php _e('&larr; View All Affiliate Codes', 'pmpro-affiliates');?></a>
 					</div>
 				<?php } ?>
 			</nav>

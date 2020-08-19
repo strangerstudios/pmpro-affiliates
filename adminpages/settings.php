@@ -47,25 +47,25 @@ if(!empty($save))
 	<table class="form-table">
 	<tbody>
 		<tr>
-			<th scope="row"><label for="pmpro_affiliates_singular_name"><?php _e('Singular Name', 'pmpro_affiliates'); ?></label></th>
+			<th scope="row"><label for="pmpro_affiliates_singular_name"><?php _e('Singular Name', 'pmpro-affiliates'); ?></label></th>
 			<td>
 				<input type="text" name="pmpro_affiliates_singular_name" id="pmpro_affiliates_singular_name" value="<?php echo $pmpro_affiliates_singular_name; ?>" /><br />
-				<p class="description"><?php _e('i.e. affiliate, referral, invitation', 'pmpro_affiliates'); ?></p>
+				<p class="description"><?php _e('i.e. affiliate, referral, invitation', 'pmpro-affiliates'); ?></p>
 			</td>
 		</tr>
 		<tr>
-			<th scope="row"><label for="pmpro_affiliates_plural_name"><?php _e('Plural Name', 'pmpro_affiliates'); ?></label></th>
+			<th scope="row"><label for="pmpro_affiliates_plural_name"><?php _e('Plural Name', 'pmpro-affiliates'); ?></label></th>
 			<td>
 				<input type="text" name="pmpro_affiliates_plural_name" id="pmpro_affiliates_plural_name" value="<?php echo $pmpro_affiliates_plural_name; ?>" /><br />
-				<p class="description"><?php _e('i.e. affiliates, referrals, invitations', 'pmpro_affiliates'); ?></p>
+				<p class="description"><?php _e('i.e. affiliates, referrals, invitations', 'pmpro-affiliates'); ?></p>
 			</td>
 		</tr>
 		<tr>
-			<th scope="row"><label for="pmpro_affiliates_recurring"><?php _e('Credit for Recurring Orders', 'pmpro_affiliates'); ?></label></th>
+			<th scope="row"><label for="pmpro_affiliates_recurring"><?php _e('Credit for Recurring Orders', 'pmpro-affiliates'); ?></label></th>
 			<td>
 				<select name="pmpro_affiliates_recurring" id="pmpro_affiliates_recurring">
-					<option value="0" <?php selected( $pmpro_affiliates_recurring, 0 ); ?>><?php _e('No - only credit affiliate for initial payment.', 'pmpro_affiliates'); ?></option>
-					<option value="1" <?php selected( $pmpro_affiliates_recurring, 1 ); ?>><?php _e('Yes - credit affiliate for initial payment and recurring orders.', 'pmpro_affiliates'); ?></option>
+					<option value="0" <?php selected( $pmpro_affiliates_recurring, 0 ); ?>><?php _e('No - only credit affiliate for initial payment.', 'pmpro-affiliates'); ?></option>
+					<option value="1" <?php selected( $pmpro_affiliates_recurring, 1 ); ?>><?php _e('Yes - credit affiliate for initial payment and recurring orders.', 'pmpro-affiliates'); ?></option>
 				</select>
 			</td>
 		</tr>
@@ -74,6 +74,6 @@ if(!empty($save))
 
 	<p class="submit">
 		<input name="save" type="hidden" value="1" />
-		<input type="submit" class="button button-primary" value="<?php _e('Save Settings', 'pmpro_affiliates'); ?>" />
+		<input type="submit" class="button button-primary" value="<?php _e('Save Settings', 'pmpro-affiliates'); ?>" />
 	</p>
 </form>

@@ -3,10 +3,21 @@
 Plugin Name: Paid Memberships Pro - Affiliates Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/
 Description: Create affiliate accounts with unique referrer URLs to track membership checkouts.
-Version: 0.4
+Version: 0.4.1
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
+Text Domain: pmpro-affiliates
+Domain Path: /languages
 */
+
+//Load text domain
+function pmpro_affilliates_load_textdomain() {
+
+	$plugin_rel_path = basename( dirname( __FILE__ ) ) . '/languages';
+	load_plugin_textdomain( 'pmpro-affiliates', false, $plugin_rel_path );
+
+}
+add_action( 'plugins_loaded', 'pmpro_affilliates_load_textdomain' );
 
 require_once(dirname(__FILE__) . "/pages/report.php");
 
@@ -42,8 +53,8 @@ function pmpro_affiliates_get_options() {
 //Get settings
 function pmpro_affiliates_get_settings() {
 	$default_settings = array( 
-		'pmpro_affiliates_singular_name' => __('affiliate', 'pmpro_affiliates'),
-		'pmpro_affiliates_plural_name' => __('affiliates', 'pmpro_affiliates'),
+		'pmpro_affiliates_singular_name' => __('affiliate', 'pmpro-affiliates'),
+		'pmpro_affiliates_plural_name' => __('affiliates', 'pmpro-affiliates'),
 		'pmpro_affiliates_recurring' => '0' );
 	
 	return get_option( 'pmpro_affiliates_settings', $default_settings );
@@ -54,7 +65,7 @@ function pmpro_affiliates_extra_page_settings($pages) {
 	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 
-	$pages['affiliate_report'] = array('title'=>ucwords($pmpro_affiliates_singular_name) . ' '.__('Report', 'pmpro_affiliates'), 'content'=>'[pmpro_affiliates_report]', 'hint'=> sprintf( __('Include the shortcode %s', 'pmpro_affiliates' ), '[pmpro_affiliates_report].' ) );
+	$pages['affiliate_report'] = array('title'=>ucwords($pmpro_affiliates_singular_name) . ' '.__('Report', 'pmpro-affiliates'), 'content'=>'[pmpro_affiliates_report]', 'hint'=> sprintf( __('Include the shortcode %s', 'pmpro-affiliates' ), '[pmpro_affiliates_report].' ) );
 	return $pages;
 }
 add_action('pmpro_extra_page_settings', 'pmpro_affiliates_extra_page_settings');
@@ -338,9 +349,9 @@ function pmpro_affiliates_add_pages() {
     }
 
 	if( version_compare( PMPRO_VERSION, '2.0' ) >= 0 ) {
-		add_submenu_page( 'pmpro-dashboard', __('Affiliates', 'pmpro_affiliates' ), __('Affiliates', 'pmpro_affiliates' ), 'manage_options', 'pmpro-affiliates', 'pmpro_affiliates_adminpage' );
+		add_submenu_page( 'pmpro-dashboard', __('Affiliates', 'pmpro-affiliates' ), __('Affiliates', 'pmpro-affiliates' ), 'manage_options', 'pmpro-affiliates', 'pmpro_affiliates_adminpage' );
 	} else {
-		add_submenu_page( 'pmpro-membershiplevels', __('Affiliates', 'pmpro_affiliates'), __('Affiliates', 'pmpro-affiliates' ), 'manage_options', 'pmpro_affiliates', 'pmpro_affiliates_adminpage' );
+		add_submenu_page( 'pmpro-membershiplevels', __('Affiliates', 'pmpro-affiliates'), __('Affiliates', 'pmpro-affiliates' ), 'manage_options', 'pmpro-affiliates', 'pmpro_affiliates_adminpage' );
 	}
 }
 add_action( 'admin_menu', 'pmpro_affiliates_add_pages', 20 );
@@ -359,7 +370,7 @@ function pmpro_affiliates_admin_bar_menu() {
 	$wp_admin_bar->add_menu( array(
 	'id' => 'pmpro-affiliates',
 	'parent' => 'paid-memberships-pro',
-	'title' => __( 'Affiliates', 'pmpro_affiliates'),
+	'title' => __( 'Affiliates', 'pmpro-affiliates'),
 	'href' => get_admin_url(NULL, '/admin.php?page=pmpro-affiliates') ) );
 }
 add_action('admin_bar_menu', 'pmpro_affiliates_admin_bar_menu', 1000);
@@ -488,10 +499,10 @@ function pmpro_affiliates_pmpro_membership_level_after_other_settings() {
 <table>
 <tbody class="form-table">
 	<tr>
-		<th scope="row" valign="top"><label for="pmpro_create_affiliate_level"><?php echo sprintf('Automatically create %s code?', $pmpro_affiliates_singular_name, 'pmpro_affiliates');?></label></th>
+		<th scope="row" valign="top"><label for="pmpro_create_affiliate_level"><?php echo sprintf('Automatically create %s code?', $pmpro_affiliates_singular_name, 'pmpro-affiliates');?></label></th>
 		<td>
 			<input type="checkbox" id="pmpro_create_affiliate_level" name="pmpro_create_affiliate_level" value="1" <?php checked($pmpro_create_affiliate_level, 1);?> />
-			<label for="pmpro_create_affiliate_level"><?php echo sprintf( __('Check this if you want to automatically create the %s code for members of this level.', 'pmpro_affilliates' ),  $pmpro_affiliates_singular_name );?></label>
+			<label for="pmpro_create_affiliate_level"><?php echo sprintf( __('Check this if you want to automatically create the %s code for members of this level.', 'pmpro-affiliates' ),  $pmpro_affiliates_singular_name );?></label>
 		</td>
 	</tr>
 </tbody>
@@ -515,7 +526,7 @@ Function to add links to the plugin action links
 */
 function pmpro_affiliates_add_action_links($links) {
 	$new_links = array(
-			'<a href="' . get_admin_url(NULL, 'admin.php?page=pmpro-affiliates') . '">'.__('Manage Affiliates', 'pmpro_affilliates' ).'</a>',
+			'<a href="' . get_admin_url(NULL, 'admin.php?page=pmpro-affiliates') . '">'.__('Manage Affiliates', 'pmpro-affiliates' ).'</a>',
 	);
 	return array_merge($new_links, $links);
 }
@@ -528,20 +539,11 @@ function pmpro_affiliates_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-affiliates.php') !== false)
 	{
 		$new_links = array(
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/?utm_source=plugin&utm_medium=plugin-row-meta&utm_campaign=add-ons' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro_affilliates' ) ) . '">' . __( 'Docs', 'pmpro_affilliates' ) . '</a>',
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/?utm_source=plugin&utm_medium=plugin-row-meta&utm_campaign=support') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro_affilliates' ) ) . '">' . __( 'Support', 'pmpro_affilliates' ) . '</a>',
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/?utm_source=plugin&utm_medium=plugin-row-meta&utm_campaign=add-ons' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-affiliates' ) ) . '">' . __( 'Docs', 'pmpro-affiliates' ) . '</a>',
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/?utm_source=plugin&utm_medium=plugin-row-meta&utm_campaign=support') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-affiliates' ) ) . '">' . __( 'Support', 'pmpro-affiliates' ) . '</a>',
 		);
 		$links = array_merge($links, $new_links);
 	}
 	return $links;
 }
 add_filter('plugin_row_meta', 'pmpro_affiliates_plugin_row_meta', 10, 2);
-
-//Load text domain
-function pmpro_affilliates_load_textdomain() {
-
-	$plugin_rel_path = basename( dirname( __FILE__ ) ) . '/languages';
-	load_plugin_textdomain( 'pmpro_affilliates', false, $plugin_rel_path );
-
-}
-add_action( 'plugins_loaded', 'pmpro_affilliates_load_textdomain' );
