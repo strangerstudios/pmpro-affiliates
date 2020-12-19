@@ -28,25 +28,25 @@
 		<?php echo ucwords($pmpro_affiliates_singular_name); ?> Report
 		<?php 
 			if(empty($affiliate_id))
-				echo "for All " . ucwords($pmpro_affiliates_plural_name);
+				echo __("for All", "pmpro_affiliates")." " . ucwords($pmpro_affiliates_plural_name);
 			else
-				echo "for Code " . stripslashes($code);
+				echo __("for Code", "pmpro_affiliates")." " . stripslashes($code);
 		?>
-		<a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $report;?>" class="add-new-h2">Export to CSV</a>
+		<a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $report;?>" class="add-new-h2"><?php _e('Export to CSV', 'pmpro_affiliates'); ?></a>
 		<?php 
 			if(!empty($affiliate_id))
 			{
 				?>
-				<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2">View All <?php echo ucwords($pmpro_affiliates_plural_name); ?> Report</a>
+				<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2"><?php echo sprintf( __('View All %s Report', 'pmpro_affiliates'), ucwords( $pmpro_affiliates_plural_name ) ); ?></a>
 				<?php
 			}
 		?>
 	</h2>
 <?php
 	if(!empty($name))
-		echo "<p>Business/Contact Name: " . stripslashes($name) . "</p>";
+		echo "<p>".__("Business/Contact Name:", "pmpro_affiliates")." " . stripslashes($name) . "</p>";
 	if(!empty($affiliateuser))
-		echo "<p>" . ucwords($pmpro_affiliates_singular_name) . " User: " . stripslashes($affiliateuser) . "</p>";
+		echo "<p>" . ucwords($pmpro_affiliates_singular_name) . " ".__("User:","pmpro_affiliates")." " . stripslashes($affiliateuser) . "</p>";
 ?>
 	
 <table class="widefat">
@@ -71,7 +71,7 @@
 		{
 		?>
 			<tr><td colspan="6" class="pmpro_pad20">					
-				<p><?php echo sprintf('No %s signups have been tracked yet.', $pmpro_affiliates_singular_name, 'pmpro_affiliates'); ?></p>
+				<p><?php echo sprintf( __('No %s signups have been tracked yet.', 'pmpro_affiliates'), $pmpro_affiliates_singular_name ); ?></p>
 			</td></tr>
 		<?php
 		}

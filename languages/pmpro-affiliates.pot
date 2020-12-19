@@ -1,0 +1,182 @@
+# Copyright (C) 2020 Paid Memberships Pro
+# This file is distributed under the same license as the Paid Memberships Pro - Affiliates Add On plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Paid Memberships Pro - Affiliates Add On 0.4.1\n"
+"Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
+"Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
+"Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2020-08-19T08:52:33+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.3.0\n"
+"X-Domain: pmpro-affiliates\n"
+
+#. Plugin Name of the plugin
+msgid "Paid Memberships Pro - Affiliates Add On"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/"
+msgstr ""
+
+#. Description of the plugin
+msgid "Create affiliate accounts with unique referrer URLs to track membership checkouts."
+msgstr ""
+
+#. Author of the plugin
+msgid "Paid Memberships Pro"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://www.paidmembershipspro.com"
+msgstr ""
+
+#: adminpages/settings.php:50
+msgid "Singular Name"
+msgstr ""
+
+#: adminpages/settings.php:53
+msgid "i.e. affiliate, referral, invitation"
+msgstr ""
+
+#: adminpages/settings.php:57
+msgid "Plural Name"
+msgstr ""
+
+#: adminpages/settings.php:60
+msgid "i.e. affiliates, referrals, invitations"
+msgstr ""
+
+#: adminpages/settings.php:64
+msgid "Credit for Recurring Orders"
+msgstr ""
+
+#: adminpages/settings.php:67
+msgid "No - only credit affiliate for initial payment."
+msgstr ""
+
+#: adminpages/settings.php:68
+msgid "Yes - credit affiliate for initial payment and recurring orders."
+msgstr ""
+
+#: adminpages/settings.php:77
+msgid "Save Settings"
+msgstr ""
+
+#: pages/report.php:103
+msgid "Export CSV"
+msgstr ""
+
+#: pages/report.php:105
+msgid "Report for Code:"
+msgstr ""
+
+#: pages/report.php:118
+msgid "Code"
+msgstr ""
+
+#: pages/report.php:121
+msgid "Sub-ID"
+msgstr ""
+
+#: pages/report.php:124
+msgid "Name"
+msgstr ""
+
+#: pages/report.php:127
+msgid "Member"
+msgstr ""
+
+#: pages/report.php:130
+msgid "Date"
+msgstr ""
+
+#: pages/report.php:133
+msgid "Membership Level"
+msgstr ""
+
+#: pages/report.php:136
+msgid "Order Total"
+msgstr ""
+
+#: pages/report.php:187
+msgid "How to Create Links for this Code"
+msgstr ""
+
+#. translators: variables for affiliate codes
+#: pages/report.php:192
+msgid "Add the string %s or %s to any link to this site. If you would like to track against specific campaigns, you can add the parameter %s or to your URL. Some example links are included below."
+msgstr ""
+
+#: pages/report.php:199
+msgid "Homepage"
+msgstr ""
+
+#: pages/report.php:200
+msgid "Membership Levels"
+msgstr ""
+
+#: pages/report.php:201
+msgid "Homepage with Campaign Tracking"
+msgstr ""
+
+#: pages/report.php:210
+msgid "Select a Code"
+msgstr ""
+
+#: pages/report.php:225
+msgid "View Your Membership Account &rarr;"
+msgstr ""
+
+#: pages/report.php:229
+msgid "&larr; View All Affiliate Codes"
+msgstr ""
+
+#: pmpro-affiliates.php:56
+msgid "affiliate"
+msgstr ""
+
+#: pmpro-affiliates.php:57
+msgid "affiliates"
+msgstr ""
+
+#: pmpro-affiliates.php:68
+msgid "Report"
+msgstr ""
+
+#: pmpro-affiliates.php:68
+msgid "Include the shortcode %s"
+msgstr ""
+
+#: pmpro-affiliates.php:352
+#: pmpro-affiliates.php:354
+#: pmpro-affiliates.php:373
+msgid "Affiliates"
+msgstr ""
+
+#: pmpro-affiliates.php:505
+msgid "Check this if you want to automatically create the %s code for members of this level."
+msgstr ""
+
+#: pmpro-affiliates.php:529
+msgid "Manage Affiliates"
+msgstr ""
+
+#: pmpro-affiliates.php:542
+msgid "View Documentation"
+msgstr ""
+
+#: pmpro-affiliates.php:542
+msgid "Docs"
+msgstr ""
+
+#: pmpro-affiliates.php:543
+msgid "Visit Customer Support Forum"
+msgstr ""
+
+#: pmpro-affiliates.php:543
+msgid "Support"
+msgstr ""
