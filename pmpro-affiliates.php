@@ -375,21 +375,20 @@ function pmpro_affiliates_admin_bar_menu() {
 }
 add_action('admin_bar_menu', 'pmpro_affiliates_admin_bar_menu', 1000);
 
-//get a new random code for affiliate codes
-function pmpro_affiliates_getNewCode()
-{
-	global $wpdb;
+// Get a new random code for affiliate codes.
+function pmpro_affiliates_getNewCode() {
+	$code = pmpro_getDiscountCode();
 
-	while(empty($code))
-	{
-		$scramble = md5(AUTH_KEY . time() . SECURE_AUTH_KEY);
-		$code = substr($scramble, 0, 10);
-		$check = $wpdb->get_var("SELECT code FROM $wpdb->pmpro_affiliates WHERE code = '$code' LIMIT 1");
-		if($check || is_numeric($code))
-			$code = NULL;
-	}
+	/**
+	 * Filter to allow customization of the code generated for Affiliate
+	 *
+	 * @param string $code The generated code for the Affiliate.
+	 *
+	 * @return string The string for the affiliate code.
+	 */
+	$code = apply_filters( 'pmpro_affiliates_new_code', $code );
 
-	return strtoupper($code);
+	return $code;
 }
 
 function pmpro_affiliates_yesorno($var)
