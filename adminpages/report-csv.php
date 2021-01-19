@@ -30,7 +30,7 @@
 		die(__("You do not have permissions to perform this action.", "pmpro"));
 	}	
 	
-	$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, u.display_name as display_name, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
+	$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, u.display_name as display_name, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
 	if($report != "all")
 		$sqlQuery .= " AND a.id = '" . esc_sql($report) . "' ";
 	$affiliate_orders = $wpdb->get_results($sqlQuery);
