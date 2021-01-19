@@ -28,25 +28,25 @@
 		<?php echo ucwords($pmpro_affiliates_singular_name); ?> Report
 		<?php 
 			if(empty($affiliate_id))
-				echo "for All " . ucwords($pmpro_affiliates_plural_name);
+				echo __("for All", "pmpro_affiliates")." " . ucwords($pmpro_affiliates_plural_name);
 			else
-				echo "for Code " . stripslashes($code);
+				echo __("for Code", "pmpro_affiliates")." " . stripslashes($code);
 		?>
-		<a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $report;?>" class="add-new-h2">Export to CSV</a>
+		<a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo $report;?>" class="add-new-h2"><?php _e('Export to CSV', 'pmpro_affiliates'); ?></a>
 		<?php 
 			if(!empty($affiliate_id))
 			{
 				?>
-				<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2">View All <?php echo ucwords($pmpro_affiliates_plural_name); ?> Report</a>
+				<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2"><?php echo sprintf( __('View All %s Report', 'pmpro_affiliates'), ucwords( $pmpro_affiliates_plural_name ) ); ?></a>
 				<?php
 			}
 		?>
 	</h2>
 <?php
 	if(!empty($name))
-		echo "<p>Business/Contact Name: " . stripslashes($name) . "</p>";
+		echo "<p>".__("Business/Contact Name:", "pmpro_affiliates")." " . stripslashes($name) . "</p>";
 	if(!empty($affiliateuser))
-		echo "<p>" . ucwords($pmpro_affiliates_singular_name) . " User: " . stripslashes($affiliateuser) . "</p>";
+		echo "<p>" . ucwords($pmpro_affiliates_singular_name) . " ".__("User:","pmpro_affiliates")." " . stripslashes($affiliateuser) . "</p>";
 ?>
 	
 <table class="widefat">
@@ -56,6 +56,7 @@
 		<th><?php _e('Sub-ID', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Name', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Member', 'pmpro_affiliates'); ?></th>
+		<th><?php _e('Membership Level', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Date', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Order Total', 'pmpro_affiliates'); ?></th>
 	</tr>
@@ -63,7 +64,7 @@
 <tbody>
 	<?php
 		$count = 0;
-		$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
+		$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> ''  AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
 		if($report != "all")
 			$sqlQuery .= " AND a.id = '" . esc_sql($report) . "' ";
 		$affiliate_orders = $wpdb->get_results($sqlQuery);
@@ -71,7 +72,7 @@
 		{
 		?>
 			<tr><td colspan="6" class="pmpro_pad20">					
-				<p><?php echo sprintf('No %s signups have been tracked yet.', $pmpro_affiliates_singular_name, 'pmpro_affiliates'); ?></p>
+				<p><?php echo sprintf( __('No %s signups have been tracked yet.', 'pmpro_affiliates'), $pmpro_affiliates_singular_name ); ?></p>
 			</td></tr>
 		<?php
 		}
@@ -80,14 +81,16 @@
 			global $pmpro_currency_symbol;
 			foreach($affiliate_orders as $order)
 			{
+				$level = pmpro_getLevel( $order->membership_id );
 			?>
 			<tr<?php if($count++ % 2 == 1) { ?> class="alternate"<?php } ?>>
 				<td><?php echo $order->code;?></td>
 				<td><?php echo $order->subid;?></td>
 				<td><?php echo stripslashes($order->name);?></td>
 				<td><?php echo $order->user_login;?></td>
+				<td><?php echo $level->name; ?></td>
 				<td><?php echo date(get_option("date_format"), $order->timestamp);?></td>
-				<td><?php echo $pmpro_currency_symbol . $order->total;?></td>
+				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
 			</tr>
 			<?php
 			}

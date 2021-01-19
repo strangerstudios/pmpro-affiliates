@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 4.5
-Tested up to: 5.4.2
-Stable tag: 0.4
+Tested up to: 5.6
+Stable tag: 0.4.1
 
 Create affiliate accounts with unique referrer URLs to track membership checkouts.
 
@@ -45,6 +45,13 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 0.4.1 - 2021-01-19 =
+* BUG FIX/ENHANCEMENT: Adjusted queries to only include credit for orders not in specific statuses.
+* ENHANCEMENT: Added `pmpro_affiliates_new_code` filter to allow custom code to modifty the generated Affiliate Codes.
+* ENHANCEMENT: Now generating the affiliate codes using the pmpro_getDiscountCode function.
+* ENHANCEMENT: Localized the plugin for translation.
+* ENHANCEMENT: Added 'Membership Level' to the Affiliate Report admin page and export CSV.
 
 = 0.4 - 2020-07-13 =
 * BUG FIX: Fixed issue where recurring orders weren't tracked as affiliate sales even if you set an affiliate to get credit for renewals.
