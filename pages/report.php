@@ -104,7 +104,7 @@
 			<?php } ?>
 			<h2><?php echo ucwords($pmpro_affiliates_singular_name); ?> <?php echo __('Report for Code:', 'pmpro-affiliates') .' '. $affiliate->code; ?></h2>
 			<?php
-				$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.membership_id FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' ";
+				$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
 				if($report != "all")
 					$sqlQuery .= " AND a.id = '" . esc_sql($report) . "' ";
 				$affiliate_orders = $wpdb->get_results($sqlQuery);
