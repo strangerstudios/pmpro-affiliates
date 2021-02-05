@@ -80,7 +80,7 @@
 		$name = "";
 		$affiliateuser = "";
 		$trackingcode = "";
-		$cookiedays = "30";
+		$cookiedays = intval( apply_filters( 'pmproaf_default_cookie_duration', 30, $user_id, $pmpro_level ) );
 		$enabled = true;
 	}
 
