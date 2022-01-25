@@ -59,6 +59,7 @@
 		<th><?php _e('Membership Level', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Date', 'pmpro_affiliates'); ?></th>
 		<th><?php _e('Order Total', 'pmpro_affiliates'); ?></th>
+		<?php do_action( "pmpro_affiliate_report_extra_cols_header" ); ?>
 	</tr>
 </thead>
 <tbody>
@@ -91,6 +92,7 @@
 				<td><?php echo $level->name; ?></td>
 				<td><?php echo date(get_option("date_format"), $order->timestamp);?></td>
 				<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
+				<?php do_action( "pmpro_affiliate_report_extra_cols_body", $order ); ?>
 			</tr>
 			<?php
 			}

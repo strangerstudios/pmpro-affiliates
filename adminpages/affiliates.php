@@ -300,7 +300,7 @@
 				<th><?php _e('Visits', 'pmpro_affiliates'); ?></th>
 				<th><?php _e('Conversion %', 'pmpro_affiliates'); ?></th>
 				<th><?php _e('Earnings', 'pmpro_affiliates'); ?></th>
-				<th><?php _e('', 'pmpro_affiliates'); ?></th>
+				<?php do_action( "pmpro_affiliate_extra_cols_header" ); ?>
 			</tr>
 		</thead>
 		<tbody>
@@ -365,6 +365,7 @@
 							?>
 						</td>
 					</tr>
+					<?php do_action( "pmpro_affiliate_extra_cols_body", $affiliate, $earnings ); ?>
 					<?php
 					}
 				}
