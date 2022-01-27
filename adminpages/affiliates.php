@@ -87,6 +87,7 @@
 		 * @param mixed $cookiedays - number of days cookie should last, accepts numerical string or integer
 		 * @param integer $user_id - User ID
 		 * @param object $pmpro_level - membership level object
+		 * @return mixed  number of days cookie should last
 		 */
 		$cookiedays = apply_filters( 'pmproaf_default_cookie_duration', $cookiedays, $user_id, $pmpro_level );
 		$cookiedays = intval( $cookiedays );
