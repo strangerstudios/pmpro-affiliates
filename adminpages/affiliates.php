@@ -80,7 +80,16 @@
 		$name = "";
 		$affiliateuser = "";
 		$trackingcode = "";
-		$cookiedays = intval( apply_filters( 'pmproaf_default_cookie_duration', 30, $user_id, $pmpro_level ) );
+		$cookiedays = 30;
+		/**
+		 *  Filter to adjust the number of days a cookie is valid for.
+		 *
+		 * @param mixed $cookiedays - number of days cookie should last, accepts numerical string or integer
+		 * @param integer $user_id - User ID
+		 * @param object $pmpro_level - membership level object
+		 */
+		$cookiedays = apply_filters( 'pmproaf_default_cookie_duration', $cookiedays, $user_id, $pmpro_level );
+		$cookiedays = intval( $cookiedays );
 		$enabled = true;
 	}
 
