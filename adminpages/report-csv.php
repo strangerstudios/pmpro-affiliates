@@ -40,22 +40,40 @@
 	header("Content-Disposition: attachment; filename=affiliates_report.csv");
 		
 	//headings
-	echo "code,sub-id,user_id,user_login,display_name,membership_level,date,total\n";
+	$headings = array(
+		'code',
+		'sub-id',
+		'user_id',
+		'user_login',
+		'display_name',
+		'date',
+		'total'
+	);
+	
+	$headings = apply_filters( "pmpro_affiliate_list_csv_extra_columns", $headings ); //add to the string
+
+	echo implode( ",", $headings )."\n";
 	
 	if(!empty($affiliate_orders))
 	{
 		global $pmpro_currency_symbol;
 		foreach($affiliate_orders as $order)
 		{	
-			$level = pmpro_getLevel( $order->membership_id );		
-			echo pmpro_enclose($order->code) . ",";
-			echo pmpro_enclose($order->subid) . ",";
-			echo pmpro_enclose($order->user_id) . ",";
-			echo pmpro_enclose($order->user_login) . ",";
-			echo pmpro_enclose($order->display_name) . ",";
-			echo pmpro_enclose($level->name) . ",";
-			echo pmpro_enclose(date("Y-m-d", $order->timestamp)) . ",";
-			echo pmpro_enclose($order->total) . "\n";
+			$level = pmpro_getLevel( $order->membership_id );	
+
+			$pmpro_affiliate_report_data = array(
+				pmpro_enclose($order->code),
+				pmpro_enclose($order->subid),
+				pmpro_enclose($order->user_id),
+				pmpro_enclose($order->user_login),
+				pmpro_enclose($order->display_name),
+				pmpro_enclose(date("Y-m-d", $order->timestamp)),
+				pmpro_enclose($order->total),
+			);
+
+			$pmpro_affiliate_report_data = apply_filters( "pmpro_affiliate_list_csv_extra_column_data", $pmpro_affiliate_report_data, $order, $level );
+
+			echo implode( ",", $pmpro_affiliate_report_data )."\n";
 		}
 	}
 	
