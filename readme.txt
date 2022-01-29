@@ -1,9 +1,9 @@
 === Paid Memberships Pro - Affiliates Add On ===
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
-Requires at least: 4.5
-Tested up to: 5.6
-Stable tag: 0.4.1
+Requires at least: 5.2
+Tested up to: 5.9
+Stable tag: 0.5
 
 Create affiliate accounts with unique referrer URLs to track membership checkouts.
 
@@ -45,6 +45,17 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+
+= 0.5 - 2022-01-29 =
+* BUG FIX: Fixed warning and broken functionality for the "View All" back link for frontend user affiliate reports.
+* BUG FIX/ENHANCEMENT: Now localizing dates using the date_i18n() function.
+* BUG FIX/ENHANCEMENT: Fixed incorrect textdomain for a few localized strings.
+* BUG FIX/ENHANCEMENT: Improved "How to Create Links" language for the frontend affiliate report.
+* ENHANCEMENT: Implemented the WP POT/PO/MO Generator action.
+* ENHANCEMENT: Added `pmpro_affiliate_report_extra_cols_header` and `pmpro_affiliate_report_extra_cols_body` hooks to show extra data on the Reports table in WP admin.
+* ENHANCEMENT: Added `pmpro_affiliate_extra_cols_header` and `pmpro_affiliate_extra_cols_body` hooks to show extra data on the Affiliates table in WP admin.
+* ENHANCEMENT: Added `pmpro_affiliate_list_csv_extra_columns` and `pmpro_affiliate_list_csv_extra_column_data` filters to add extra data to the Affiliate report export to CSV.
+* ENHANCEMENT: Added `pmpro_affiliate_default_cookie_duration` filter adjust the cookie days default value when manually creating a new affiliate.
 
 = 0.4.1 - 2021-01-19 =
 * BUG FIX/ENHANCEMENT: Adjusted queries to only include credit for orders not in specific statuses.
