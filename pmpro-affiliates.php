@@ -405,7 +405,17 @@ function pmpro_affiliates_yesorno($var)
 */
 function pmpro_affiliates_set_discount_code()
 {
-	global $wpdb;
+	global $wpdb, $pmpro_level;
+
+	// Is PMPro active?
+	if ( ! function_exists( 'pmpro_is_checkout' ) ) {
+		return;
+	}
+	
+	// Make sure we're on the checkout page.
+	if ( ! pmpro_is_checkout() ) {
+		return;
+	}
 
 	//checkout page
 	if(!isset($_REQUEST['discount_code']) && (!empty($_COOKIE['pmpro_affiliate']) || !empty($_REQUEST['pa'])))
@@ -420,7 +430,14 @@ function pmpro_affiliates_set_discount_code()
 		if(!empty($exists))
 		{
 			//check that the code is applicable for this level
-			$codecheck = pmpro_checkDiscountCode($affiliate_code, $_REQUEST['level']);
+			if( !empty( $pmpro_level ) ) {
+				$level_id = $pmpro_level->id;
+			} elseif ( !empty( $_REQUEST['level'] ) ) {
+				$level_id = intval( $_REQUEST['level'] );
+			} else {
+				$level_id = null;
+			}
+			$codecheck = pmpro_checkDiscountCode($affiliate_code, $level_id);
 			if($codecheck)
 				$_REQUEST['discount_code'] = $affiliate_code;
 		}
