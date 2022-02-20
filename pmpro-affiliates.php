@@ -438,6 +438,9 @@ function pmpro_affiliates_set_discount_code() {
 			$codecheck = pmpro_checkDiscountCode( $affiliate_code, $level_id );
 			if( $codecheck ) {
 				$_REQUEST['discount_code'] = $affiliate_code;
+				
+				//prevent caching of this page load
+				add_action( 'send_headers', 'nocache_headers' );
 			}
 		}
 	} elseif( ! empty( $_REQUEST['discount_code'] ) && empty( $_REQUEST['pa'] ) && empty( $_COOKIE['pmpro_affiliate'] ) ) {
@@ -449,6 +452,9 @@ function pmpro_affiliates_set_discount_code() {
 
 			//set the cookie to the discount code
 			$_COOKIE['pmpro_affiliate'] = $_REQUEST['discount_code'];
+			
+			//prevent caching of this page load
+			add_action( 'send_headers', 'nocache_headers' );
 		}
 	}
 }
