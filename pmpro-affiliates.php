@@ -243,9 +243,9 @@ function pmpro_affiliates_pmpro_added_order($order, $savefirst = false)
 add_action("pmpro_added_order", "pmpro_affiliates_pmpro_added_order");
 
 /*
-	If we get to the after_checkout hook without $pmpro_affiliates_saved_order set, let's add a $0 order
+	If we get to the after_checkout hook without $pmpro_affiliates_saved_order set, let's pass the order directly.
 */
-function pmpro_affiliates_no_order_checkout($user_id)
+function pmpro_affiliates_no_order_checkout( $user_id, $morder )
 {
 	global $pmpro_affiliates_saved_order;
 
@@ -253,35 +253,20 @@ function pmpro_affiliates_no_order_checkout($user_id)
 	if($pmpro_affiliates_saved_order)
 		return;
 
-	//get some info
-	$user = get_userdata($user_id);
-	$pmpro_level = pmpro_getMembershipLevelForUser($user_id);
-
-	//setup an order
-	$morder = new MemberOrder();
-	$morder->membership_id = $pmpro_level->id;
-	$morder->membership_name = $pmpro_level->name;
-	$morder->InitialPayment = 0;
-	$morder->user_id = $user_id;
-	$morder->Email = $user->user_email;
-	$morder->gateway = "check";
-	$morder->Gateway = NULL;
-	$morder->getMembershipLevel();
-
 	//now pass through the function above
 	return pmpro_affiliates_pmpro_added_order($morder, true);		//will create an order if there is an affiliate id
 }
-add_action( 'pmpro_after_checkout', 'pmpro_affiliates_no_order_checkout' );
+add_action( 'pmpro_after_checkout', 'pmpro_affiliates_no_order_checkout', 10, 2 );
 
 /*
 	If the level is set to create an affiliate, let's create it.
 */
-function pmpro_affiliates_generate_affiliate_after_checkout( $user_id ) {
+function pmpro_affiliates_generate_affiliate_after_checkout( $user_id, $morder ) {
 	global $wpdb;
 
 	//get some info
 	$user = get_userdata($user_id);
-	$pmpro_level = pmpro_getMembershipLevelForUser($user_id);
+	$pmpro_level = pmpro_getSpecificMembershipLevelForUser( $user_id, $morder->membership_id );
 
 	//generate the affiliate after membership checkout
 	$pmpro_create_affiliate_level = get_option('pmpro_create_affiliate_level_' . $pmpro_level->id);
@@ -292,7 +277,7 @@ function pmpro_affiliates_generate_affiliate_after_checkout( $user_id ) {
 		$wpdb->query($sqlQuery);
 	};
 }
-add_action( 'pmpro_after_checkout', 'pmpro_affiliates_generate_affiliate_after_checkout' );
+add_action( 'pmpro_after_checkout', 'pmpro_affiliates_generate_affiliate_after_checkout', 10, 2 );
 
 //add tracking code to confirmation page
 function pmpro_affiliates_pmpro_confirmation_message($message)
