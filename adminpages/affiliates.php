@@ -48,6 +48,8 @@
 			$affiliateuser = $_REQUEST['affiliateuser'];
 		if(isset($_REQUEST['trackingcode']))
 			$trackingcode = $_REQUEST['trackingcode'];
+		if(isset($_REQUEST['commissionrate']))
+			$commissionrate = $_REQUEST['commissionrate'] / 100; //convert to decimal
 		if(isset($_REQUEST['cookiedays']))
 			$cookiedays = preg_replace("[^0-9]", "", $_REQUEST['cookiedays']);
 		if(isset($_REQUEST['enabled']))
@@ -71,6 +73,7 @@
 			$trackingcode = $affiliate->trackingcode;
 			$cookiedays = $affiliate->cookiedays;
 			$enabled = $affiliate->enabled;
+			$commissionrate = $affiliate->commissionrate * 100; //Stored as decimal, but we want to show as percent.
 		}
 	}
 	else
@@ -81,6 +84,7 @@
 		$affiliateuser = '';
 		$trackingcode = '';
 		$cookiedays = 30;
+		$commissionrate = 0.10;
 		/**
 		 * Filter to adjust the number of days a cookie is valid for by default.
 		 * This can also be set and modified for each individual cookie.
@@ -99,7 +103,7 @@
 		//updating or new?
 		if($edit > 0)
 		{
-			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . $edit . "' LIMIT 1";
+			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', commissionrate = '" . esc_sql( $commissionrate ) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . $edit . "' LIMIT 1";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				//all good
@@ -116,7 +120,7 @@
 		}
 		else
 		{
-			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql($code) . "', '" . esc_sql($name) . "', '" . esc_sql($affiliateuser) . "', '" . esc_sql($trackingcode) . "', '" . intval($cookiedays) . "', '" . esc_sql($enabled) . "')";
+			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled, commissionrate) VALUES('" . esc_sql($code) . "', '" . esc_sql($name) . "', '" . esc_sql($affiliateuser) . "', '" . esc_sql($trackingcode) . "', '" . intval($cookiedays) . "', '" . esc_sql($enabled) . "', '" . esc_sql( $commissionrate ) . "')";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				//all good
@@ -224,6 +228,14 @@
 					</tr>
 
 					<tr>
+						<th scope="row" valign="top"><label for="commissionrate"><?php esc_html_e('Commission Rate (%)', 'pmpro-affiliates'); ?></label></th>
+						<td>
+							<input name="commissionrate" type="text" size="5" value="<?php if(!empty($commissionrate)) echo esc_attr($commissionrate);?>" maxlength="3" />
+							<small><?php esc_html_e( 'Enter the percentage value of the commission to be earned.', 'pmpro-affiliates' ); ?></small>
+						</td>
+					</tr>
+
+					<tr>
 						<th scope="row" valign="top"><label for="trackingcode"><?php _e('Tracking Code:', 'pmpro-affiliates'); ?></label></th>
 						<td>
 							<textarea id="trackingcode" name="trackingcode" rows="6" cols="60"><?php if(!empty($trackingcode)) echo esc_textarea(stripslashes($trackingcode));?></textarea>
@@ -298,14 +310,16 @@
 				<table class="widefat striped fixed">
 				<thead>
 					<tr>
-						<th><?php _e('Code', 'pmpro-affiliates'); ?></th>
-						<th><?php _e('Name', 'pmpro-affiliates'); ?></th>
-						<th><?php _e('User', 'pmpro-affiliates'); ?></th>
-						<th><?php _e('Cookie', 'pmpro-affiliates'); ?></th>
-						<th><?php _e('Enabled', 'pmpro-affiliates'); ?></th>
-						<th><?php _e('Visits', 'pmpro-affiliates'); ?></th>
-						<th><?php _e('Conversion %', 'pmpro-affiliates'); ?></th>
-						<th><?php _e('Earnings', 'pmpro-affiliates'); ?></th>
+						<th><?php esc_html_e('Code', 'pmpro-affiliates'); ?></th>
+						<th><?php esc_html_e('Name', 'pmpro-affiliates'); ?></th>
+						<th><?php esc_html_e('User', 'pmpro-affiliates'); ?></th>
+						<th><?php esc_html_e('Cookie', 'pmpro-affiliates'); ?></th>
+						<th><?php esc_html_e('Enabled', 'pmpro-affiliates'); ?></th>
+						<th><?php esc_html_e('Visits', 'pmpro-affiliates'); ?></th>
+						<th><?php esc_html_e( 'Commission %', 'pmpro-affiliates' ); ?></th>
+						<th><?php esc_html_e('Conversion %', 'pmpro-affiliates'); ?></th>
+						<th><?php esc_html_e( 'Commission Earned', 'pmpro-affiliate' ); ?></th>
+						<th><?php esc_html_e('Earnings', 'pmpro-affiliates'); ?></th>
 						<?php do_action( "pmpro_affiliate_extra_cols_header" ); ?>
 					</tr>
 				</thead>
@@ -344,6 +358,11 @@
 							<td><?php echo intval($affiliate->visits);?></td>
 							<td>
 								<?php
+								echo $affiliate->commissionrate * 100 . "%";
+								?>
+							</td>
+							<td>
+								<?php
 									$norders = $wpdb->get_var("SELECT COUNT(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
 									if(empty($affiliate->visits))
 										echo "0%";
@@ -351,11 +370,19 @@
 										echo round($norders / $affiliate->visits * 100, 2) . "%";
 								?>
 							</td>
+							<?php
+							// Calculate earnings so we can show commission earned and total earnings.
+								$earnings = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+								
+							?>
+							
 							<td>
 								<?php
-									$earnings = $wpdb->get_var("SELECT SUM(total) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
-									echo pmpro_formatPrice($earnings);
+								echo pmpro_formatPrice( $earnings * $affiliate->commissionrate );
 								?>
+							</td>
+							<td>
+								<?php echo pmpro_formatPrice( $earnings ); ?>
 							</td>
 							<?php do_action( "pmpro_affiliate_extra_cols_body", $affiliate, $earnings ); ?>
 						</tr>

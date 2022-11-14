@@ -10,6 +10,7 @@ Text Domain: pmpro-affiliates
 Domain Path: /languages
 */
 
+define( 'PMPRO_AFFILIATES_VERSION', '0.5' );
 /**
  * Load the languages folder for translations.
  */
@@ -88,8 +89,12 @@ function pmpro_affiliates_member_links_bottom()
 add_filter('pmpro_member_links_bottom','pmpro_affiliates_member_links_bottom');
 
 //setup db
-function pmpro_affiliates_checkDB()
-{
+function pmpro_affiliates_checkDB() {	
+	// Only run this code on PMPro Affiliates.
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) {
+		return;
+	}
+
 	$pmpro_affiliates_options = pmpro_affiliates_get_options();
 	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 
@@ -113,6 +118,7 @@ function pmpro_affiliates_checkDB()
 		  trackingcode mediumtext NOT NULL,
 		  cookiedays int(11) NOT NULL DEFAULT '30',
 		  enabled tinyint(4) NOT NULL DEFAULT '1',
+		  commissionrate decimal(10,2) NOT NULL DEFAULT '0.10',
 		  visits int(11) unsigned NOT NULL DEFAULT '0',
 		  PRIMARY KEY (id),
 		  KEY affiliateid (code),
@@ -121,16 +127,19 @@ function pmpro_affiliates_checkDB()
 		);
 	";
 
-	//update it if need be
-	if($db_version < .2)
-	{
+	// Create the database table.
+	if( $db_version == 0 ) {
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sqlQuery);
 
 		//save the db version
-		$db_version = .2;
+		$db_version = 0.6;
 		$pmpro_affiliates_options['db_version'] = $db_version;
 		update_option("pmpro_affiliates_options", $pmpro_affiliates_options);
+	} else if ( $db_version > 0 && $db_version < 0.6 ) {
+		//update the db version
+		require_once( dirname(__FILE__) . '/includes/updates/upgrade_0_6.php' );
+		pmpro_affiliates_upgrade_0_6();
 	}
 }
 add_action("admin_init", "pmpro_affiliates_checkDB", 20);
@@ -518,6 +527,47 @@ function pmpro_affiliate_pmpro_save_membership_level($level_id) {
 	update_option('pmpro_create_affiliate_level_' . $level_id, $pmpro_create_affiliate_level);
 }
 add_action('pmpro_save_membership_level', 'pmpro_affiliate_pmpro_save_membership_level');
+
+
+/**
+ * Register scripts needed for admin area.
+ */
+function pmpro_affiliates_register_scripts_styles() {
+	// Only load script on PMPro affiliates pages.
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) {
+		return;
+	}
+	// Register scripts.
+	wp_register_script( 'pmpro_affiliates_admin', plugins_url( 'includes/js/admin.js', __FILE__ ), array( 'jquery' ), PMPRO_AFFILIATES_VERSION, true );
+
+	$localize_data = array( 
+		'ajaxurl'  => admin_url( 'admin-ajax.php' ),
+		'paid_status' => esc_html__( 'Paid', 'pmpro-affiliates' )
+	 );
+
+	//Localize scripts with data from PHP.
+	wp_localize_script( 'pmpro_affiliates_admin', 'pmpro_affiliates_admin', $localize_data );
+	wp_enqueue_script( 'pmpro_affiliates_admin' );
+}
+add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_register_scripts_styles' );
+/**
+ * Ajax handler for saving affiliate paid order setting.
+ *  
+ */
+function pmpro_affiliates_mark_as_paid() {
+	
+	//check the nonce, if it's not valid bail.
+	$nonce = $_REQUEST['_wpnonce'];
+	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_mark_as_paid' ) ) {
+		return;
+	}
+
+	$order_id = (int) $_REQUEST['order_id'];
+	update_pmpro_membership_order_meta( $order_id, 'pmpro_affiliate_paid', true );
+	exit;
+}
+add_action( 'wp_ajax_pmpro_affiliates_mark_as_paid', 'pmpro_affiliates_mark_as_paid' );
+
 
 /*
 Function to add links to the plugin action links

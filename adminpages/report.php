@@ -56,7 +56,19 @@
 ?>
 
 <?php
-	$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> ''  AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
+	$sqlQuery = 
+	"SELECT o.id as order_id, a.code, o.affiliate_subid as subid, a.name, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
+	FROM $wpdb->pmpro_membership_orders o 
+	LEFT JOIN $wpdb->pmpro_affiliates a 
+	ON o.affiliate_id = a.id 
+	LEFT JOIN $wpdb->users u 
+	ON o.user_id = u.ID
+	LEFT JOIN $wpdb->pmpro_membership_ordermeta om
+	ON o.id = om.pmpro_membership_order_id
+	AND om.meta_key = 'pmpro_affiliate_paid'
+	WHERE o.affiliate_id <> ''
+	AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')";
+
 	if ( $report != "all" ) {
 		$sqlQuery .= " AND a.id = '" . esc_sql($report) . "' ";
 	}
@@ -76,6 +88,7 @@
 					<th><?php _e('Membership Level', 'pmpro-affiliates'); ?></th>
 					<th><?php _e('Date', 'pmpro-affiliates'); ?></th>
 					<th><?php _e('Order Total', 'pmpro-affiliates'); ?></th>
+					<th><?php _e('Status', 'pmpro-affiliates'); ?></th>
 					<?php do_action( "pmpro_affiliate_report_extra_cols_header" ); ?>
 				</tr>
 			</thead>
@@ -83,7 +96,18 @@
 				<?php
 					global $pmpro_currency_symbol;
 					foreach ( $affiliate_orders as $order ) {
-						$level = pmpro_getLevel( $order->membership_id ); ?>
+						$level = pmpro_getLevel( $order->membership_id ); 
+						
+						// Get the affiliate paid status and generate a mark as paid link if not paid. Add nonce.
+						$affiliate_paid = $order->affiliate_paid;
+						if ( $affiliate_paid == '1' ) {
+							$affiliate_paid = esc_html__( 'Paid', 'pmpro-affiliates' );
+						} else {
+							$nonce = wp_create_nonce( 'pmpro_affiliates_mark_as_paid' );
+							$affiliate_paid = '<a id="pmpro_affiliates_mark_as_paid" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" >' . esc_html__( 'Mark as Paid', 'pmpro-affiliates' ) . '</a>';
+						}
+						
+						?>
 						<tr>
 							<td><?php echo $order->code;?></td>
 							<td><?php echo $order->subid;?></td>
@@ -92,6 +116,7 @@
 							<td><?php echo $level->name; ?></td>
 							<td><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp );?></td>
 							<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
+							<td><?php echo '<span class="pmpro_affiliate_paid_status">' . $affiliate_paid . '</span>'; ?></td>
 							<?php do_action( "pmpro_affiliate_report_extra_cols_body", $order ); ?>
 						</tr>
 						<?php
