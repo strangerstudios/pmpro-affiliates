@@ -57,7 +57,7 @@
 
 <?php
 	$sqlQuery = 
-	"SELECT o.id as order_id, a.code, o.affiliate_subid as subid, a.name, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
+	"SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
 	FROM $wpdb->pmpro_membership_orders o 
 	LEFT JOIN $wpdb->pmpro_affiliates a 
 	ON o.affiliate_id = a.id 
@@ -81,14 +81,16 @@
 		<table class="widefat striped fixed">
 			<thead>
 				<tr>
-					<th><?php _e('Code', 'pmpro-affiliates'); ?></th>
-					<th><?php _e('Sub-ID', 'pmpro-affiliates'); ?></th>
-					<th><?php _e('Name', 'pmpro-affiliates'); ?></th>
-					<th><?php _e('Member', 'pmpro-affiliates'); ?></th>
-					<th><?php _e('Membership Level', 'pmpro-affiliates'); ?></th>
-					<th><?php _e('Date', 'pmpro-affiliates'); ?></th>
-					<th><?php _e('Order Total', 'pmpro-affiliates'); ?></th>
-					<th><?php _e('Status', 'pmpro-affiliates'); ?></th>
+					<th><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Sub-ID', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Name', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Member', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Membership Level', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Date', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Comission %', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Commission Earned', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Order Total', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Status', 'pmpro-affiliates' ); ?></th>
 					<?php do_action( "pmpro_affiliate_report_extra_cols_header" ); ?>
 				</tr>
 			</thead>
@@ -115,6 +117,8 @@
 							<td><?php echo $order->user_login;?></td>
 							<td><?php echo $level->name; ?></td>
 							<td><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp );?></td>
+							<td><?php echo $order->commissionrate * 100;?>%</td>
+							<td><?php echo pmpro_formatPrice( $order->total * $order->commissionrate ); ?></td>
 							<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
 							<td><?php echo '<span class="pmpro_affiliate_paid_status">' . $affiliate_paid . '</span>'; ?></td>
 							<?php do_action( "pmpro_affiliate_report_extra_cols_body", $order ); ?>

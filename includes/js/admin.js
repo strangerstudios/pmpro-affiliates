@@ -9,8 +9,6 @@ jQuery(document).ready(function () {
             _wpnonce: jQuery(this).attr('_wpnonce')
         }
 
-        console.log(data);
-
         jQuery.ajax({
             url: pmpro_affiliates_admin.ajaxurl,
             type: 'POST',
