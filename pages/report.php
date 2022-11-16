@@ -99,6 +99,11 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			exit;
 		}
 
+		// Get paid and unpaid commissions.
+		$paid_commissions = pmpro_affiliates_get_commissions( $affiliate->code, 'paid' );
+		$unpaid_commissions = pmpro_affiliates_get_commissions( $affiliate->code, 'unpaid' );
+		$total_commissions = $paid_commissions + $unpaid_commissions;
+
 		?>
 		<?php if ( ! empty( $export ) ) { ?>
 			<span class="pmpro_a-right"><a href="<?php echo admin_url( 'admin-ajax.php' ); ?>?action=affiliates_report_csv&report=<?php echo $affiliate->id; ?>"><?php _e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
@@ -110,8 +115,24 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			$sqlQuery .= " AND a.id = '" . esc_sql( $report ) . "' ";
 		}
 			$affiliate_orders = $wpdb->get_results( $sqlQuery );
+
 		if ( ! empty( $affiliate_orders ) ) {
 			?>
+			<table class="pmpro_affiliate_report-commission" width="100%" cellpadding="0" cellspacing="0">
+				<thead>
+					<tr>
+						<th><?php esc_html_e( 'Commission Earned (All Time)', 'pmpro-affiliates' ); ?></th>
+						<th><?php esc_html_e( 'Commission Paid (All Time)', 'pmpro-affiliates' ); ?></th>
+						<th><?php esc_html_e( 'Commission Due', 'pmpro-affiliates' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<td><?php echo pmpro_formatPrice( $total_commissions ); ?></td>
+					<td><?php echo pmpro_formatPrice( $paid_commissions ); ?></td>
+					<td><?php echo pmpro_formatPrice( $unpaid_commissions ); ?></td>
+				</tbody>
+			</table>
+
 				<table class="pmpro_affiliate_report" width="100%" cellpadding="0" cellspacing="0">
 				<thead>
 					<tr>
