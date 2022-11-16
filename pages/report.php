@@ -119,13 +119,13 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		if ( ! empty( $affiliate_orders ) ) {
 			?>
 			<!-- Commissions Table -->
-			<div class="pmpro_affiliates-table-container">
-				<div class="table-row heading">
+			<div class="pmpro_affiliates-table-container pmpro_affiliates-commissions">
+				<div class="table-row table-row-heading">
 					<div class="row-item"><?php esc_html_e( 'Commission Earned (All Time)', 'pmpro-affiliates' ); ?></div>
 					<div class="row-item"><?php esc_html_e( 'Commission Paid (All Time)', 'pmpro-affiliates' ); ?></div>
 					<div class="row-item"><?php esc_html_e( 'Commission Due', 'pmpro-affiliates' ); ?></div>
 				</div>
-				<div class="table-row">
+				<div class="table-row table-row-body">
 					<div class="row-item"><?php echo pmpro_formatPrice( $total_commissions ); ?></div>
 					<div class="row-item"><?php echo pmpro_formatPrice( $paid_commissions ); ?></div>
 					<div class="row-item"><?php echo pmpro_formatPrice( $unpaid_commissions ); ?></div>
@@ -133,8 +133,8 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			</div>
 
 			<!-- Orders Table -->
-			<div class="pmpro_affiliates-table-container">
-				<div class="table-row heading">
+			<div class="pmpro_affiliates-table-container pmpro_affiliates-orders">
+				<div class="table-row table-row-heading">
 					<?php if ( in_array( 'code', $fields ) ) { ?>
 							<div class="row-item"><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></div>
 						<?php } ?>					
@@ -165,7 +165,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 				foreach ( $affiliate_orders as $order ) {
 					$level = pmpro_getLevel( $order->membership_id );
 					?>
-						<div class="table-row">
+						<div class="table-row table-row-body">
 						<?php if ( in_array( 'code', $fields ) ) { ?>
 								<div class="row-item"><?php echo $order->code; ?></div>
 							<?php } ?>
@@ -204,9 +204,8 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		}
 		?>
 		<?php if ( ! empty( $help ) ) { ?>
-		<div class="pmpro_content_message">
-			<h3><?php _e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h2>
-
+		<div class="pmpro_affiliates-links">
+			<h2><?php _e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h2>
 			<p>
 			<?php
 			// translators: variables for affiliate codes
@@ -241,17 +240,12 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 	if ( ! empty( $back_link ) ) {
 		$pmpro_pages_affiliate_report = $pmpro_pages['affiliate_report'];
 		?>
-		<hr />
-		<nav id="nav-below" class="navigation" role="navigation">
-			<div class="nav-next alignright">
-				<a href="<?php echo pmpro_url( 'account' ); ?>"><?php _e( 'View Your Membership Account &rarr;', 'pmpro-affiliates' ); ?></a>
-			</div>
+		<p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav pmpro_affiliates-actions_nav', 'pmpro_affiliates-actions_nav' ); ?>">
+			<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-right' ); ?>"><a href="<?php echo pmpro_url( 'account' ); ?>"><?php _e( 'View Your Membership Account &rarr;', 'pmpro-affiliates' ); ?></a></span>
 			<?php if ( ! empty( $report ) && ! empty( $pmpro_pages_affiliate_report ) ) { ?>
-				<div class="nav-prev alignleft">
-					<a href="<?php echo get_permalink( $pmpro_pages_affiliate_report ); ?>"><?php _e( '&larr; View All', 'pmpro-affiliates' ); ?></a>
-				</div>
+				<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-left' ); ?>"><a href="<?php echo get_permalink( $pmpro_pages_affiliate_report ); ?>"><?php _e( '&larr; View All', 'pmpro-affiliates' ); ?></a></span>
 			<?php } ?>
-		</nav>
+		</p> <!-- end pmpro_actions_nav -->
 		<?php
 	}
 
