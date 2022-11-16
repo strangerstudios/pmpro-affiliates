@@ -38,7 +38,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			array(
 				'back_link' => '1',
 				'export'    => '1',
-				'fields'    => 'code,subid,name,user_login,date,membership_level,total',
+				'fields'    => 'code,subid,name,user_login,date,membership_level,show_commission,total',
 				'help'      => '1',
 			),
 			$atts
@@ -118,81 +118,83 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 
 		if ( ! empty( $affiliate_orders ) ) {
 			?>
-			<table class="pmpro_affiliate_report-commission" width="100%" cellpadding="0" cellspacing="0">
-				<thead>
-					<tr>
-						<th><?php esc_html_e( 'Commission Earned (All Time)', 'pmpro-affiliates' ); ?></th>
-						<th><?php esc_html_e( 'Commission Paid (All Time)', 'pmpro-affiliates' ); ?></th>
-						<th><?php esc_html_e( 'Commission Due', 'pmpro-affiliates' ); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<td><?php echo pmpro_formatPrice( $total_commissions ); ?></td>
-					<td><?php echo pmpro_formatPrice( $paid_commissions ); ?></td>
-					<td><?php echo pmpro_formatPrice( $unpaid_commissions ); ?></td>
-				</tbody>
-			</table>
+			<!-- Commissions Table -->
+			<div class="pmpro_affiliates-table-container">
+				<div class="table-row heading">
+					<div class="row-item"><?php esc_html_e( 'Commission Earned (All Time)', 'pmpro-affiliates' ); ?></div>
+					<div class="row-item"><?php esc_html_e( 'Commission Paid (All Time)', 'pmpro-affiliates' ); ?></div>
+					<div class="row-item"><?php esc_html_e( 'Commission Due', 'pmpro-affiliates' ); ?></div>
+				</div>
+				<div class="table-row">
+					<div class="row-item"><?php echo pmpro_formatPrice( $total_commissions ); ?></div>
+					<div class="row-item"><?php echo pmpro_formatPrice( $paid_commissions ); ?></div>
+					<div class="row-item"><?php echo pmpro_formatPrice( $unpaid_commissions ); ?></div>
+				</div>
+			</div>
 
-				<table class="pmpro_affiliate_report" width="100%" cellpadding="0" cellspacing="0">
-				<thead>
-					<tr>
+			<!-- Orders Table -->
+			<div class="pmpro_affiliates-table-container">
+				<div class="table-row heading">
 					<?php if ( in_array( 'code', $fields ) ) { ?>
-							<th><?php _e( 'Code', 'pmpro-affiliates' ); ?></th>
+							<div class="row-item"><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></div>
 						<?php } ?>					
 					<?php if ( in_array( 'subid', $fields ) ) { ?>
-							<th><?php _e( 'Sub-ID', 'pmpro-affiliates' ); ?></th>
+							<div class="row-item"><?php esc_html_e( 'Sub-ID', 'pmpro-affiliates' ); ?></div>
 						<?php } ?>					
 					<?php if ( in_array( 'name', $fields ) ) { ?>
-							<th><?php _e( 'Name', 'pmpro-affiliates' ); ?></th>
+							<div class="row-item"><?php esc_html_e( 'Name', 'pmpro-affiliates' ); ?></div>
 						<?php } ?>					
 					<?php if ( in_array( 'user_login', $fields ) ) { ?>
-							<th><?php _e( 'Member', 'pmpro-affiliates' ); ?></th>
+							<div class="row-item"><?php esc_html_e( 'Member', 'pmpro-affiliates' ); ?></div>
 						<?php } ?>					
 					<?php if ( in_array( 'date', $fields ) ) { ?>
-							<th><?php _e( 'Date', 'pmpro-affiliates' ); ?></th>
+							<div class="row-item"><?php esc_html_e( 'Date', 'pmpro-affiliates' ); ?></div>
 						<?php } ?>					
 					<?php if ( in_array( 'membership_level', $fields ) ) { ?>
-							<th><?php _e( 'Membership Level', 'pmpro-affiliates' ); ?></th>
+							<div class="row-item"><?php esc_html_e( 'Level', 'pmpro-affiliates' ); ?></div>
 						<?php } ?>
+					<?php if ( in_array( 'show_commission', $fields ) ) { ?>
+							<div class="row-item"><?php esc_html_e( 'Commission', 'pmpro-affiliates' ); ?></div>
+					<?php } ?>
 					<?php if ( in_array( 'total', $fields ) ) { ?>
-							<th><?php _e( 'Order Total', 'pmpro-affiliates' ); ?></th>
+							<div class="row-item"><?php esc_html_e( 'Order Total', 'pmpro-affiliates' ); ?></div>
 						<?php } ?>
-					</tr>
-				</thead>
-				<tbody>
+				</div>
 				<?php
 				global $pmpro_currency_symbol;
 				foreach ( $affiliate_orders as $order ) {
 					$level = pmpro_getLevel( $order->membership_id );
 					?>
-						<tr>
+						<div class="table-row">
 						<?php if ( in_array( 'code', $fields ) ) { ?>
-								<td><?php echo $order->code; ?></td>
+								<div class="row-item"><?php echo $order->code; ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'subid', $fields ) ) { ?>
-								<td><?php echo $order->subid; ?></td>
+								<div class="row-item"><?php echo $order->subid; ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'name', $fields ) ) { ?>
-								<td><?php echo stripslashes( $order->name ); ?></td>
+								<div class="row-item"><?php echo stripslashes( $order->name ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'user_login', $fields ) ) { ?>
-								<td><?php echo $order->user_login; ?></td>
+								<div class="row-item"><?php echo $order->user_login; ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'date', $fields ) ) { ?>
-								<td><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?></td>
+								<div class="row-item"><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'membership_level', $fields ) ) { ?>
-								<td><?php echo $level->name; ?></td>
+								<div class="row-item"><?php echo $level->name; ?></div>
 							<?php } ?>
+						<?php if ( in_array( 'show_commission', $fields ) ) { ?>
+							<div class="row-item"><?php echo pmpro_formatPrice( $order->total * $affiliate->commissionrate ); ?></div>
+						<?php } ?>
 						<?php if ( in_array( 'total', $fields ) ) { ?>
-								<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
+								<div class="row-item"><?php echo pmpro_formatPrice( $order->total ); ?></div>
 							<?php } ?>
-						</tr>
+						</div>
 						<?php
 				}
 				?>
-				</tbody>
-				</table>
+			</div>
 				<?php
 		} else {
 			// there are no orders for this code
@@ -210,27 +212,27 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			// translators: variables for affiliate codes
 			echo sprintf(
 				__( 'Add the string %1$1s (first parameter) or %2$2s (second or later parameter) to any link to this site. If you would like to track against specific campaigns, you can add the parameter %3$3s or %4$4s to your URL. Some example links are included below.', 'pmpro-affiliates' ),
-				'<code>?pa=' . $affiliate->code . '</code>',
-				'<code>&amp;pa=' . $affiliate->code . '</code>',
+				'<code>?pa=' . esc_html( $affiliate->code ) . '</code>',
+				'<code>&amp;pa=' . esc_html( $affiliate->code ) . '</code>',
 				'<code>?subid=CAMPAIGN_NAME</code>',
 				'<code>&subid=CAMPAIGN_NAME</code>'
 			);
 			?>
 			</p>
 
-			<p><strong><?php _e( 'Homepage', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code; ?>" /></p>
-			<p><strong><?php _e( 'Membership Levels', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo pmpro_url( 'levels' ); ?>?pa=<?php echo $affiliate->code; ?>" /></p>
-			<p><strong><?php _e( 'Homepage with Campaign Tracking', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo $affiliate->code; ?>&subid=FACEBOOK" /></p>
+			<p><strong><?php esc_html_e( 'Homepage', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo esc_attr( $affiliate->code ); ?>" /></p>
+			<p><strong><?php esc_html_e( 'Membership Levels', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo esc_attr( pmpro_url( 'levels' ) ); ?>?pa=<?php echo esc_attr( $affiliate->code ); ?>" /></p>
+			<p><strong><?php esc_html_e( 'Homepage with Campaign Tracking', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo esc_attr( site_url() ); ?>/?pa=<?php echo esc_attr( $affiliate->code ); ?>&subid=FACEBOOK" /></p>
 		</div>
 		<?php } ?>
 		<?php
 	} else {
 		// show affiliates
 		?>
-		<h2><?php _e( 'Select a Code', 'pmpro-affiliates' ); ?></h2>
+		<h2><?php esc_html_e( 'Select a Code', 'pmpro-affiliates' ); ?></h2>
 		<ul>
 			<?php foreach ( $pmpro_affiliates as $affiliate ) { ?>
-				<li><a href="<?php echo get_permalink( $post->ID ); ?>?report=<?php echo $affiliate->id; ?>"><?php echo $affiliate->code; ?></a></li>
+				<li><a href="<?php echo get_permalink( $post->ID ); ?>?report=<?php echo esc_attr( $affiliate->id ); ?>"><?php echo esc_html( $affiliate->code ); ?></a></li>
 			<?php } ?>
 		</ul>
 		<?php

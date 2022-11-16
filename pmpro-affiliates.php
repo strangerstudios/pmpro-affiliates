@@ -520,7 +520,19 @@ function pmpro_affiliate_pmpro_save_membership_level( $level_id ) {
 }
 add_action( 'pmpro_save_membership_level', 'pmpro_affiliate_pmpro_save_membership_level' );
 
+/**
+ * Enqueue scripts and styles on the frontend if shortcode is present on the page.
+ *
+ * @since TBD
+ */
+function pmpro_affiliates_enqueue_scripts() {
+	global $post;
 
+	if ( is_singular() && has_shortcode( $post->post_content, 'pmpro_affiliates_report' ) ) {
+		wp_enqueue_style( 'pmpro_affiliates', plugins_url( 'includes/css/frontend.css', __FILE__ ) );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'pmpro_affiliates_enqueue_scripts' );
 /**
  * Register scripts needed for admin area.
  */
