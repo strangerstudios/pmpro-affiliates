@@ -38,7 +38,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			array(
 				'back_link' => '1',
 				'export'    => '1',
-				'fields'    => 'code,subid,name,user_login,date,membership_level,show_commission,total',
+				'fields'    => 'user_login,date,membership_level,show_commission,total',
 				'help'      => '1',
 			),
 			$atts
@@ -205,7 +205,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		?>
 		<?php if ( ! empty( $help ) ) { ?>
 		<div class="pmpro_affiliates-links">
-			<h2><?php _e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h2>
+			<h3><?php _e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h3>
 			<p>
 			<?php
 			// translators: variables for affiliate codes
