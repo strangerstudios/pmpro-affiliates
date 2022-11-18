@@ -14,10 +14,6 @@
     border-bottom: 1px solid #D6D6D6;
 }
 
-.pmpro_affiliates-table-container .table-row-body:nth-child(odd) {
-    background-color: #FAFAFA;
-}
-
 .pmpro_affiliates-table-container .table-row-heading {
     background-color: #EFEFEF;
     color: #3e3e3e;
@@ -39,9 +35,6 @@
 }
 
 /** Commissions Table **/
-.pmpro_affiliates-commissions .table-row-heading {
-    text-align: center;
-}
 .pmpro_affiliates-commissions .table-row-body .row-item {
     font-size: 20px;
     font-weight: 700;
@@ -53,8 +46,10 @@
 }
 
 /** Create Links **/
-.pmpro_affiliates-links h3 {
-    margin-bottom: 0;
+.pmpro_affiliates-links {
+    border: 1px solid #D6D6D6;
+    margin: 30px auto;
+    padding: 30px;
 }
 
 /** Report Navigation **/

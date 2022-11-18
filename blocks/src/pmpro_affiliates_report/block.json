@@ -1,0 +1,59 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 2,
+    "name": "pmpro-affiliates/pmpro-affiliates-report",
+    "version": "1.0.0",
+    "title": "Affiliate Report",
+    "icon": "media-default",
+    "description": "Show a list of courses a member has access.",
+    "supports": {
+        "html": false
+    },
+    "textdomain": "pmpro-affiliates",
+    "attributes": {
+        "back_link": {
+            "type": "boolean",
+            "default": true
+        },
+        "export_csv": {
+            "type": "boolean",
+            "default": true
+        },
+        "help": {
+            "type": "boolean",
+            "default": true
+        },
+        "code": {
+            "type": "boolean",
+            "default": false
+        },
+        "subid": {
+            "type": "boolean",
+            "default": false
+        },
+        "name": {
+            "type": "boolean",
+            "default": false
+        },
+        "user_login": {
+            "type": "boolean",
+            "default": true
+        },
+        "date": {
+            "type": "boolean",
+            "default": true
+        },
+        "membership_level": {
+            "type": "boolean",
+            "default": true
+        },
+        "show_commission": {
+            "type": "boolean",
+            "default": true
+        },
+        "total": {
+            "type": "boolean",
+            "default": true
+        }
+    }
+}

@@ -11,6 +11,13 @@ Domain Path: /languages
 */
 
 define( 'PMPRO_AFFILIATES_VERSION', '0.5' );
+define( 'PMPRO_AFFILIATES_DIR', dirname( __FILE__ ) );
+
+require_once dirname( __FILE__ ) . '/pages/report.php';
+require_once dirname( __FILE__ ) . '/includes/blocks.php';
+
+
+
 /**
  * Load the languages folder for translations.
  */
@@ -18,8 +25,6 @@ function pmpro_affiliates_load_textdomain() {
 	load_plugin_textdomain( 'pmpro-affiliates', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 add_action( 'plugins_loaded', 'pmpro_affiliates_load_textdomain' );
-
-require_once dirname( __FILE__ ) . '/pages/report.php';
 
 // require Paid Memberships Pro
 function pmpro_affiliates_dependencies() {
@@ -528,7 +533,7 @@ add_action( 'pmpro_save_membership_level', 'pmpro_affiliate_pmpro_save_membershi
 function pmpro_affiliates_enqueue_scripts() {
 	global $post;
 
-	if ( is_singular() && has_shortcode( $post->post_content, 'pmpro_affiliates_report' ) ) {
+	if ( is_singular() && ( has_shortcode( $post->post_content, 'pmpro_affiliates_report' ) || has_block( 'pmpro-affiliates/pmpro-affiliates-report' ) ) ) {
 		wp_enqueue_style( 'pmpro_affiliates', plugins_url( 'includes/css/frontend.css', __FILE__ ) );
 	}
 }

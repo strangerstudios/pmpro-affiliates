@@ -33,33 +33,51 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 	$pmpro_affiliates          = pmpro_affiliates_getAffiliatesForUser();
 	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 
+	// Default values from shortcode attribute. Block defaults are set in the block's register_block_type() function.
 	extract(
 		shortcode_atts(
 			array(
-				'back_link' => '1',
-				'export'    => '1',
-				'fields'    => 'user_login,date,membership_level,show_commission,total',
-				'help'      => '1',
+				'back_link'  => '0',
+				'export'     => '0',
+				'export_csv' => '0',
+				'help'       => '0',
+				'fields'     => 'user_login,date,membership_level,show_commission,total',
 			),
 			$atts
 		)
 	);
 
-	if ( $back_link === '0' || $back_link === 'false' || $back_link === 'no' ) {
+	// unset shortcode settings from Block.
+	unset( $atts['back_link'] );
+	unset( $atts['export'] );
+	unset( $atts['export_csv'] );
+	
+	// Set the fields to values from the Block.
+	$fields = array_keys( array_filter( $atts ) );
+
+	// Check if the fields values are coming from the shortcode instead.
+	if ( ! is_array( $fields ) ) {
+		$fields = explode( ',', $fields );
+	}
+
+	if ( $back_link === '0' || $back_link === 'false' || $back_link === 'no' || ! $back_link ) {
 		$back_link = false;
 	} else {
 		$back_link = true;
 	}
 
-	$fields = explode( ',', $fields );
+	// For block attributes.
+	if ( ! empty( $export_csv ) ) {
+		$export = $export_csv;
+	}
 
-	if ( $export === '0' || $export === 'false' || $export === 'no' ) {
+	if ( $export === '0' || $export === 'false' || $export === 'no' || ! $export ) {
 		$export = false;
 	} else {
 		$export = true;
 	}
 
-	if ( $help === '0' || $help === 'false' || $help === 'no' ) {
+	if ( $help === '0' || $help === 'false' || $help === 'no' || ! $help ) {
 		$help = false;
 	} else {
 		$help = true;
@@ -100,9 +118,9 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		}
 
 		// Get paid and unpaid commissions.
-		$paid_commissions = pmpro_affiliates_get_commissions( $affiliate->code, 'paid' );
+		$paid_commissions   = pmpro_affiliates_get_commissions( $affiliate->code, 'paid' );
 		$unpaid_commissions = pmpro_affiliates_get_commissions( $affiliate->code, 'unpaid' );
-		$total_commissions = $paid_commissions + $unpaid_commissions;
+		$total_commissions  = $paid_commissions + $unpaid_commissions;
 
 		?>
 		<?php if ( ! empty( $export ) ) { ?>
@@ -205,7 +223,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		?>
 		<?php if ( ! empty( $help ) ) { ?>
 		<div class="pmpro_affiliates-links">
-			<h3><?php _e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h3>
+			<h2><?php _e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h2>
 			<p>
 			<?php
 			// translators: variables for affiliate codes
