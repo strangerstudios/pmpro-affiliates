@@ -3,8 +3,8 @@
     "apiVersion": 2,
     "name": "pmpro-affiliates/pmpro-affiliates-report",
     "version": "1.0.0",
-    "title": "Affiliate Report",
-    "icon": "media-default",
+    "title": "PMPro: Affiliate Report",
+    "icon": "table",
     "description": "Show a list of courses a member has access.",
     "supports": {
         "html": false
