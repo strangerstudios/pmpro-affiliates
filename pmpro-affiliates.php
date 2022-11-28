@@ -94,10 +94,6 @@ add_filter( 'pmpro_member_links_bottom', 'pmpro_affiliates_member_links_bottom' 
 
 // setup db
 function pmpro_affiliates_checkDB() {
-	// Only run this code on PMPro Affiliates.
-	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) {
-		return;
-	}
 
 	$pmpro_affiliates_options  = pmpro_affiliates_get_options();
 	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
