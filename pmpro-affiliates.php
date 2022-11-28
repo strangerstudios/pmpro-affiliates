@@ -17,7 +17,6 @@ require_once dirname( __FILE__ ) . '/pages/report.php';
 require_once dirname( __FILE__ ) . '/includes/blocks.php';
 
 
-
 /**
  * Load the languages folder for translations.
  */
@@ -55,8 +54,8 @@ function pmpro_affiliates_get_options() {
 // Get settings
 function pmpro_affiliates_get_settings() {
 	$default_settings = array(
-		'pmpro_affiliates_singular_name' => __( 'affiliate', 'pmpro-affiliates' ),
-		'pmpro_affiliates_plural_name'   => __( 'affiliates', 'pmpro-affiliates' ),
+		'pmpro_affiliates_singular_name' => esc_html__( 'affiliate', 'pmpro-affiliates' ),
+		'pmpro_affiliates_plural_name'   => esc_html__( 'affiliates', 'pmpro-affiliates' ),
 		'pmpro_affiliates_recurring'     => '0',
 	);
 
@@ -69,9 +68,9 @@ function pmpro_affiliates_extra_page_settings( $pages ) {
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 
 	$pages['affiliate_report'] = array(
-		'title'   => ucwords( $pmpro_affiliates_singular_name ) . ' ' . __( 'Report', 'pmpro-affiliates' ),
+		'title' => sprintf( esc_html__( '%s Report', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_singular_name ) ),
 		'content' => '[pmpro_affiliates_report]',
-		'hint'    => sprintf( __( 'Include the shortcode %s', 'pmpro-affiliates' ), '[pmpro_affiliates_report].' ),
+		'hint'    => sprintf( esc_html__( 'Include the shortcode %s or Affiliate Report block.', 'pmpro-affiliates' ), '[pmpro_affiliates_report]' ),
 	);
 	return $pages;
 }
@@ -87,7 +86,7 @@ function pmpro_affiliates_member_links_bottom() {
 	// If the user has affiliates codes, add the link
 	if ( ! empty( $pmpro_affiliates ) && ! empty( $pmpro_pages_affiliate_report ) ) {
 		?>
-		<li><a href="<?php echo get_permalink( $pmpro_pages_affiliate_report ); ?>"><?php echo get_the_title( $pmpro_pages['affiliate_report'] ); ?></a></li>
+		<li><a href="<?php echo esc_url( get_permalink( $pmpro_pages_affiliate_report ) ); ?>"><?php echo esc_html( get_the_title( $pmpro_pages['affiliate_report'] ) ); ?></a></li>
 		<?php
 	}
 }

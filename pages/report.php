@@ -48,7 +48,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 	);
 
 	// Set the fields to values from the Block.
-	if ( ! empty( $atts ) && is_array( $atts ) ) { 
+	if ( ! empty( $atts ) && is_array( $atts ) ) {
 		$fields = array_keys( array_filter( $atts ) );
 	}
 
@@ -121,9 +121,9 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 
 		?>
 		<?php if ( ! empty( $export ) ) { ?>
-			<span class="pmpro_a-right"><a href="<?php echo admin_url( 'admin-ajax.php' ); ?>?action=affiliates_report_csv&report=<?php echo $affiliate->id; ?>"><?php _e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
+			<span class="pmpro_a-right"><a href="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=affiliates_report_csv&report=<?php echo esc_html( $affiliate->id ); ?>"><?php esc_html_e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
 		<?php } ?>
-		<h2><?php echo ucwords( $pmpro_affiliates_singular_name ); ?> <?php echo __( 'Report for Code:', 'pmpro-affiliates' ) . ' ' . $affiliate->code; ?></h2>
+		<h2><?php echo ucwords( $pmpro_affiliates_singular_name ); ?> <?php echo esc_html__( 'Report for Code:', 'pmpro-affiliates' ) . ' ' . esc_html( $affiliate->code ); ?></h2>
 		<?php
 			$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
 		if ( $report != 'all' ) {
@@ -214,13 +214,13 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		} else {
 			// there are no orders for this code
 			?>
-				<p><?php echo sprintf( 'No %s signups have been tracked yet.', $pmpro_affiliates_singular_name, 'pmpro-affiliates' ); ?></p>
+				<p><?php echo sprintf( 'No %s signups have been tracked yet.', esc_html( $pmpro_affiliates_singular_name ), 'pmpro-affiliates' ); ?></p>
 				<?php
 		}
 		?>
 		<?php if ( ! empty( $help ) ) { ?>
 		<div class="pmpro_affiliates-links">
-			<h2><?php _e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h2>
+			<h2><?php esc_html_e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h2>
 			<p>
 			<?php
 			// translators: variables for affiliate codes
@@ -234,7 +234,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			?>
 			</p>
 
-			<p><strong><?php esc_html_e( 'Homepage', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo site_url(); ?>/?pa=<?php echo esc_attr( $affiliate->code ); ?>" /></p>
+			<p><strong><?php esc_html_e( 'Homepage', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo esc_url( site_url() ); ?>/?pa=<?php echo esc_attr( $affiliate->code ); ?>" /></p>
 			<p><strong><?php esc_html_e( 'Membership Levels', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo esc_attr( pmpro_url( 'levels' ) ); ?>?pa=<?php echo esc_attr( $affiliate->code ); ?>" /></p>
 			<p><strong><?php esc_html_e( 'Homepage with Campaign Tracking', 'pmpro-affiliates' ); ?>:</strong> <input type="text" style="width:100%;" readonly value="<?php echo esc_attr( site_url() ); ?>/?pa=<?php echo esc_attr( $affiliate->code ); ?>&subid=FACEBOOK" /></p>
 		</div>
@@ -246,7 +246,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		<h2><?php esc_html_e( 'Select a Code', 'pmpro-affiliates' ); ?></h2>
 		<ul>
 			<?php foreach ( $pmpro_affiliates as $affiliate ) { ?>
-				<li><a href="<?php echo get_permalink( $post->ID ); ?>?report=<?php echo esc_attr( $affiliate->id ); ?>"><?php echo esc_html( $affiliate->code ); ?></a></li>
+				<li><a href="<?php echo esc_url( get_permalink( $post->ID ) ); ?>?report=<?php echo esc_attr( $affiliate->id ); ?>"><?php echo esc_html( $affiliate->code ); ?></a></li>
 			<?php } ?>
 		</ul>
 		<?php
@@ -256,9 +256,9 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		$pmpro_pages_affiliate_report = $pmpro_pages['affiliate_report'];
 		?>
 		<p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav pmpro_affiliates-actions_nav', 'pmpro_affiliates-actions_nav' ); ?>">
-			<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-right' ); ?>"><a href="<?php echo pmpro_url( 'account' ); ?>"><?php _e( 'View Your Membership Account &rarr;', 'pmpro-affiliates' ); ?></a></span>
+			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e( 'View Your Membership Account &rarr;', 'pmpro-affiliates' ); ?></a></span>
 			<?php if ( ! empty( $report ) && ! empty( $pmpro_pages_affiliate_report ) ) { ?>
-				<span class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav-left' ); ?>"><a href="<?php echo get_permalink( $pmpro_pages_affiliate_report ); ?>"><?php _e( '&larr; View All', 'pmpro-affiliates' ); ?></a></span>
+				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-left' ) ); ?>"><a href="<?php echo esc_url( get_permalink( $pmpro_pages_affiliate_report ) ); ?>"><?php esc_html_e( '&larr; View All', 'pmpro-affiliates' ); ?></a></span>
 			<?php } ?>
 		</p> <!-- end pmpro_actions_nav -->
 		<?php
