@@ -41,20 +41,21 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 				'export'     => '1',
 				'export_csv' => '1',
 				'help'       => '1',
-				'fields'     => 'user_login,date,membership_level,show_commission,total',
+				'fields'     => 'user_login,date,membership_level,total',
+				'show_commissions_table' => '0'
 			),
 			$atts
 		)
 	);
 
-	// Set the fields to values from the Block.
-	if ( ! empty( $atts ) && is_array( $atts ) ) {
-		$fields = array_keys( array_filter( $atts ) );
-	}
-
 	// Check if the fields values are coming from the shortcode instead.
 	if ( ! is_array( $fields ) ) {
 		$fields = explode( ',', $fields );
+	}
+
+	// Set the fields to values from the Block.
+	if ( ! empty( $atts ) && is_array( $atts ) && has_block( 'pmpro-affiliates/pmpro-affiliates-report' ) ) {
+		$fields = array_keys( array_filter( $atts ) );
 	}
 
 	if ( $back_link === '0' || $back_link === 'false' || $back_link === 'no' || ! $back_link ) {
@@ -78,6 +79,12 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		$help = false;
 	} else {
 		$help = true;
+	}
+
+	if ( $show_commissions_table === '0' || $show_commissions_table === 'false' || $show_commissions_table === 'no' || ! $show_commissions_table ) {
+		$show_commissions_table = false;
+	} else {
+		$show_commissions_table = true;
 	}
 
 	ob_start();
@@ -132,6 +139,9 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			$affiliate_orders = $wpdb->get_results( $sqlQuery );
 
 		if ( ! empty( $affiliate_orders ) ) {
+
+			// Attribute to show/hide commission table.
+			if ( $show_commissions_table ) {		
 			?>
 			<!-- Commissions Table -->
 			<div class="pmpro_affiliates-table-container pmpro_affiliates-commissions">
@@ -146,6 +156,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 					<div class="row-item"><?php echo pmpro_formatPrice( $unpaid_commissions ); ?></div>
 				</div>
 			</div>
+			<?php } ?>
 
 			<!-- Orders Table -->
 			<div class="pmpro_affiliates-table-container pmpro_affiliates-orders">

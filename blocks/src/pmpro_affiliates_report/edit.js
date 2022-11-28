@@ -3,7 +3,7 @@ import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { ToggleControl, PanelBody } from '@wordpress/components';
 
 function Edit({ attributes, setAttributes }) {
-    const { back_link, export_csv, help, code, subid, name, user_login, date, membership_level, show_commission, total } = attributes
+    const { back_link, export_csv, help, show_commissions_table, code, subid, name, user_login, date, membership_level, show_commission, total } = attributes
     const blockProps = useBlockProps({ className: "pmpro-block-element" });
 
     return ([
@@ -26,6 +26,12 @@ function Edit({ attributes, setAttributes }) {
                     checked={help}
                     onChange={help => { setAttributes({ help }) }}
                     help={__('Show a help table', 'pmpro-affiliates')}
+                />
+                <ToggleControl
+                    label={__('Show Commissions Table', 'pmpro-affiliates')}
+                    checked={show_commissions_table}
+                    onChange={show_commissions_table => { setAttributes({ show_commissions_table }) }}
+                    help={__('Show the commission table', 'pmpro-affiliates')}
                 />
             </PanelBody>
             <PanelBody title={__('Table Fields', 'pmpro-affiliates')}>

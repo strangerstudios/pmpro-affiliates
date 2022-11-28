@@ -23,6 +23,10 @@
             "type": "boolean",
             "default": true
         },
+        "show_commissions_table": {
+            "type": "boolean",
+            "default": false
+        },
         "code": {
             "type": "boolean",
             "default": false
@@ -49,7 +53,7 @@
         },
         "show_commission": {
             "type": "boolean",
-            "default": true
+            "default": false
         },
         "total": {
             "type": "boolean",
