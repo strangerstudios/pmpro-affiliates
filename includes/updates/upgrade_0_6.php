@@ -20,12 +20,12 @@ function pmpro_affiliates_upgrade_0_6() {
 
     // Add the commissionrate column.
 	$sqlQuery = "
-		ALTER TABLE  `" . $wpdb->pmpro_affiliates . "` ADD  `commissionrate` decimal(10,2) NOT NULL DEFAULT '0.10' AFTER  `enabled`;
+		ALTER TABLE  `" . $wpdb->pmpro_affiliates . "` ADD  `commissionrate` decimal(10,2) NOT NULL DEFAULT '0.00' AFTER  `enabled`;
 	";
 	$wpdb->query( $sqlQuery );
 
     $affiliate_options['db_version'] = '0.6';
-    update_option( 'pmpro_affiliates_options', $affiliate_options );
+    update_option( 'pmpro_affiliates_options', $affiliate_options, false );
 
 	return 0.6;
 }

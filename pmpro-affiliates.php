@@ -119,7 +119,7 @@ function pmpro_affiliates_checkDB() {
 		  trackingcode mediumtext NOT NULL,
 		  cookiedays int(11) NOT NULL DEFAULT '30',
 		  enabled tinyint(4) NOT NULL DEFAULT '1',
-		  commissionrate decimal(10,2) NOT NULL DEFAULT '0.10',
+		  commissionrate decimal(10,2) NOT NULL DEFAULT '0.00',
 		  visits int(11) unsigned NOT NULL DEFAULT '0',
 		  PRIMARY KEY (id),
 		  KEY affiliateid (code),
