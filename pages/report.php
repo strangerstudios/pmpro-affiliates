@@ -37,23 +37,20 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 	extract(
 		shortcode_atts(
 			array(
-				'back_link'  => '0',
-				'export'     => '0',
-				'export_csv' => '0',
-				'help'       => '0',
+				'back_link'  => '1',
+				'export'     => '1',
+				'export_csv' => '1',
+				'help'       => '1',
 				'fields'     => 'user_login,date,membership_level,show_commission,total',
 			),
 			$atts
 		)
 	);
 
-	// unset shortcode settings from Block.
-	unset( $atts['back_link'] );
-	unset( $atts['export'] );
-	unset( $atts['export_csv'] );
-	
 	// Set the fields to values from the Block.
-	$fields = array_keys( array_filter( $atts ) );
+	if ( ! empty( $atts ) && is_array( $atts ) ) { 
+		$fields = array_keys( array_filter( $atts ) );
+	}
 
 	// Check if the fields values are coming from the shortcode instead.
 	if ( ! is_array( $fields ) ) {
@@ -66,8 +63,8 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		$back_link = true;
 	}
 
-	// For block attributes.
-	if ( ! empty( $export_csv ) ) {
+	// Check if the block attribute export_csv value is false and set it to "export" to override the shortcode value.
+	if ( ! $export_csv ) {
 		$export = $export_csv;
 	}
 
