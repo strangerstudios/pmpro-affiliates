@@ -1,4 +1,5 @@
 jQuery(document).ready(function () {
+    // Functionality to mark commission as paid for a particular order.
     jQuery('#pmpro_affiliates_mark_as_paid').on('click', function (e) {
         e.preventDefault();
 
@@ -28,4 +29,22 @@ jQuery(document).ready(function () {
         });
     });
 
-});
+    // Functionality for autocomplete search via AJA using autocomplete jQuery
+    jQuery(function () {
+        var searchRequest;
+        jQuery('#affiliateuser').autocomplete({
+            source: function (term, suggest) {
+                try { searchRequest.abort(); } catch (e) { }
+                searchRequest = jQuery.post(pmpro_affiliates_admin.ajaxurl,
+                    {
+                        search: term.term,
+                        action: 'pmpro_affiliates_autocomplete_user_search',
+                        search_nonce: pmpro_affiliates_admin.pmpro_affiliates_search_nonce
+                    },
+                    function (res) {
+                        suggest(res.data);
+                    });
+            }
+        });
+    });
+}); //end of document ready

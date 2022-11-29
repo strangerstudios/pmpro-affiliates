@@ -541,12 +541,14 @@ function pmpro_affiliates_register_scripts_styles() {
 	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) {
 		return;
 	}
+
 	// Register scripts.
-	wp_register_script( 'pmpro_affiliates_admin', plugins_url( 'includes/js/admin.js', __FILE__ ), array( 'jquery' ), PMPRO_AFFILIATES_VERSION, true );
+	wp_register_script( 'pmpro_affiliates_admin', plugins_url( 'includes/js/admin.js', __FILE__ ), array( 'jquery', 'jquery-ui-autocomplete' ), PMPRO_AFFILIATES_VERSION, true );
 
 	$localize_data = array(
 		'ajaxurl'     => admin_url( 'admin-ajax.php' ),
 		'paid_status' => esc_html__( 'Paid', 'pmpro-affiliates' ),
+		'search_nonce' => wp_create_nonce( 'pmpro_affiliates_search_nonce' )
 	);
 
 	// Localize scripts with data from PHP.
@@ -554,8 +556,11 @@ function pmpro_affiliates_register_scripts_styles() {
 	wp_enqueue_script( 'pmpro_affiliates_admin' );
 }
 add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_register_scripts_styles' );
+
 /**
  * Ajax handler for saving affiliate paid order setting.
+ * 
+ * @since TBD
  */
 function pmpro_affiliates_mark_as_paid() {
 
@@ -571,6 +576,37 @@ function pmpro_affiliates_mark_as_paid() {
 }
 add_action( 'wp_ajax_pmpro_affiliates_mark_as_paid', 'pmpro_affiliates_mark_as_paid' );
 
+/**
+ * AJAX handler for searching for affiliates and autocomplete.
+ * 
+ * @since TBD
+ */
+function pmpro_affiliates_autocomplete_user_search() {
+
+	// Verify the nonce for this action.
+	wp_verify_nonce( $_REQUEST['search_nonce'], 'pmpro_affiliates_search_nonce' );
+
+	$search = sanitize_text_field( $_REQUEST['search'] );
+	$search_limit = apply_filters( 'pmpro_affiliates_autocomplete_user_search_limit', 25 );
+
+	$user_query = new WP_User_Query( 
+		array(
+			'search' => '*' . $search . '*',
+			'search_columns' => array( 'user_login', 'user_nicename' ),
+			'number' => (int) $search_limit
+		) 
+	);
+
+	$results = array();
+	if ( ! empty( $user_query->get_results() ) ) {
+		foreach ( $user_query->get_results() as $user ) {
+			$results[] = $user->user_login;
+		}
+	}
+
+	wp_send_json_success( $results );
+}
+add_action( 'wp_ajax_pmpro_affiliates_autocomplete_user_search', 'pmpro_affiliates_autocomplete_user_search' );
 
 /**
  * Function to get all paid commission and the amount.
