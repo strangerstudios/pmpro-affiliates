@@ -33,6 +33,7 @@ jQuery(document).ready(function () {
     jQuery(function () {
         var searchRequest;
         jQuery('#affiliateuser').autocomplete({
+            delay: 500,
             source: function (term, suggest) {
                 try { searchRequest.abort(); } catch (e) { }
                 searchRequest = jQuery.post(pmpro_affiliates_admin.ajaxurl,
