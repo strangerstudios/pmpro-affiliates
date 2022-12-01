@@ -40,7 +40,7 @@ jQuery(document).ready(function () {
                     {
                         search: term.term,
                         action: 'pmpro_affiliates_autocomplete_user_search',
-                        search_nonce: pmpro_affiliates_admin.pmpro_affiliates_search_nonce
+                        search_nonce: pmpro_affiliates_admin.search_nonce
                     },
                     function (res) {
                         suggest(res.data);
