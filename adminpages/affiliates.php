@@ -350,9 +350,19 @@
 									</span>
 								</div>
 							</td>
+
+							<?php 
+								$user = get_user_by( 'login', $affiliate->affiliateuser );
+								if ( $user ) {
+									$affiliate_user_name = '<a href="' . esc_url( get_edit_user_link( $user->ID ) ) . '">' . esc_html( stripslashes( $affiliate->affiliateuser ) ) . '</a>';
+								} else {
+									$affiliate_user_name = esc_html( stripslashes( $affiliate->affiliateuser ) );
+								}
+							?>
+
 							</td>
 							<td><?php echo stripslashes($affiliate->name); ?></td>
-							<td><?php echo stripslashes($affiliate->affiliateuser); ?></td>
+							<td><?php echo $affiliate_user_name; ?></td>
 							<td><?php echo $affiliate->cookiedays . " days"; ?></td>
 							<td><?php echo pmpro_affiliates_yesorno($affiliate->enabled); ?></td>
 							<td><?php echo intval($affiliate->visits);?></td>
