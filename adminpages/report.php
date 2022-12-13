@@ -112,7 +112,7 @@
 						}
 						?>
 						<tr>
-							<td><?php echo "<a href='" . esc_url( get_admin_url() . 'admin.php?page=pmpro-affiliates&edit=' . (int) $order->affiliate_id  ) . "'>" . esc_html( $order->code ) . "</a>";?></td>
+							<td><?php echo "<a href='" . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-affiliates&edit=' . (int) $order->affiliate_id  ) ) . "'>" . esc_html( $order->code ) . "</a>";?></td>
 							<td><?php echo $order->subid;?></td>
 							<td><?php echo stripslashes($order->name);?></td>
 							<td>

@@ -260,6 +260,49 @@
 						</td>
 					</tr>
 
+					<?php 
+
+						// Get totals for commissions and display it as a readonly view.
+						if ( $code ) {
+							$paid_commissions   = pmpro_affiliates_get_commissions( $code, 'paid' );
+							$unpaid_commissions = pmpro_affiliates_get_commissions( $code, 'unpaid' );
+							$total_commissions  = $paid_commissions + $unpaid_commissions;
+						} else {
+							$paid_commissions = 0;
+							$unpaid_commissions = 0;
+							$total_commissions = 0;
+						}
+						
+					?>
+					<tr>
+						<th scope="row" valign="top"><label for="commission_earned"><?php esc_html_e('Commission Earned (All time):', 'pmpro-affiliates'); ?></label></th>
+						<td>
+							<?php echo pmpro_formatPrice( $total_commissions ); ?>
+						</td>
+					</tr>
+
+					<tr>
+						<th scope="row" valign="top"><label for="commission_paid"><?php esc_html_e('Commission Paid (All time):', 'pmpro-affiliates'); ?></label></th>
+						<td>
+							<?php echo pmpro_formatPrice( $paid_commissions ); ?>
+						</td>
+					</tr>
+
+					<tr>
+						<th scope="row" valign="top"><label for="commission_due"><?php esc_html_e('Commission Due:', 'pmpro-affiliates'); ?></label></th>
+						<td>
+							<?php 
+							echo pmpro_formatPrice( $unpaid_commissions ); 
+							if ( $affiliate_id ) {
+								echo ' (<a href="' . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-affiliates&report=' . (int) $affiliate_id ) ).'">' . esc_html( 'view report', 'pmpro-affiliates' ) .'</a>)';
+							}
+							
+							?>
+						</td>
+					</tr>
+
+					
+
 				</tbody>
 			</table>
 
