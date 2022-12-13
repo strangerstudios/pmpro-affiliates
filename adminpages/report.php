@@ -57,7 +57,7 @@
 
 <?php
 	$sqlQuery = 
-	"SELECT o.id as order_id, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
+	"SELECT o.id as order_id, o.code as order_code, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
 	FROM $wpdb->pmpro_membership_orders o 
 	LEFT JOIN $wpdb->pmpro_affiliates a 
 	ON o.affiliate_id = a.id 
@@ -82,7 +82,7 @@
 			<thead>
 				<tr>
 					<th><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Sub-ID', 'pmpro-affiliates' ); ?></th>
+					<th><?php esc_html_e( 'Order', 'pmpro-affiliates' ); ?></th>
 					<th><?php esc_html_e( 'Name', 'pmpro-affiliates' ); ?></th>
 					<th><?php esc_html_e( 'Member', 'pmpro-affiliates' ); ?></th>
 					<th><?php esc_html_e( 'Membership Level', 'pmpro-affiliates' ); ?></th>
@@ -99,7 +99,6 @@
 					global $pmpro_currency_symbol;
 					foreach ( $affiliate_orders as $order ) {
 						$level = pmpro_getLevel( $order->membership_id ); 
-						
 						// Get the affiliate paid status and generate a mark as paid link if not paid. Add nonce.
 						$affiliate_paid = $order->affiliate_paid;
 						if ( $affiliate_paid == '1' ) {
@@ -112,8 +111,15 @@
 						}
 						?>
 						<tr>
-							<td><?php echo "<a href='" . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-affiliates&edit=' . (int) $order->affiliate_id  ) ) . "'>" . esc_html( $order->code ) . "</a>";?></td>
-							<td><?php echo $order->subid;?></td>
+							<td><?php echo "<a href='" . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-affiliates&edit=' . (int) $order->affiliate_id  ) ) . "'>" . esc_html( $order->code ) . "</a>";
+							if ( $order->subid ) {
+								echo '<br><span class="pmpro-affiliates-sub-id-report" style="font-size:12px;">';
+								echo  '<strong>' . esc_html__( 'Sub-ID', 'pmpro-affiliates' ) . ':</strong> ' . esc_html( $order->subid );
+								echo '</span>';
+							}
+							?>
+						</td>
+							<td><?php echo "<a href='" . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-orders&order=' . (int) $order->order_id ) ) . "'>" . esc_html( $order->order_code ) . "</a>"; ?></td>
 							<td><?php echo stripslashes($order->name);?></td>
 							<td>
 								<?php
