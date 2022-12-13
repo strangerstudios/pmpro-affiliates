@@ -57,7 +57,7 @@
 
 <?php
 	$sqlQuery = 
-	"SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
+	"SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
 	FROM $wpdb->pmpro_membership_orders o 
 	LEFT JOIN $wpdb->pmpro_affiliates a 
 	ON o.affiliate_id = a.id 
@@ -114,8 +114,29 @@
 							<td><?php echo $order->code;?></td>
 							<td><?php echo $order->subid;?></td>
 							<td><?php echo stripslashes($order->name);?></td>
-							<td><?php echo $order->user_login;?></td>
-							<td><?php echo $level->name; ?></td>
+							<td>
+								<?php
+									if ( ! empty( $order->user_id ) ) {
+										if ( ! empty( get_user_by( 'id', $order->user_id ) ) ) { ?>
+											<a href="<?php echo esc_url( add_query_arg( 'user_id', $order->user_id, self_admin_url( 'user-edit.php' ) ) ); ?>"><?php echo esc_html( $order->user_login ); ?></a>
+											<?php
+										} else {
+											echo esc_html( $order->user_login );
+										}
+									}
+								?>
+							</td>
+							<td>
+								<?php
+									if ( ! empty( $level ) ) {
+										echo esc_html( $level->name );
+									} elseif ( $order->membership_id > 0 ) { ?>
+										[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
+									<?php } else {
+										esc_html_e( '&#8212;', 'paid-memberships-pro' );
+									}
+								?>
+							</td>
 							<td><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp );?></td>
 							<td><?php echo $order->commissionrate * 100;?>%</td>
 							<td><?php echo pmpro_formatPrice( $order->total * $order->commissionrate ); ?></td>

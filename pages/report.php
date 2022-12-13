@@ -202,14 +202,32 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 								<div class="row-item"><?php echo stripslashes( $order->name ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'user_login', $fields ) ) { ?>
-								<div class="row-item"><?php echo $order->user_login; ?></div>
-							<?php } ?>
+							<div class="row-item">
+								<?php
+									if ( ! empty( $order->user_login ) ) {
+										echo esc_html( $order->user_login );
+									} else { ?>
+										[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
+									<?php }
+								?>
+							</div>
+						<?php } ?>
 						<?php if ( in_array( 'date', $fields ) ) { ?>
 								<div class="row-item"><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'membership_level', $fields ) ) { ?>
-								<div class="row-item"><?php echo $level->name; ?></div>
-							<?php } ?>
+							<div class="row-item">
+								<?php
+									if ( ! empty( $level ) ) {
+										echo esc_html( $level->name );
+									} elseif ( $order->membership_id > 0 ) { ?>
+										[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
+									<?php } else {
+										esc_html_e( '&#8212;', 'paid-memberships-pro' );
+									}
+								?>
+							</div>
+						<?php } ?>
 						<?php if ( in_array( 'show_commission', $fields ) ) { ?>
 							<div class="row-item"><?php echo pmpro_formatPrice( $order->total * $affiliate->commissionrate ); ?></div>
 						<?php } ?>
