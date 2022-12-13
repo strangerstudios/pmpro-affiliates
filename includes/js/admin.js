@@ -1,6 +1,6 @@
 jQuery(document).ready(function () {
     // Functionality to mark commission as paid for a particular order.
-    jQuery('#pmpro_affiliates_mark_as_paid').on('click', function (e) {
+    jQuery('.pmpro_affiliates_mark_as_paid').on('click', function (e) {
         e.preventDefault();
 
         var data = {
@@ -29,7 +29,38 @@ jQuery(document).ready(function () {
         });
     });
 
-    // Functionality for autocomplete search via AJA using autocomplete jQuery
+
+    // Functionality to reset paid commissions to unpaid for a particular order.
+    jQuery('.pmpro_affiliates_reset_paid_status').on('click', function (e) {
+        e.preventDefault();
+
+        var data = {
+            action: 'pmpro_affiliates_reset_paid_status',
+            order_id: jQuery(this).attr('order_id'),
+            reset_status: pmpro_affiliates_admin.reset_status,
+            _wpnonce: jQuery(this).attr('_wpnonce')
+        }
+
+        jQuery.ajax({
+            url: pmpro_affiliates_admin.ajaxurl,
+            type: 'POST',
+            timeout: 2000,
+            dataType: 'html',
+            data: data,
+            error: function (xml) {
+                alert('Error resetting order.');
+            },
+            success: function (responseHTML) {
+                if (responseHTML == 'error') {
+                    alert('Error resetting paid status.');
+                } else {
+                    jQuery('#order_' + data.order_id).html(data.reset_status);
+                }
+            }
+        });
+    });
+
+    // Functionality for autocomplete search via AJAX using autocomplete jQuery
     jQuery(function () {
         var searchRequest;
         jQuery('#affiliateuser').autocomplete({

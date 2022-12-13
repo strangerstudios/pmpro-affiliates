@@ -103,10 +103,12 @@
 						// Get the affiliate paid status and generate a mark as paid link if not paid. Add nonce.
 						$affiliate_paid = $order->affiliate_paid;
 						if ( $affiliate_paid == '1' ) {
+							$nonce = wp_create_nonce( 'pmpro_affiliates_reset_paid_status' );
 							$affiliate_paid = esc_html__( 'Paid', 'pmpro-affiliates' );
+							$affiliate_paid .= ' [<a class="pmpro_affiliates_reset_paid_status" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" >x</a>]'  ;
 						} else {
 							$nonce = wp_create_nonce( 'pmpro_affiliates_mark_as_paid' );
-							$affiliate_paid = '<a id="pmpro_affiliates_mark_as_paid" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" >' . esc_html__( 'Mark as Paid', 'pmpro-affiliates' ) . '</a>';
+							$affiliate_paid = '<a class="pmpro_affiliates_mark_as_paid" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" >' . esc_html__( 'Mark as Paid', 'pmpro-affiliates' ) . '</a>';
 						}
 						
 						?>

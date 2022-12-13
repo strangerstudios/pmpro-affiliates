@@ -548,7 +548,8 @@ function pmpro_affiliates_register_scripts_styles() {
 	$localize_data = array(
 		'ajaxurl'     => admin_url( 'admin-ajax.php' ),
 		'paid_status' => esc_html__( 'Paid', 'pmpro-affiliates' ),
-		'search_nonce' => wp_create_nonce( 'pmpro_affiliates_search_nonce' )
+		'search_nonce' => wp_create_nonce( 'pmpro_affiliates_search_nonce' ),
+		'reset_status' => esc_html__( 'Payment status reset.', 'pmpro-affiliates' ),
 	);
 
 	// Localize scripts with data from PHP.
@@ -566,7 +567,7 @@ function pmpro_affiliates_mark_as_paid() {
 
 	// check the nonce, if it's not valid bail.
 	$nonce = $_REQUEST['_wpnonce'];
-	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_mark_as_paid' ) ) {
+	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_mark_as_paid') ) {
 		return;
 	}
 
@@ -575,6 +576,27 @@ function pmpro_affiliates_mark_as_paid() {
 	exit;
 }
 add_action( 'wp_ajax_pmpro_affiliates_mark_as_paid', 'pmpro_affiliates_mark_as_paid' );
+
+
+/**
+ * Ajax handler for resetting affiliate paid order to unpaid.
+ * 
+ * @since TBD
+ */
+function pmpro_affiliates_reset_paid_status() {
+
+	// check the nonce, if it's not valid bail.
+	$nonce = $_REQUEST['_wpnonce'];
+	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_reset_paid_status' ) ) {
+		return;
+	}
+
+	$order_id = (int) $_REQUEST['order_id'];
+	delete_pmpro_membership_order_meta( $order_id, 'pmpro_affiliate_paid', NULL );
+	exit;
+}
+add_action( 'wp_ajax_pmpro_affiliates_reset_paid_status', 'pmpro_affiliates_reset_paid_status' );
+
 
 /**
  * AJAX handler for searching for affiliates and autocomplete.
