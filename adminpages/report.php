@@ -143,7 +143,7 @@
 							<td><?php echo $order->commissionrate * 100;?>%</td>
 							<td><?php echo pmpro_formatPrice( $order->total * $order->commissionrate ); ?></td>
 							<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
-							<td><?php echo '<span class="pmpro_affiliate_paid_status">' . $affiliate_paid . '</span>'; ?></td>
+							<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . $order->order_id . '">' . $affiliate_paid . '</span>'; ?></td>
 							<?php do_action( "pmpro_affiliate_report_extra_cols_body", $order ); ?>
 						</tr>
 						<?php

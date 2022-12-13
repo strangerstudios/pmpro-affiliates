@@ -23,7 +23,7 @@ jQuery(document).ready(function () {
                 if (responseHTML == 'error') {
                     alert('Error marking item as paid.');
                 } else {
-                    jQuery('span.pmpro_affiliate_paid_status').html(data.paid_status);
+                    jQuery('#order_' + data.order_id).html(data.paid_status);
                 }
             }
         });
