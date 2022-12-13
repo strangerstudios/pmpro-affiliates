@@ -123,6 +123,8 @@
 										} else {
 											echo esc_html( $order->user_login );
 										}
+									} else { ?>
+										[<?php esc_html_e( 'deleted', 'pmpro-affiliates' ); ?>]<?php
 									}
 								?>
 							</td>
@@ -131,9 +133,9 @@
 									if ( ! empty( $level ) ) {
 										echo esc_html( $level->name );
 									} elseif ( $order->membership_id > 0 ) { ?>
-										[<?php esc_html_e( 'deleted', 'paid-memberships-pro' ); ?>]
+										[<?php esc_html_e( 'deleted', 'pmpro-affiliates' ); ?>]
 									<?php } else {
-										esc_html_e( '&#8212;', 'paid-memberships-pro' );
+										esc_html_e( '&#8212;', 'pmpro-affiliates' );
 									}
 								?>
 							</td>
