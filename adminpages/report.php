@@ -118,7 +118,7 @@
 								<?php
 									if ( ! empty( $order->user_id ) ) {
 										if ( ! empty( get_user_by( 'id', $order->user_id ) ) ) { ?>
-											<a href="<?php echo esc_url( add_query_arg( 'user_id', $order->user_id, self_admin_url( 'user-edit.php' ) ) ); ?>"><?php echo esc_html( $order->user_login ); ?></a>
+											<a href="<?php echo esc_url( get_edit_user_link( $order->user_id ) ); ?>"><?php echo esc_html( $order->user_login ); ?></a>
 											<?php
 										} else {
 											echo esc_html( $order->user_login );
