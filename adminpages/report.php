@@ -57,7 +57,7 @@
 
 <?php
 	$sqlQuery = 
-	"SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
+	"SELECT o.id as order_id, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
 	FROM $wpdb->pmpro_membership_orders o 
 	LEFT JOIN $wpdb->pmpro_affiliates a 
 	ON o.affiliate_id = a.id 
@@ -110,10 +110,9 @@
 							$nonce = wp_create_nonce( 'pmpro_affiliates_mark_as_paid' );
 							$affiliate_paid = '<a class="pmpro_affiliates_mark_as_paid" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" >' . esc_html__( 'Mark as Paid', 'pmpro-affiliates' ) . '</a>';
 						}
-						
 						?>
 						<tr>
-							<td><?php echo $order->code;?></td>
+							<td><?php echo "<a href='" . esc_url( get_admin_url() . 'admin.php?page=pmpro-affiliates&edit=' . (int) $order->affiliate_id  ) . "'>" . esc_html( $order->code ) . "</a>";?></td>
 							<td><?php echo $order->subid;?></td>
 							<td><?php echo stripslashes($order->name);?></td>
 							<td>
