@@ -675,6 +675,51 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 	return $paid_commission;
 }
 
+/**
+ * Show affiliate information when editing a user in WordPress.
+ * 
+ * @since TBD
+ */
+function pmpro_affiliates_edit_user_profile( $user ) {
+	if ( ! current_user_can( 'edit_users' ) ) {
+		return;
+	}
+
+	echo '<h3>' . esc_html__( 'Affiliate Information', 'pmpro-affiliates' ) . '</h3>';
+	// Show Affiliate information for this particular user.
+	$affiliates = pmpro_affiliates_getAffiliatesForUser( $user->ID );
+
+	// Get values if the user is an affiliate or not.
+	if ( ! empty( $affiliates ) ) {
+		$is_affiliate = true;
+		$affiliate_code = $affiliates[0]->code;
+	} else {
+		$is_affiliate = false;
+	}
+
+	if ( ! $is_affiliate ) {
+		$affiliate_actions = '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&edit=-1') ) . '">+ ' . esc_html__( 'Create Affiliate', 'pmpro-affiliates' ) . '</a>';
+	} else {
+		$affiliate_actions = '<a class="button button-secondary" href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&report=' . $affiliates[0]->id ) ) . '">' . esc_html__( 'View Report', 'pmpro-affiliates' ) . '</a>';
+		$affiliate_actions .= ' <a class="button button-secondary" href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&edit=' . $affiliates[0]->id ) ) . '">' . esc_html__( 'Edit Affiliate', 'pmpro-affiliates' ) . '</a>';	
+	}
+
+
+	?>
+	<table class="form-table">
+		<tbody>
+			<tr>
+				<th><?php esc_html_e( 'Affiliate Status', 'pmpro-affiliates' ); ?></th>
+				<td><?php echo $affiliate_actions; ?></td>
+			</tr>
+		</tbody>
+	</table>
+	<?php
+
+
+}
+add_action( 'edit_user_profile', 'pmpro_affiliates_edit_user_profile' );
+
 /*
 Function to add links to the plugin action links
 */
