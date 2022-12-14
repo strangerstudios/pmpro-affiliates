@@ -5,7 +5,7 @@
  * @since 1.2
  */
 function pmpro_affiliates_register_block_type() {
-	register_block_type( 'pmpro-affiliates/pmpro-affiliates-report', 
+	register_block_type( PMPRO_AFFILIATES_DIR . '/blocks/build/pmpro_affiliates_report',
 		array(
         	'editor_script'   => 'pmpro_affiliates_block_report',
 			'render_callback' => 'pmpro_affiliates_report_shortcode',
@@ -69,7 +69,7 @@ function pmpro_affiliates_block_scripts() {
 	wp_enqueue_script(
 		'pmpro_affiliates_block_report',
 		plugins_url( 'blocks/build/pmpro_affiliates_report/index.js', __DIR__ ),
-		plugins_url( 'blocks/build/pmpro_affiliates_report/index.asset.php')
+		plugins_url( 'blocks/build/pmpro_affiliates_report/index.asset.php', __DIR__)
 	);
 
 }
