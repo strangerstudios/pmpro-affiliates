@@ -4,7 +4,7 @@
  * 
  * @since 1.2
  */
-function pmpro_courses_register_block_type() {
+function pmpro_affiliates_register_block_type() {
 	register_block_type( 'pmpro-affiliates/pmpro-affiliates-report', 
 		array(
         	'editor_script'   => 'pmpro_affiliates_block_report',
@@ -58,14 +58,14 @@ function pmpro_courses_register_block_type() {
 		)
 	);
 }
-add_action( 'init', 'pmpro_courses_register_block_type' );
+add_action( 'init', 'pmpro_affiliates_register_block_type' );
 
 /**
  * Enqueue the Block Scripts for both blocks.
  *
  * @since 1.2
  */
-function pmpro_courses_block_scripts() {
+function pmpro_affiliates_block_scripts() {
 	wp_enqueue_script(
 		'pmpro_affiliates_block_report',
 		plugins_url( 'blocks/build/pmpro_affiliates_report/index.js', __DIR__ ),
@@ -73,4 +73,4 @@ function pmpro_courses_block_scripts() {
 	);
 
 }
-add_action( 'enqueue_block_editor_assets', 'pmpro_courses_block_scripts' );
+add_action( 'enqueue_block_editor_assets', 'pmpro_affiliates_block_scripts' );
