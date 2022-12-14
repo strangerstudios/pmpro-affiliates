@@ -248,9 +248,11 @@ function pmpro_affiliates_pmpro_added_order( $order, $savefirst = false ) {
 add_action( 'pmpro_added_order', 'pmpro_affiliates_pmpro_added_order' );
 
 /*
-	If we get to the after_checkout hook without $pmpro_affiliates_saved_order set, let's add a $0 order
+	If we get to the after_checkout hook without $pmpro_affiliates_saved_order set, let's pass the order directly.
 */
-function pmpro_affiliates_no_order_checkout( $user_id ) {
+
+function pmpro_affiliates_no_order_checkout( $user_id, $morder ) {
+
 	global $pmpro_affiliates_saved_order;
 
 	// if an order was added, we're good already
@@ -258,46 +260,32 @@ function pmpro_affiliates_no_order_checkout( $user_id ) {
 		return;
 	}
 
-	// get some info
-	$user        = get_userdata( $user_id );
-	$pmpro_level = pmpro_getMembershipLevelForUser( $user_id );
+	//now pass through the function above
+	return pmpro_affiliates_pmpro_added_order($morder, true);		//will create an order if there is an affiliate id
 
-	// setup an order
-	$morder                  = new MemberOrder();
-	$morder->membership_id   = $pmpro_level->id;
-	$morder->membership_name = $pmpro_level->name;
-	$morder->InitialPayment  = 0;
-	$morder->user_id         = $user_id;
-	$morder->Email           = $user->user_email;
-	$morder->gateway         = 'check';
-	$morder->Gateway         = null;
-	$morder->getMembershipLevel();
-
-	// now pass through the function above
-	return pmpro_affiliates_pmpro_added_order( $morder, true );       // will create an order if there is an affiliate id
 }
-add_action( 'pmpro_after_checkout', 'pmpro_affiliates_no_order_checkout' );
+add_action( 'pmpro_after_checkout', 'pmpro_affiliates_no_order_checkout', 10, 2 );
 
 /*
 	If the level is set to create an affiliate, let's create it.
 */
-function pmpro_affiliates_generate_affiliate_after_checkout( $user_id ) {
+function pmpro_affiliates_generate_affiliate_after_checkout( $user_id, $morder ) {
 	global $wpdb;
 
-	// get some info
-	$user        = get_userdata( $user_id );
-	$pmpro_level = pmpro_getMembershipLevelForUser( $user_id );
+	//get some info
+	$user = get_userdata($user_id);
+	$pmpro_level = pmpro_getSpecificMembershipLevelForUser( $user_id, $morder->membership_id );
 
-	// generate the affiliate after membership checkout
+	//generate the affiliate after membership checkout
 	$pmpro_create_affiliate_level = get_option( 'pmpro_create_affiliate_level_' . $pmpro_level->id );
 	$code                         = pmpro_affiliates_getNewCode();
 	if ( ! empty( $pmpro_create_affiliate_level ) ) {
 		$days     = intval( apply_filters( 'pmproaf_default_cookie_duration', 30, $user_id, $pmpro_level ) );
 		$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql( $code ) . "', '" . esc_sql( $user->display_name ) . "', '" . esc_sql( $user->user_login ) . "', '', $days, '1')";
 		$wpdb->query( $sqlQuery );
-	};
+	}
 }
-add_action( 'pmpro_after_checkout', 'pmpro_affiliates_generate_affiliate_after_checkout' );
+add_action( 'pmpro_after_checkout', 'pmpro_affiliates_generate_affiliate_after_checkout', 10, 2 );
 
 // add tracking code to confirmation page
 function pmpro_affiliates_pmpro_confirmation_message( $message ) {
@@ -409,34 +397,57 @@ function pmpro_affiliates_yesorno( $var ) {
 	If an affiliate code was passed or is already saved in a cookie and a discount code is used, the previous affiliate takes precedence.
 */
 function pmpro_affiliates_set_discount_code() {
-	 global $wpdb;
+	global $wpdb, $pmpro_level;
 
-	// checkout page
-	if ( ! isset( $_REQUEST['discount_code'] ) && ( ! empty( $_COOKIE['pmpro_affiliate'] ) || ! empty( $_REQUEST['pa'] ) ) ) {
-		if ( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
+	// Is PMPro active?
+	if ( ! function_exists( 'pmpro_is_checkout' ) ) {
+		return;
+	}
+	
+	// Make sure we're on the checkout page.
+	if ( ! pmpro_is_checkout() ) {
+		return;
+	}
+
+	//checkout page
+	if(  !isset( $_REQUEST['discount_code'] ) && ( ! empty( $_COOKIE['pmpro_affiliate'] ) || ! empty( $_REQUEST['pa'] ) ) ) {
+		if( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
 			$affiliate_code = $_COOKIE['pmpro_affiliate'];
 		} else {
 			$affiliate_code = $_REQUEST['pa'];
 		}
 
-		// set the discount code if there is an affiliate cookie
+		//set the discount code if there is an affiliate cookie
 		$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
-		if ( ! empty( $exists ) ) {
-			// check that the code is applicable for this level
-			$codecheck = pmpro_checkDiscountCode( $affiliate_code, $_REQUEST['level'] );
-			if ( $codecheck ) {
+		if( ! empty( $exists ) ) {
+			//check that the code is applicable for this level
+			if( ! empty( $pmpro_level ) ) {
+				$level_id = $pmpro_level->id;
+			} elseif ( ! empty( $_REQUEST['level'] ) ) {
+				$level_id = intval( $_REQUEST['level'] );
+			} else {
+				$level_id = null;
+			}
+			$codecheck = pmpro_checkDiscountCode( $affiliate_code, $level_id );
+			if( $codecheck ) {
 				$_REQUEST['discount_code'] = $affiliate_code;
+				
+				//prevent caching of this page load
+				add_action( 'send_headers', 'nocache_headers' );
 			}
 		}
-	} elseif ( ! empty( $_REQUEST['discount_code'] ) && empty( $_REQUEST['pa'] ) && empty( $_COOKIE['pmpro_affiliate'] ) ) {
-		// set the affiliate id to the discount code
+	} elseif( ! empty( $_REQUEST['discount_code'] ) && empty( $_REQUEST['pa'] ) && empty( $_COOKIE['pmpro_affiliate'] ) ) {
+		//set the affiliate id to the discount code
 		$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $_REQUEST['discount_code'] ) . "' LIMIT 1" );
-		if ( ! empty( $exists ) ) {
-			// set the affiliate id passed in to the discount code
+		if( ! empty( $exists ) ) {
+			//set the affiliate id passed in to the discount code
 			$_REQUEST['pa'] = $_REQUEST['discount_code'];
 
 			// set the cookie to the discount code
 			$_COOKIE['pmpro_affiliate'] = $_REQUEST['discount_code'];
+			
+			//prevent caching of this page load
+			add_action( 'send_headers', 'nocache_headers' );
 		}
 	}
 }
