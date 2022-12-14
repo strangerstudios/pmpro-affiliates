@@ -676,9 +676,11 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 
 	$commission_data = $wpdb->get_results( $sql_query );
 
-	// Calculate the total paid commissions.
+	// Loop through commission data and calculate the total paid commissions.
 	if ( ! empty( $commission_data ) ) {
-		$paid_commission = $commission_data[0]->total *  $commission_data[0]->commissionrate;
+		foreach( $commission_data as $commission ) {
+			$paid_commission += $commission->total *  $commission->commissionrate;
+		}
 	} else {
 		$paid_commission = 0;
 	}
@@ -711,8 +713,8 @@ function pmpro_affiliates_edit_user_profile( $user ) {
 	if ( ! $is_affiliate ) {
 		$affiliate_actions = '<a href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&edit=-1') ) . '">+ ' . esc_html__( 'Create Affiliate', 'pmpro-affiliates' ) . '</a>';
 	} else {
-		$affiliate_actions = '<a class="button button-secondary" href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&report=' . $affiliates[0]->id ) ) . '">' . esc_html__( 'View Report', 'pmpro-affiliates' ) . '</a>';
-		$affiliate_actions .= ' <a class="button button-secondary" href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&edit=' . $affiliates[0]->id ) ) . '">' . esc_html__( 'Edit Affiliate', 'pmpro-affiliates' ) . '</a>';	
+		$affiliate_actions = '<a class="button button-secondary" href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&report=' . (int) $affiliates[0]->id ) ) . '">' . esc_html__( 'View Report', 'pmpro-affiliates' ) . '</a>';
+		$affiliate_actions .= ' <a class="button button-secondary" href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&edit=' . (int) $affiliates[0]->id ) ) . '">' . esc_html__( 'Edit Affiliate', 'pmpro-affiliates' ) . '</a>';	
 	}
 
 
