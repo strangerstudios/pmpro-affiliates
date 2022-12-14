@@ -362,7 +362,7 @@
 						<th><?php esc_html_e( 'Commission %', 'pmpro-affiliates' ); ?></th>
 						<th><?php esc_html_e( 'Conversion %', 'pmpro-affiliates' ); ?></th>
 						<th><?php esc_html_e( 'Commission Earned', 'pmpro-affiliate' ); ?></th>
-						<th><?php esc_html_e( 'Earnings', 'pmpro-affiliates' ); ?></th>
+						<th><?php esc_html_e( 'Revenue Contributed', 'pmpro-affiliates' ); ?></th>
 						<?php do_action( "pmpro_affiliate_extra_cols_header" ); ?>
 					</tr>
 				</thead>
