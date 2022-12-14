@@ -403,43 +403,62 @@ function pmpro_affiliates_yesorno($var)
 
 	If an affiliate code was passed or is already saved in a cookie and a discount code is used, the previous affiliate takes precedence.
 */
-function pmpro_affiliates_set_discount_code()
-{
-	global $wpdb;
+function pmpro_affiliates_set_discount_code() {
+	global $wpdb, $pmpro_level;
+
+	// Is PMPro active?
+	if ( ! function_exists( 'pmpro_is_checkout' ) ) {
+		return;
+	}
+	
+	// Make sure we're on the checkout page.
+	if ( ! pmpro_is_checkout() ) {
+		return;
+	}
 
 	//checkout page
-	if(!isset($_REQUEST['discount_code']) && (!empty($_COOKIE['pmpro_affiliate']) || !empty($_REQUEST['pa'])))
-	{
-		if(!empty($_COOKIE['pmpro_affiliate']))
+	if(  !isset( $_REQUEST['discount_code'] ) && ( ! empty( $_COOKIE['pmpro_affiliate'] ) || ! empty( $_REQUEST['pa'] ) ) ) {
+		if( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
 			$affiliate_code = $_COOKIE['pmpro_affiliate'];
-		else
+		} else {
 			$affiliate_code = $_REQUEST['pa'];
+		}
 
 		//set the discount code if there is an affiliate cookie
-		$exists = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql($affiliate_code) . "' LIMIT 1");
-		if(!empty($exists))
-		{
+		$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
+		if( ! empty( $exists ) ) {
 			//check that the code is applicable for this level
-			$codecheck = pmpro_checkDiscountCode($affiliate_code, $_REQUEST['level']);
-			if($codecheck)
+			if( ! empty( $pmpro_level ) ) {
+				$level_id = $pmpro_level->id;
+			} elseif ( ! empty( $_REQUEST['level'] ) ) {
+				$level_id = intval( $_REQUEST['level'] );
+			} else {
+				$level_id = null;
+			}
+			$codecheck = pmpro_checkDiscountCode( $affiliate_code, $level_id );
+			if( $codecheck ) {
 				$_REQUEST['discount_code'] = $affiliate_code;
+				
+				//prevent caching of this page load
+				add_action( 'send_headers', 'nocache_headers' );
+			}
 		}
-	}
-	elseif(!empty($_REQUEST['discount_code']) && empty($_REQUEST['pa']) && empty($_COOKIE['pmpro_affiliate']))
-	{
+	} elseif( ! empty( $_REQUEST['discount_code'] ) && empty( $_REQUEST['pa'] ) && empty( $_COOKIE['pmpro_affiliate'] ) ) {
 		//set the affiliate id to the discount code
-		$exists = $wpdb->get_var("SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql($_REQUEST['discount_code']) . "' LIMIT 1");
-		if(!empty($exists))
-		{
+		$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $_REQUEST['discount_code'] ) . "' LIMIT 1" );
+		if( ! empty( $exists ) ) {
 			//set the affiliate id passed in to the discount code
 			$_REQUEST['pa'] = $_REQUEST['discount_code'];
 
 			//set the cookie to the discount code
 			$_COOKIE['pmpro_affiliate'] = $_REQUEST['discount_code'];
+			
+			//prevent caching of this page load
+			add_action( 'send_headers', 'nocache_headers' );
 		}
 	}
 }
-add_action("init", "pmpro_affiliates_set_discount_code", 30);
+add_action( 'init', 'pmpro_affiliates_set_discount_code', 30 );
 
 //service for csv export
 function pmpro_wp_ajax_affiliates_report_csv()
