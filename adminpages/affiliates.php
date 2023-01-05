@@ -3,32 +3,32 @@
 	global $wpdb, $pmpro_currency_symbol;
 
 	if(isset($_REQUEST['edit']))
-		$edit = $_REQUEST['edit'];
+		$edit = sanitize_text_field( $_REQUEST['edit'] );
 	else
 		$edit = false;
 
 	if(isset($_REQUEST['report']))
-		$report = $_REQUEST['report'];
+		$report = sanitize_text_field( $_REQUEST['report'] );
 	else
 		$report = false;
 
 	if(isset($_REQUEST['settings']))
-		$settings = $_REQUEST['settings'];
+		$settings = sanitize_text_field( $_REQUEST['settings'] );
 	else
 		$settings = false;
 
 	if(isset($_REQUEST['s']))
-		$s = $_REQUEST['s'];
+		$s = sanitize_text_field( $_REQUEST['s'] );
 	else
 		$s = false;
 
 	if(isset($_REQUEST['copy']))
-		$copy = $_REQUEST['copy'];
+		$copy = sanitize_text_field( $_REQUEST['copy'] );
 	else
 		$copy = false;
 
 	if(isset($_REQUEST['delete']))
-		$delete = $_REQUEST['delete'];
+		$delete = sanitize_text_field( $_REQUEST['delete'] );
 	else
 		$delete = false;
 
@@ -38,25 +38,42 @@
 		$save = false;
 
 	//get form values
-	if(!empty($save))
-	{
-		if(isset($_REQUEST['code']))
-			$code = preg_replace("[^a-zA-Z0-9]", "", $_REQUEST['code']);
-		if(isset($_REQUEST['name']))
-			$name = $_REQUEST['name'];
-		if(isset($_REQUEST['affiliateuser']))
-			$affiliateuser = $_REQUEST['affiliateuser'];
-		if(isset($_REQUEST['trackingcode']))
-			$trackingcode = $_REQUEST['trackingcode'];
-		if(isset($_REQUEST['commissionrate']))
-			$commissionrate = $_REQUEST['commissionrate'] / 100; //convert to decimal
-		if(isset($_REQUEST['cookiedays']))
-			$cookiedays = preg_replace("[^0-9]", "", $_REQUEST['cookiedays']);
-		if(isset($_REQUEST['enabled']))
-			$enabled = $_REQUEST['enabled'];
-	}
-	elseif($edit > 0 || ($report && $report != "all") || $copy)
-	{
+	if ( ! empty( $save ) ) {
+		if ( isset( $_REQUEST['code'] ) ) {
+			$code = sanitize_text_field( preg_replace("[^a-zA-Z0-9]", "", $_REQUEST['code']) );
+		}
+
+		if ( isset( $_REQUEST['name'] ) ) {
+			$name = sanitize_text_field( $_REQUEST['name'] );
+		}
+
+		if ( isset( $_REQUEST['affiliateuser'] ) ) {
+			$affiliateuser = sanitize_text_field( $_REQUEST['affiliateuser'] );
+		}
+
+		if ( isset( $_REQUEST['trackingcode'] ) ) {
+			$trackingcode = sanitize_text_field( $_REQUEST['trackingcode'] );
+		}
+
+		if ( isset( $_REQUEST['commissionrate'] ) ) {
+			if ( intval( $_REQUEST['commissionrate'] ) > 100 ) {
+				$rate = 100;
+			} else {
+				$rate = intval( $_REQUEST['commissionrate'] );
+			}
+
+			$commissionrate = $rate / 100; //convert to decimal
+		}
+
+		if ( isset( $_REQUEST['cookiedays'] ) ) {
+			$cookiedays = sanitize_text_field( preg_replace( "[^0-9]", "", $_REQUEST['cookiedays'] ) );
+		}
+
+		if ( isset( $_REQUEST['enabled'] ) ) {
+			$enabled = sanitize_text_field( $_REQUEST['enabled'] );
+		}
+
+	} elseif ( $edit > 0 || ($report && $report != "all" ) || $copy ) {
 		//get values from DB
 		if($edit > 0)
 			$affiliate_id = $edit;
@@ -84,7 +101,7 @@
 		$affiliateuser = '';
 		$trackingcode = '';
 		$cookiedays = 30;
-		$commissionrate = 0.10;
+		$commissionrate = 0;
 		/**
 		 * Filter to adjust the number of days a cookie is valid for by default.
 		 * This can also be set and modified for each individual cookie.
@@ -103,7 +120,7 @@
 		//updating or new?
 		if($edit > 0)
 		{
-			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', commissionrate = '" . esc_sql( $commissionrate ) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . $edit . "' LIMIT 1";
+			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', commissionrate = '" . esc_sql( $commissionrate ) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . esc_sql( $edit ) . "' LIMIT 1";
 			if($wpdb->query($sqlQuery) !== false)
 			{
 				//all good
@@ -293,7 +310,7 @@
 						<td>
 							<?php 
 							echo pmpro_formatPrice( $unpaid_commissions ); 
-							if ( $affiliate_id ) {
+							if ( ! empty( $affiliate_id ) ) {
 								echo ' (<a href="' . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-affiliates&report=' . (int) $affiliate_id ) ).'">' . esc_html( 'view report', 'pmpro-affiliates' ) .'</a>)';
 							}
 							
