@@ -655,6 +655,7 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 		return;
 	}
 
+	$paid_commission = 0;
 
 	$sql_query = "SELECT SUM(o.total) as total, a.commissionrate
 				FROM $wpdb->pmpro_membership_orders o
@@ -681,8 +682,6 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 		foreach( $commission_data as $commission ) {
 			$paid_commission += $commission->total *  $commission->commissionrate;
 		}
-	} else {
-		$paid_commission = 0;
 	}
 
 	return $paid_commission;
