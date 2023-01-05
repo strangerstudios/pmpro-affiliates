@@ -193,10 +193,10 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 					?>
 						<div class="table-row table-row-body">
 						<?php if ( in_array( 'code', $fields ) ) { ?>
-								<div class="row-item"><?php echo $order->code; ?></div>
+								<div class="row-item"><?php echo esc_html( $order->code ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'subid', $fields ) ) { ?>
-								<div class="row-item"><?php echo $order->subid; ?></div>
+								<div class="row-item"><?php echo esc_html( $order->subid ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'name', $fields ) ) { ?>
 								<div class="row-item"><?php echo stripslashes( $order->name ); ?></div>
