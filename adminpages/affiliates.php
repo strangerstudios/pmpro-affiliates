@@ -186,11 +186,11 @@
 		<?php echo sprintf( esc_html__('%s Add On: Lightweight %s Tracking', 'pmpro-affiliates' ), ucwords($pmpro_affiliates_plural_name), ucwords($pmpro_affiliates_plural_name) ); ?>
 	</h2>
 
-	<h2 class="nav-tab-wrapper">
+	<nav class="nav-tab-wrapper">
 		<a href="admin.php?page=pmpro-affiliates" class="nav-tab<?php if(empty($report) && empty($settings)) { ?> nav-tab-active<?php } ?>"><?php _e('Manage', 'pmpro-affiliates' ); ?> <?php echo ucwords($pmpro_affiliates_plural_name); ?></a>
 		<a href="admin.php?page=pmpro-affiliates&report=all" class="nav-tab<?php if(!empty($report)) { ?> nav-tab-active<?php } ?>"><?php _e('Reports', 'pmpro-affiliates' ); ?></a>
 		<a href="admin.php?page=pmpro-affiliates&settings=1" class="nav-tab<?php if(!empty($settings)) { ?> nav-tab-active<?php } ?>"><?php _e('Settings', 'pmpro-affiliates' ); ?></a>
-	</h2>
+	</nav>
 	<br class="clear" />
 	<?php
 
@@ -338,11 +338,15 @@
 		//show the report for affiliate activity
 		require_once("report.php");
 	} else { ?>
-		<h1>
+		<form id="posts-filter" method="get" action="">
+
+		<h1 class="wp-heading-inline">
 			<?php echo esc_html( ucwords( $pmpro_affiliates_plural_name ) ); ?>
-			<a href="admin.php?page=pmpro-affiliates&edit=-1" class="add-new-h2"><?php esc_html_e('Add New', 'pmpro-affiliates'); ?> <?php echo esc_html( ucwords( $pmpro_affiliates_singular_name ) ); ?></a>
-			<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2"><?php esc_html_e('View', 'pmpro-affiliates'); ?> <?php echo esc_html( ucwords( $pmpro_affiliates_plural_name ) ); ?> <?php esc_html_e('Report', 'pmpro-affiliates'); ?></a>
 		</h1>
+
+		<a href="admin.php?page=pmpro-affiliates&edit=-1" class="page-title-action pmpro-has-icon pmpro-has-icon-plus"><?php esc_html_e('Add New', 'pmpro-affiliates'); ?> <?php echo esc_html( ucwords( $pmpro_affiliates_singular_name ) ); ?></a>
+
+		<a href="admin.php?page=pmpro-affiliates&report=all" class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users"><?php esc_html_e('View', 'pmpro-affiliates'); ?> <?php echo esc_html( ucwords( $pmpro_affiliates_plural_name ) ); ?> <?php esc_html_e('Report', 'pmpro-affiliates'); ?></a>
 
 		<?php if(!empty($pmpro_msg)) { ?>
 			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo esc_html( $pmpro_msg ); ?></p></div>
@@ -353,18 +357,18 @@
 			if ( empty( $affiliates ) ) { ?>
 				<p><?php echo sprintf( __('Use %s to track orders coming in from different sales campaigns and partners.', 'pmpro-affiliates'), $pmpro_affiliates_plural_name ); ?> <a href="admin.php?page=pmpro-affiliates&edit=-1"><?php echo sprintf( esc_html__( 'Create your first %s now', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ); ?></a>.</p>
 			<?php } else { ?>
-				<form id="posts-filter" method="get" action="">
-					<p class="search-box">
-						<label class="screen-reader-text" for="post-search-input"><?php echo sprintf( esc_html__( 'Search %s:', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ); ?></label>
-						<input type="hidden" name="page" value="pmpro-affiliates" />
-						<input id="post-search-input" type="text" value="<?php if(!empty($s)) echo esc_attr( $s );?>" name="s" size="30" />
-						<input class="button" type="submit" value="Search" id="search-submit "/>
-					</p>
-				</form>
+				<p class="search-box">
+					<label class="screen-reader-text" for="post-search-input"><?php echo sprintf( esc_html__( 'Search %s:', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ); ?></label>
+					<input type="hidden" name="page" value="pmpro-affiliates" />
+					<input id="post-search-input" type="text" value="<?php if(!empty($s)) echo esc_attr( $s );?>" name="s" size="30" />
+					<input class="button" type="submit" value="Search" id="search-submit "/>
+				</p>
+
+				<hr class="wp-header-end">
 
 				<br class="clear" />
 
-				<table class="widefat striped fixed">
+				<table class="wp-list-table widefat striped">
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></th>
@@ -459,7 +463,8 @@
 			<?php }
 	}
 	?>
-	<hr />
+	</form>
+
 	<p><a href="https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/?utm_source=plugin&utm_medium=pmpro-affiliates-admin&utm_campaign=add-ons" target="_blank"><?php esc_html_e('Documentation', 'pmpro-affiliates'); ?></a> | <a href="https://www.paidmembershipspro.com/support/?utm_source=plugin&utm_medium=pmpro-affiliates-admin&utm_campaign=support" target="_blank"><?php esc_html_e('Support', 'pmpro-affiliates'); ?></a></p>
 	<?php
 	require_once( PMPRO_DIR . "/adminpages/admin_footer.php" );
