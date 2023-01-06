@@ -46,6 +46,10 @@ function pmpro_affiliates_register_block_type() {
 					'type' => 'boolean',
 					'default' => true,
 				),
+				'show_commissions_table' => array(
+					'type' => 'boolean',
+					'default' => false,
+				),
 				'show_commission' => array(
 					'type' => 'boolean',
 					'default' => true,
