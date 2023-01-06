@@ -360,7 +360,7 @@
 				<p class="search-box">
 					<label class="screen-reader-text" for="post-search-input"><?php echo sprintf( esc_html__( 'Search %s:', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ); ?></label>
 					<input type="hidden" name="page" value="pmpro-affiliates" />
-					<input id="post-search-input" type="text" value="<?php if(!empty($s)) echo esc_attr( $s );?>" name="s" size="30" />
+					<input id="post-search-input" type="text" value="<?php echo esc_attr( wp_unslash( $s ) ); ?>" name="s" size="30" />
 					<input class="button" type="submit" value="Search" id="search-submit "/>
 				</p>
 
@@ -385,7 +385,15 @@
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ( $affiliates as $affiliate ) { ?>
+					<?php
+						// Is there a search term?
+						if ( ! empty( $s ) ) {
+							$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates WHERE code LIKE '%" . esc_sql( $s ) . "%' OR name LIKE '%" . esc_sql( $s ) . "%' OR affiliateuser LIKE '%" . esc_sql( $s ) . "%'");
+							if ( empty( $affiliates ) ) {
+								echo '<tr><td colspan="100%">' . esc_html__( 'No affiliates found.', 'pmpro-affiliates' ) . '</td></tr>';
+							}
+						}
+						foreach ( $affiliates as $affiliate ) { ?>
 						<tr>
 							<td class="affiliate_code column-affiliate_code has-row-actions">
 								<a href="?page=pmpro-affiliates&report=<?php echo esc_attr( $affiliate->id ); ?>"><?php echo esc_html( $affiliate->code ); ?></a>
