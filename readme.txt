@@ -54,8 +54,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 * ENHANCEMENT: General improvements to UI/UX of the affiliates admin area. Added various links to navigate between affiliate and user information more easily.
 * ENHANCEMENT: Added autocomplete username functionality when creating an affiliate.
 * ENHANCEMENT: Improved logic to figure out affiliate orders during checkout (Only loads relevant code on the checkout page).
-
-
+* ENHANCEMENT: Added filter 'pmpro_affiliates_autocomplete_user_search_limit' to adjust the number of users returned in the autocomplete search when adding an affiliate. Defaults to 25.
 
 = 0.5 - 2022-01-29 =
 * BUG FIX: Fixed warning and broken functionality for the "View All" back link for frontend user affiliate reports.
