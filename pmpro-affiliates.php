@@ -395,12 +395,19 @@ function pmpro_affiliates_yesorno( $var ) {
 	This next function connects affiliate codes to discount codes with the same code. If one is set, the other will be set.
 
 	If an affiliate code was passed or is already saved in a cookie and a discount code is used, the previous affiliate takes precedence.
+
+	Legacy function for PMPro < 3.0.
 */
 function pmpro_affiliates_set_discount_code() {
-	global $wpdb, $pmpro_level;
+	global $wpdb;
 
 	// Is PMPro active?
 	if ( ! function_exists( 'pmpro_is_checkout' ) ) {
+		return;
+	}
+
+	// Only run the rest of this function if PMPro is not yet updated to 3.0.
+	if ( version_compare( PMPRO_VERSION, '3.0' ) < 0 ) {
 		return;
 	}
 	
@@ -452,6 +459,86 @@ function pmpro_affiliates_set_discount_code() {
 	}
 }
 add_action( 'init', 'pmpro_affiliates_set_discount_code', 30 );
+
+/**
+ * Set the default discount code to the affiliates code for sites updated to PMPro v3.0.
+ *
+ * @since TBD
+ *
+ * @param string|null $code The default discount code.
+ * @param int         $level_id The level ID.
+ * @return string The default discount code.
+ */
+function pmpro_affiliates_default_discount_code( $code, $level_id ) {
+	global $wpdb;
+
+	// Get the affiliate code.
+	if( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
+		$affiliate_code = sanitize_text_field( $_COOKIE['pmpro_affiliate'] );
+	} elseif ( ! empty( $_REQUEST['pa'] ) ) {
+		$affiliate_code = sanitize_text_field( $_REQUEST['pa'] );
+	} else {
+		// No affiliate set. Return the code that was passed.
+		return $code;
+	}
+
+	// Check if the affiliate code exists.
+	$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
+	if ( empty( $exists ) ) {
+		// The discount code for this affiliate does not exist. Return the code that was passed.
+		return $code;
+	}
+
+	// Check that the code is applicable for this level.
+	$codecheck = pmpro_checkDiscountCode( $affiliate_code, $level_id );
+	if ( ! $codecheck ) {
+		// The discount code for this affiliate is not applicable for this level. Return the code that was passed.
+		return $code;
+	}
+
+	// Prevent caching of this page load.
+	add_action( 'send_headers', 'nocache_headers' );
+
+	// Set the default discount code to the affiliate code.
+	return $affiliate_code;
+}
+add_filter( 'pmpro_default_discount_code', 'pmpro_affiliates_default_discount_code', 10, 2 );
+
+/**
+ * If a discount code is used, check if it is an affiliate code.
+ * If so, set the affiliate cookie and 'pa' parameter.
+ *
+ * @since TBD
+ *
+ * @param object $level The checkout level object.
+ * @return object The checkout level object.
+ */
+function pmpro_affiliates_discount_code_level( $level ) {
+	global $wpdb;
+
+	if ( empty( $level->discount_code ) ) {
+		// The 'discount_code' parameter will only be set for PMPro v3.0+.
+		// For previous versions, the pmpro_affiliates_set_discount_code() function will handle this behavior.
+		return $level;
+	}
+
+	// Check if the affiliate exists.
+	$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $level->discount_code ) . "' LIMIT 1" );
+	if ( empty( $exists ) ) {
+		// The discount code for this affiliate does not exist. Return the level object.
+		return $level;
+	}
+
+	// Set the affiliate cookie and 'pa' parameter.
+	$_COOKIE['pmpro_affiliate'] = sanitize_text_field( $level->discount_code );
+	$_REQUEST['pa']             = sanitize_text_field( $level->discount_code );
+
+	// Prevent caching of this page load.
+	add_action( 'send_headers', 'nocache_headers' );
+
+	return $level;
+}
+add_filter( 'pmpro_discount_code_level', 'pmpro_affiliates_discount_code_level' );
 
 // service for csv export
 function pmpro_wp_ajax_affiliates_report_csv() {
