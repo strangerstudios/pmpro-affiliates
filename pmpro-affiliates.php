@@ -504,7 +504,7 @@ function pmpro_affiliates_pmpro_membership_level_after_other_settings() {
 		$pmpro_create_affiliate_level = false;
 	}
 	?>
-<h3 class="topborder"><?php echo sprintf( esc_html__( '%s Settings', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_singular_name ) ); ?></h3>
+<h2 class="topborder"><?php echo sprintf( esc_html__( '%s Settings', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_singular_name ) ); ?></h2>
 <table>
 <tbody class="form-table">
 	<tr>
@@ -697,7 +697,7 @@ function pmpro_affiliates_edit_user_profile( $user ) {
 		return;
 	}
 
-	echo '<h3>' . esc_html__( 'Affiliate Information', 'pmpro-affiliates' ) . '</h3>';
+	echo '<h2>' . esc_html__( 'Affiliate Information', 'pmpro-affiliates' ) . '</h2>';
 	// Show Affiliate information for this particular user.
 	$affiliates = pmpro_affiliates_getAffiliatesForUser( $user->ID );
 
