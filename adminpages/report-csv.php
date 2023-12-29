@@ -28,7 +28,7 @@ if ( ! function_exists( 'current_user_can' )
 	die( __( 'You do not have permissions to perform this action.', 'pmpro-affiliates' ) );
 }
 
-	$sql_query = "SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
+	$sql_query = "SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.user_login, o.user_id, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.status, om.meta_value as affiliate_paid
 	FROM $wpdb->pmpro_membership_orders o 
 	LEFT JOIN $wpdb->pmpro_affiliates a 
 	ON o.affiliate_id = a.id 
@@ -75,9 +75,9 @@ if ( $report !== 'all' ) {
 			$pmpro_affiliate_report_data = array(
 				pmpro_enclose( $order->code ),
 				pmpro_enclose( $order->subid ),
-				pmpro_enclose( $order->user_id ),
+				pmpro_enclose( (int) $order->user_id ),
 				pmpro_enclose( $order->user_login ),
-				pmpro_enclose( $order->display_name ),
+				pmpro_enclose( $order->name ),
 				pmpro_enclose( date_i18n( 'Y-m-d', $order->timestamp ) ),
 				pmpro_enclose( $order->commissionrate * 100 ) . '%',
 				pmpro_enclose( number_format( $order->total * $order->commissionrate, 2 ) ),
