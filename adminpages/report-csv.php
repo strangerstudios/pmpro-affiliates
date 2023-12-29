@@ -56,7 +56,7 @@ if ( $report !== 'all' ) {
 		'sub_id',
 		'user_id',
 		'user_login',
-		'display_name',
+		'affiliate_name',
 		'date',
 		'commission_rate',
 		'commission_earned',
