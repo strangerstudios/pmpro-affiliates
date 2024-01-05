@@ -1,17 +1,17 @@
-# Copyright (C) 2023 Paid Memberships Pro
+# Copyright (C) 2024 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro - Affiliates Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Affiliates Add On 0.6\n"
+"Project-Id-Version: Paid Memberships Pro - Affiliates Add On 0.6.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-01-10T09:31:16+00:00\n"
+"POT-Creation-Date: 2024-01-05T17:46:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.7.1\n"
+"X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: pmpro-affiliates\n"
 
 #. Plugin Name of the plugin
@@ -283,6 +283,7 @@ msgstr ""
 #: pmpro-affiliates.php:541
 #: adminpages/affiliates.php:476
 #: pmpro-affiliates.php:753
+#: pmpro-affiliates.php:840
 msgid "Support"
 msgstr ""
 
@@ -474,26 +475,31 @@ msgstr ""
 
 #: pmpro-affiliates.php:503
 #: pmpro-affiliates.php:514
+#: pmpro-affiliates.php:601
 msgid "Check this if you want to automatically create the %s code for members of this level."
 msgstr ""
 
 #: pmpro-affiliates.php:527
 #: pmpro-affiliates.php:740
+#: pmpro-affiliates.php:827
 msgid "Manage Affiliates"
 msgstr ""
 
 #: pmpro-affiliates.php:540
 #: pmpro-affiliates.php:752
+#: pmpro-affiliates.php:839
 msgid "View Documentation"
 msgstr ""
 
 #: pmpro-affiliates.php:540
 #: pmpro-affiliates.php:752
+#: pmpro-affiliates.php:839
 msgid "Docs"
 msgstr ""
 
 #: pmpro-affiliates.php:541
 #: pmpro-affiliates.php:753
+#: pmpro-affiliates.php:840
 msgid "Visit Customer Support Forum"
 msgstr ""
 
@@ -575,6 +581,7 @@ msgstr ""
 
 #: adminpages/report.php:111
 #: pmpro-affiliates.php:561
+#: pmpro-affiliates.php:648
 msgid "Paid"
 msgstr ""
 
@@ -633,34 +640,42 @@ msgid "Include the shortcode %s or Affiliate Report block."
 msgstr ""
 
 #: pmpro-affiliates.php:507
+#: pmpro-affiliates.php:594
 msgid "%s Settings"
 msgstr ""
 
 #: pmpro-affiliates.php:511
+#: pmpro-affiliates.php:598
 msgid "Automatically create %s code?"
 msgstr ""
 
 #: pmpro-affiliates.php:563
+#: pmpro-affiliates.php:650
 msgid "Payment status reset."
 msgstr ""
 
 #: pmpro-affiliates.php:700
+#: pmpro-affiliates.php:787
 msgid "Affiliate Information"
 msgstr ""
 
 #: pmpro-affiliates.php:713
+#: pmpro-affiliates.php:800
 msgid "Create Affiliate"
 msgstr ""
 
 #: pmpro-affiliates.php:715
+#: pmpro-affiliates.php:802
 msgid "View Report"
 msgstr ""
 
 #: pmpro-affiliates.php:716
+#: pmpro-affiliates.php:803
 msgid "Edit Affiliate"
 msgstr ""
 
 #: pmpro-affiliates.php:724
+#: pmpro-affiliates.php:811
 msgid "Affiliate Status"
 msgstr ""
 
