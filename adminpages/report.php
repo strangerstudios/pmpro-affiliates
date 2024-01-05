@@ -125,7 +125,7 @@
 							?>
 						</td>
 							<td><?php echo "<a href='" . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-orders&order=' . (int) $order->order_id ) ) . "'>" . esc_html( $order->order_code ) . "</a>"; ?></td>
-							<td><?php echo stripslashes($order->name);?></td>
+							<td><?php echo ! empty( $order->name ) ? stripslashes($order->name) : '';?></td>
 							<td>
 								<?php
 									if ( ! empty( $order->user_id ) ) {
