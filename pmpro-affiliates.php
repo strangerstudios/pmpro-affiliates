@@ -407,7 +407,7 @@ function pmpro_affiliates_set_discount_code() {
 	}
 
 	// Only run the rest of this function if PMPro is not yet updated to 3.0.
-	if ( version_compare( PMPRO_VERSION, '3.0' ) < 0 ) {
+	if ( version_compare( PMPRO_VERSION, '3.0' ) >= 0 ) {
 		return;
 	}
 	
