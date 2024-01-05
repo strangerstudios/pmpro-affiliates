@@ -399,7 +399,7 @@ function pmpro_affiliates_yesorno( $var ) {
 	Legacy function for PMPro < 3.0.
 */
 function pmpro_affiliates_set_discount_code() {
-	global $wpdb;
+	global $wpdb, $pmpro_level;
 
 	// Is PMPro active?
 	if ( ! function_exists( 'pmpro_is_checkout' ) ) {
