@@ -744,7 +744,13 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 
 	$paid_commission = 0;
 
-	$sql_query = "SELECT SUM(o.total) as total, a.commissionrate
+	$filter_on = "o.total";
+
+	if ( apply_filters( 'pmpro_affiliates_calculate_on_subtotal', false ) ) {
+		$filter_on = "o.subtotal";
+	}
+
+	$sql_query = "SELECT SUM(".esc_sql( $filter_on ).") as total, a.commissionrate
 				FROM $wpdb->pmpro_membership_orders o
 				LEFT JOIN $wpdb->pmpro_membership_ordermeta om 
 				ON o.id = om.pmpro_membership_order_id
