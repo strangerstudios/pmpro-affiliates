@@ -132,7 +132,17 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		<?php } ?>
 		<h2><?php echo ucwords( $pmpro_affiliates_singular_name ); ?> <?php echo esc_html__( 'Report for Code:', 'pmpro-affiliates' ) . ' ' . esc_html( $affiliate->code ); ?></h2>
 		<?php
-			$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
+
+		$filter_on = "o.total";
+
+		$calculate_subtotal = apply_filters( 'pmpro_affiliates_calculate_on_subtotal', false );
+
+		if ( $calculate_subtotal ) {
+			$filter_on = "o.subtotal";
+		}
+		
+		$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, ".esc_sql( $filter_on ).", o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
+		var_dump($sqlQuery);
 		if ( $report != 'all' ) {
 			$sqlQuery .= " AND a.id = '" . esc_sql( $report ) . "' ";
 		}
@@ -232,7 +242,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 							<div class="row-item"><?php echo pmpro_formatPrice( $order->total * $affiliate->commissionrate ); ?></div>
 						<?php } ?>
 						<?php if ( in_array( 'total', $fields ) ) { ?>
-								<div class="row-item"><?php echo pmpro_formatPrice( $order->total ); ?></div>
+								<div class="row-item"><?php echo ( $calculate_subtotal ) ? pmpro_formatPrice( $order->subtotal ) : pmpro_formatPrice( $order->total ); ?></div>
 							<?php } ?>
 						</div>
 						<?php
