@@ -239,7 +239,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 							</div>
 						<?php } ?>
 						<?php if ( in_array( 'show_commission', $fields ) ) { ?>
-							<div class="row-item"><?php echo pmpro_formatPrice( $order->total * $affiliate->commissionrate ); ?></div>
+							<div class="row-item"><?php echo ( $calculate_subtotal ) ? pmpro_formatPrice($order->subtotal * $affiliate->commissionrate) : pmpro_formatPrice($order->total * $affiliate->commissionrate); ?></div>
 						<?php } ?>
 						<?php if ( in_array( 'total', $fields ) ) { ?>
 								<div class="row-item"><?php echo ( $calculate_subtotal ) ? pmpro_formatPrice( $order->subtotal ) : pmpro_formatPrice( $order->total ); ?></div>
