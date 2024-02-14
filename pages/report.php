@@ -142,7 +142,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		}
 		
 		$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, ".esc_sql( $filter_on ).", o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
-		var_dump($sqlQuery);
+
 		if ( $report != 'all' ) {
 			$sqlQuery .= " AND a.id = '" . esc_sql( $report ) . "' ";
 		}
