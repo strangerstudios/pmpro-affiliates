@@ -320,7 +320,12 @@
 				</tbody>
 			</table>
 
-			<?php do_action("pmpro_affiliate_after_settings"); ?>
+			<?php
+				/**
+				 * Action to add additional fields to the affiliate edit form.
+				 */
+				do_action("pmpro_affiliate_after_settings");
+			?>
 
 			<p class="submit topborder">
 				<input name="edit" type="hidden" value="<?php if(!empty($edit)) echo esc_attr( $edit ); ?>" />
@@ -381,7 +386,12 @@
 						<th><?php esc_html_e( 'Conversion %', 'pmpro-affiliates' ); ?></th>
 						<th><?php esc_html_e( 'Commission Earned', 'pmpro-affiliate' ); ?></th>
 						<th><?php esc_html_e( 'Revenue Contributed', 'pmpro-affiliates' ); ?></th>
-						<?php do_action( "pmpro_affiliate_extra_cols_header" ); ?>
+						<?php
+							/**
+							 * Action to add additional columns to the affiliates table.
+							 */
+							do_action( "pmpro_affiliate_extra_cols_header" );
+						?>
 					</tr>
 				</thead>
 				<tbody>
@@ -463,7 +473,15 @@
 							<td>
 								<?php echo pmpro_formatPrice( $earnings ); ?>
 							</td>
-							<?php do_action( "pmpro_affiliate_extra_cols_body", $affiliate, $earnings ); ?>
+							<?php
+								/**
+								 * Action to populate additional columns in the affiliates table.
+								 *
+								 * @param object $affiliate The affiliate object
+								 * @param float $earnings The earnings for the affiliate
+								 */
+								do_action( "pmpro_affiliate_extra_cols_body", $affiliate, $earnings );
+							?>
 						</tr>
 					<?php } ?>
 				</tbody>

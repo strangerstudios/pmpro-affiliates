@@ -280,6 +280,14 @@ function pmpro_affiliates_generate_affiliate_after_checkout( $user_id, $morder )
 	$pmpro_create_affiliate_level = get_option( 'pmpro_create_affiliate_level_' . $pmpro_level->id );
 	$code                         = pmpro_affiliates_getNewCode();
 	if ( ! empty( $pmpro_create_affiliate_level ) ) {
+		/**
+		 * Filter the number of days to set the cookie for the affiliate.
+		 *
+		 * @param int $days The number of days to set the cookie for the affiliate.
+		 * @param int $user_id The user ID.
+		 * @param object $pmpro_level The membership level object.
+		 * @return int The number of days to set the cookie for the affiliate.
+		 */
 		$days     = intval( apply_filters( 'pmproaf_default_cookie_duration', 30, $user_id, $pmpro_level ) );
 		$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql( $code ) . "', '" . esc_sql( $user->display_name ) . "', '" . esc_sql( $user->user_login ) . "', '', $days, '1')";
 		$wpdb->query( $sqlQuery );

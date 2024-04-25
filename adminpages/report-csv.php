@@ -63,6 +63,13 @@ if ( $report !== 'all' ) {
 		'total',
 	);
 
+	/**
+	 * Filter the headings for the CSV export.
+	 *
+	 * @param array $headings The headings for the CSV export.
+	 *
+	 * @return array The modified headings.
+	 */
 	$headings = apply_filters( 'pmpro_affiliate_list_csv_extra_columns', $headings ); // Add to the string.
 
 	echo implode( ',', $headings ) . "\n";
@@ -84,6 +91,14 @@ if ( $report !== 'all' ) {
 				pmpro_enclose( $order->total ),
 			);
 
+			/**
+			 * Filter the data for the CSV export.
+			 *
+			 * @param array $pmpro_affiliate_report_data The data for the CSV export.
+			 * @param object $order The order object.
+			 * @param object $level The membership level object.
+			 * @return array The modified data.
+			 */
 			$pmpro_affiliate_report_data = apply_filters( 'pmpro_affiliate_list_csv_extra_column_data', $pmpro_affiliate_report_data, $order, $level );
 
 			echo implode( ',', $pmpro_affiliate_report_data ) . "\n";

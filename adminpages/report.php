@@ -96,7 +96,12 @@
 					<th><?php esc_html_e( 'Commission Earned', 'pmpro-affiliates' ); ?></th>
 					<th><?php esc_html_e( 'Order Total', 'pmpro-affiliates' ); ?></th>
 					<th><?php esc_html_e( 'Status', 'pmpro-affiliates' ); ?></th>
-					<?php do_action( "pmpro_affiliate_report_extra_cols_header" ); ?>
+					<?php
+						/**
+						 * Action to add additional columns to the affiliates report table.
+						 */
+						do_action( "pmpro_affiliate_report_extra_cols_header" );
+					?>
 				</tr>
 			</thead>
 			<tbody>
@@ -156,7 +161,14 @@
 							<td><?php echo pmpro_formatPrice( $order->total * $order->commissionrate ); ?></td>
 							<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
 							<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>'; // We escape the $affiliate_paid before outputting further up.?></td>
-							<?php do_action( "pmpro_affiliate_report_extra_cols_body", $order ); ?>
+							<?php
+								/**
+								 * Action to populate additional columns in the affiliates report table.
+								 *
+								 * @param object $order The order object.
+								 */
+								do_action( "pmpro_affiliate_report_extra_cols_body", $order );
+							?>
 						</tr>
 						<?php
 					}
