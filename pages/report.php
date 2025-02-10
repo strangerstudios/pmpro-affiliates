@@ -243,8 +243,8 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		} else {
 			// there are no orders for this code
 			?>
-				<p><?php echo sprintf( 'No %s signups have been tracked yet.', esc_html( $pmpro_affiliates_singular_name ), 'pmpro-affiliates' ); ?></p>
-				<?php
+				<p><?php echo sprintf( esc_html__('No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ); ?></p>
+			<?php
 		}
 		?>
 		<?php if ( ! empty( $help ) ) { ?>
