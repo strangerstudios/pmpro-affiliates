@@ -28,15 +28,7 @@ if ( ! function_exists( 'current_user_can' )
 	die( __( 'You do not have permissions to perform this action.', 'pmpro-affiliates' ) );
 }
 
-$filter_on = "o.total";
-
-$calculate_subtotal = apply_filters( 'pmpro_affiliates_calculate_on_subtotal', false );
-
-if ( $calculate_subtotal ) {
-    $filter_on = "o.subtotal";
-}
-
-	$sql_query = "SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.user_login, o.user_id, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, ".esc_sql( $filter_on ).", o.status, om.meta_value as affiliate_paid
+	$sql_query = "SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.user_login, o.user_id, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.status, om.meta_value as affiliate_paid
 	FROM $wpdb->pmpro_membership_orders o
 	LEFT JOIN $wpdb->pmpro_affiliates a 
 	ON o.affiliate_id = a.id 
@@ -88,8 +80,8 @@ if ( $report !== 'all' ) {
 				pmpro_enclose( $order->name ),
 				pmpro_enclose( date_i18n( 'Y-m-d', $order->timestamp ) ),
 				pmpro_enclose( $order->commissionrate * 100 ) . '%',
-                ( $calculate_subtotal ) ? pmpro_enclose( number_format( $order->subtotal * $order->commissionrate, 2 ) ) : pmpro_enclose( number_format( $order->total * $order->commissionrate, 2 ) ),
-                ( $calculate_subtotal ) ? pmpro_enclose( $order->subtotal ) : pmpro_enclose( $order->total ),
+				pmpro_enclose( number_format( $order->total * $order->commissionrate, 2 ) ),
+				pmpro_enclose( $order->total ),
 			);
 
 			$pmpro_affiliate_report_data = apply_filters( 'pmpro_affiliate_list_csv_extra_column_data', $pmpro_affiliate_report_data, $order, $level );

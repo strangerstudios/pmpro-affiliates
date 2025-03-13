@@ -115,14 +115,6 @@
 		$enabled = true;
 	}
 
-	$filter_on = "total";
-
-	$calculate_subtotal = apply_filters( 'pmpro_affiliates_calculate_on_subtotal', false );
-
-	if ( $calculate_subtotal ) {
-		$filter_on = "subtotal";
-	}
-
 	if($edit && $save)
 	{
 		//updating or new?
@@ -450,7 +442,7 @@
 							</td>
 							<td>
 								<?php
-									$norders = $wpdb->get_var("SELECT COUNT(".esc_sql( $filter_on ).") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+									$norders = $wpdb->get_var("SELECT COUNT(" . esc_sql( pmpro_affiliates_get_commission_calculation_source() ) . ") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
 									if(empty($affiliate->visits))
 										echo "0%";
 									else
@@ -459,7 +451,7 @@
 							</td>
 							<?php
 							// Calculate earnings so we can show commission earned and total earnings.
-								$earnings = $wpdb->get_var("SELECT SUM(".esc_sql( $filter_on ).") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+								$earnings = $wpdb->get_var("SELECT SUM(" . esc_sql( pmpro_affiliates_get_commission_calculation_source() ) . ") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
 								
 							?>
 							

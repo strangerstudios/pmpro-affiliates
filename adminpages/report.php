@@ -61,17 +61,8 @@
 ?>
 
 <?php
-
-	$filter_on = "o.total";
-
-	$calculate_subtotal = apply_filters( 'pmpro_affiliates_calculate_on_subtotal', false );
-
-	if ( $calculate_subtotal ) {
-		$filter_on = "o.subtotal";
-	}
-
 	$sqlQuery = 
-	"SELECT o.id as order_id, o.code as order_code, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, ".esc_sql( $filter_on).", o.status, om.meta_value as affiliate_paid
+	"SELECT o.id as order_id, o.code as order_code, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.status, om.meta_value as affiliate_paid
 	FROM $wpdb->pmpro_membership_orders o 
 	LEFT JOIN $wpdb->pmpro_affiliates a 
 	ON o.affiliate_id = a.id 
@@ -112,13 +103,6 @@
 				<?php
 					global $pmpro_currency_symbol;
 					foreach ( $affiliate_orders as $order ) {
-
-						if( $calculate_subtotal ) {
-							$order_total = $order->subtotal;
-						} else {
-							$order_total = $order->total;
-						}
-
 						$level = pmpro_getLevel( $order->membership_id ); 
 						// Get the affiliate paid status and generate a mark as paid link if not paid. Add nonce.
 						$affiliate_paid = $order->affiliate_paid;
@@ -169,8 +153,8 @@
 							</td>
 							<td><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp );?></td>
 							<td><?php echo esc_html( $order->commissionrate * 100 );?>%</td>
-							<td><?php echo pmpro_formatPrice( $order_total * $order->commissionrate ); ?></td>
-							<td><?php echo pmpro_formatPrice( $order_total ); ?></td>
+							<td><?php echo pmpro_formatPrice( $order->total * $order->commissionrate ); ?></td>
+							<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
 							<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>'; // We escape the $affiliate_paid before outputting further up.?></td>
 							<?php do_action( "pmpro_affiliate_report_extra_cols_body", $order ); ?>
 						</tr>
