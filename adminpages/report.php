@@ -162,7 +162,7 @@
 							<td><?php echo esc_html( $order->commissionrate * 100 );?>%</td>
 							<td><?php echo esc_html( pmpro_formatPrice( $order->total * $order->commissionrate ) ); ?></td>
 							<td><?php echo esc_html( pmpro_formatPrice( $order->total ) ); ?></td>
-							<td><?php echo wp_kses_post( '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>' ); ?></td>
+							<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>'; ?></td>
 							<?php
 								/**
 								 * Action to populate additional columns in the affiliates report table.
