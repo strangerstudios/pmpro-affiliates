@@ -151,9 +151,9 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 					<div class="row-item"><?php esc_html_e( 'Commission Due', 'pmpro-affiliates' ); ?></div>
 				</div>
 				<div class="table-row table-row-body">
-					<div class="row-item"><?php echo pmpro_formatPrice( $total_commissions ); ?></div>
-					<div class="row-item"><?php echo pmpro_formatPrice( $paid_commissions ); ?></div>
-					<div class="row-item"><?php echo pmpro_formatPrice( $unpaid_commissions ); ?></div>
+					<div class="row-item"><?php echo esc_html( pmpro_formatPrice( $total_commissions ) ); ?></div>
+					<div class="row-item"><?php echo esc_html( pmpro_formatPrice( $paid_commissions ) ); ?></div>
+					<div class="row-item"><?php echo esc_html( pmpro_formatPrice( $unpaid_commissions ) ); ?></div>
 				</div>
 			</div>
 			<?php } ?>
@@ -199,7 +199,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 								<div class="row-item"><?php echo esc_html( $order->subid ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'name', $fields ) ) { ?>
-								<div class="row-item"><?php echo stripslashes( $order->name ); ?></div>
+								<div class="row-item"><?php echo esc_html( stripslashes( $order->name ) ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'user_login', $fields ) ) { ?>
 							<div class="row-item">
@@ -213,7 +213,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 							</div>
 						<?php } ?>
 						<?php if ( in_array( 'date', $fields ) ) { ?>
-								<div class="row-item"><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp ); ?></div>
+								<div class="row-item"><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->timestamp ) ); ?></div>
 							<?php } ?>
 						<?php if ( in_array( 'membership_level', $fields ) ) { ?>
 							<div class="row-item">
@@ -254,7 +254,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			<?php
 			// translators: variables for affiliate codes
 			echo sprintf(
-				__( 'Add the string %1$1s (first parameter) or %2$2s (second or later parameter) to any link to this site. If you would like to track against specific campaigns, you can add the parameter %3$3s or %4$4s to your URL. Some example links are included below.', 'pmpro-affiliates' ),
+				esc_html__( 'Add the string %1$1s (first parameter) or %2$2s (second or later parameter) to any link to this site. If you would like to track against specific campaigns, you can add the parameter %3$3s or %4$4s to your URL. Some example links are included below.', 'pmpro-affiliates' ),
 				'<code>?pa=' . esc_html( $affiliate->code ) . '</code>',
 				'<code>&amp;pa=' . esc_html( $affiliate->code ) . '</code>',
 				'<code>?subid=CAMPAIGN_NAME</code>',
@@ -284,7 +284,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 	if ( ! empty( $back_link ) ) {
 		$pmpro_pages_affiliate_report = $pmpro_pages['affiliate_report'];
 		?>
-		<p class="<?php echo pmpro_get_element_class( 'pmpro_actions_nav pmpro_affiliates-actions_nav', 'pmpro_affiliates-actions_nav' ); ?>">
+		<p class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav pmpro_affiliates-actions_nav', 'pmpro_affiliates-actions_nav' ) ); ?>">
 			<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-right' ) ); ?>"><a href="<?php echo esc_url( pmpro_url( 'account' ) ); ?>"><?php esc_html_e( 'View Your Membership Account &rarr;', 'pmpro-affiliates' ); ?></a></span>
 			<?php if ( ! empty( $report ) && ! empty( $pmpro_pages_affiliate_report ) ) { ?>
 				<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_actions_nav-left' ) ); ?>"><a href="<?php echo esc_url( get_permalink( $pmpro_pages_affiliate_report ) ); ?>"><?php esc_html_e( '&larr; View All', 'pmpro-affiliates' ); ?></a></span>
