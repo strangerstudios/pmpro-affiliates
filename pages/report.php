@@ -130,7 +130,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		<?php if ( ! empty( $export ) ) { ?>
 			<span class="pmpro_a-right"><a href="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=affiliates_report_csv&report=<?php echo esc_html( $affiliate->id ); ?>"><?php esc_html_e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
 		<?php } ?>
-		<h2><?php echo ucwords( $pmpro_affiliates_singular_name ); ?> <?php echo esc_html__( 'Report for Code:', 'pmpro-affiliates' ) . ' ' . esc_html( $affiliate->code ); ?></h2>
+		<h2><?php echo esc_html( ucwords( $pmpro_affiliates_singular_name ) ); ?> <?php echo esc_html__( 'Report for Code:', 'pmpro-affiliates' ) . ' ' . esc_html( $affiliate->code ); ?></h2>
 		<?php
 			$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, o.total, o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
 		if ( $report != 'all' ) {
@@ -229,10 +229,10 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 							</div>
 						<?php } ?>
 						<?php if ( in_array( 'show_commission', $fields ) ) { ?>
-							<div class="row-item"><?php echo pmpro_formatPrice( $order->total * $affiliate->commissionrate ); ?></div>
+							<div class="row-item"><?php echo esc_html( pmpro_formatPrice( $order->total * $affiliate->commissionrate ) ); ?></div>
 						<?php } ?>
 						<?php if ( in_array( 'total', $fields ) ) { ?>
-								<div class="row-item"><?php echo pmpro_formatPrice( $order->total ); ?></div>
+								<div class="row-item"><?php echo esc_html( pmpro_formatPrice( $order->total ) ); ?></div>
 							<?php } ?>
 						</div>
 						<?php
@@ -243,7 +243,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		} else {
 			// there are no orders for this code
 			?>
-				<p><?php echo sprintf( esc_html__('No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ); ?></p>
+				<p><?php echo sprintf( esc_html__('No %s signups have been tracked yet.', 'pmpro-affiliates' ), esc_html( $pmpro_affiliates_singular_name ) ); ?></p>
 			<?php
 		}
 		?>
