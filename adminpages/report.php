@@ -72,6 +72,8 @@
 	ON o.id = om.pmpro_membership_order_id
 	AND om.meta_key = 'pmpro_affiliate_paid'
 	WHERE o.affiliate_id <> ''
+	AND o.affiliate_id IS NOT NULL
+	AND o.affiliate_id <> 0
 	AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')";
 
 	if ( $report != "all" ) {
