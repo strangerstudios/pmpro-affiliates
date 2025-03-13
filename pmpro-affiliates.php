@@ -180,7 +180,7 @@ function pmpro_affiliates_wp_head() {
 					today.setTime( today.getTime() );
 					var expires = <?php echo intval( $cookielength ); ?> * 1000 * 60 * 60 * 24;
 					var expires_date = new Date( today.getTime() + (expires) );
-					document.cookie = 'pmpro_affiliate=<?php echo $cookiestring; ?>;path=/;expires=' + expires_date.toGMTString() + ';';
+					document.cookie = 'pmpro_affiliate=<?php echo esc_html( $cookiestring ); ?>;path=/;expires=' + expires_date.toGMTString() + ';';
 			</script>
 			<?php
 		}
@@ -599,14 +599,14 @@ function pmpro_affiliates_pmpro_membership_level_after_other_settings() {
 		$pmpro_create_affiliate_level = false;
 	}
 	?>
-<h2 class="topborder"><?php echo sprintf( esc_html__( '%s Settings', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_singular_name ) ); ?></h2>
+<h2 class="topborder"><?php echo esc_html( sprintf( esc_html__( '%s Settings', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_singular_name ) ) ); ?></h2>
 <table>
 <tbody class="form-table">
 	<tr>
-		<th scope="row" valign="top"><label for="pmpro_create_affiliate_level"><?php echo sprintf( esc_html__( 'Automatically create %s code?', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ); ?></label></th>
+		<th scope="row" valign="top"><label for="pmpro_create_affiliate_level"><?php echo esc_html( sprintf( esc_html__( 'Automatically create %s code?', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ) ); ?></label></th>
 		<td>
 			<input type="checkbox" id="pmpro_create_affiliate_level" name="pmpro_create_affiliate_level" value="1" <?php checked( $pmpro_create_affiliate_level, 1 ); ?> />
-			<label for="pmpro_create_affiliate_level"><?php echo sprintf( esc_html__( 'Check this if you want to automatically create the %s code for members of this level.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ); ?></label>
+			<label for="pmpro_create_affiliate_level"><?php echo esc_html( sprintf( esc_html__( 'Check this if you want to automatically create the %s code for members of this level.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ) ); ?></label>
 		</td>
 	</tr>
 </tbody>
@@ -817,7 +817,7 @@ function pmpro_affiliates_edit_user_profile( $user ) {
 		<tbody>
 			<tr>
 				<th><?php esc_html_e( 'Affiliate Status', 'pmpro-affiliates' ); ?></th>
-				<td><?php echo $affiliate_actions; //Sanitized before output. See above. ?></td>
+				<td><?php echo wp_kses_post( $affiliate_actions ); ?></td>
 			</tr>
 		</tbody>
 	</table>

@@ -25,7 +25,7 @@ if ( $report && $report !== 'all' ) {
 if ( ! function_exists( 'current_user_can' )
 	|| ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_affiliates_report_csv' ) && ( $report != 'all' && $current_user->user_login != $affiliate->affiliateuser ) )
 ) {
-	die( __( 'You do not have permissions to perform this action.', 'pmpro-affiliates' ) );
+	die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-affiliates' ) );
 }
 
 	$sql_query = "SELECT o.id as order_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.user_login, o.user_id, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.status, om.meta_value as affiliate_paid

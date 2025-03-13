@@ -63,7 +63,7 @@ if(!empty($save))
 			<th scope="row"><label for="pmpro_affiliates_plural_name"><?php esc_html_e('Plural Name', 'pmpro-affiliates'); ?></label></th>
 			<td>
 				<input type="text" name="pmpro_affiliates_plural_name" id="pmpro_affiliates_plural_name" value="<?php echo esc_html( $pmpro_affiliates_plural_name ); ?>" /><br />
-				<p class="description"><?php _e('i.e. affiliates, referrals, invitations', 'pmpro-affiliates'); ?></p>
+				<p class="description"><?php esc_html_e('i.e. affiliates, referrals, invitations', 'pmpro-affiliates'); ?></p>
 			</td>
 		</tr>
 		<tr>

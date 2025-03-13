@@ -25,19 +25,19 @@
 	}	
 ?>
 	<h2>
-		<?php echo ucwords($pmpro_affiliates_singular_name); ?> Report
+		<?php echo esc_html( ucwords($pmpro_affiliates_singular_name) ); ?> Report
 		<?php 
 			if(empty($affiliate_id))
-				echo sprintf( esc_html__("for All %s", 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) );
+				echo esc_html( sprintf( esc_html__("for All %s", 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ) );
 			else
-				echo sprintf( esc_html__("for Code %s", 'pmpro-affiliates' ), stripslashes( $code ) );
+				echo esc_html( sprintf( esc_html__("for Code %s", 'pmpro-affiliates' ), stripslashes( $code ) ) );
 		?>
-		<a href="<?php echo admin_url('admin-ajax.php');?>?action=affiliates_report_csv&report=<?php echo esc_attr( $report );?>" class="add-new-h2"><?php esc_html_e('Export to CSV', 'pmpro-affiliates' ); ?></a>
+		<a href="<?php echo esc_url( admin_url('admin-ajax.php') );?>?action=affiliates_report_csv&report=<?php echo esc_attr( $report );?>" class="add-new-h2"><?php esc_html_e('Export to CSV', 'pmpro-affiliates' ); ?></a>
 		<?php 
 			if(!empty($affiliate_id))
 			{
 				?>
-				<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2"><?php echo sprintf( esc_html__('View All %s Report', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ); ?></a>
+				<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2"><?php echo esc_html( sprintf( esc_html__('View All %s Report', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ) ); ?></a>
 				<?php
 			}
 		?>
@@ -51,12 +51,12 @@
 	}
 
 	if ( ! empty( $name ) ) {
-		echo "<p>". sprintf( esc_html__("Business/Contact Name: %s", 'pmpro-affiliates' ), stripslashes($name) ) . "</p>";
+		echo "<p>". esc_html( sprintf( esc_html__("Business/Contact Name: %s", 'pmpro-affiliates' ), stripslashes($name) ) ) . "</p>";
 	}
 
 	if ( ! empty( $affiliateuser ) ) {
 		// The $affiliate_user_shown is escaped before echoing it out.
-		echo "<p>" . esc_html( ucwords($pmpro_affiliates_singular_name) ) . " ". esc_html__("User:", 'pmpro-affiliates' )." " . $affiliate_user_shown . "</p>";
+		echo "<p>" . esc_html( ucwords($pmpro_affiliates_singular_name) ) . " ". esc_html__("User:", 'pmpro-affiliates' )." " . wp_kses_post( $affiliate_user_shown ) . "</p>";
 	}
 ?>
 
@@ -83,7 +83,7 @@
 
 	// Show a message of there are no affiliate orders.
 	if ( empty( $affiliate_orders ) ) { ?>
-		<p><?php echo sprintf( esc_html__('No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ); ?></p>
+		<p><?php echo esc_html( sprintf( esc_html__('No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ) ); ?></p>
 	<?php } else { ?>
 		<table class="widefat striped fixed">
 			<thead>
@@ -132,7 +132,7 @@
 							?>
 						</td>
 							<td><?php echo "<a href='" . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-orders&order=' . (int) $order->order_id ) ) . "'>" . esc_html( $order->order_code ) . "</a>"; ?></td>
-							<td><?php echo ! empty( $order->name ) ? stripslashes($order->name) : '';?></td>
+							<td><?php echo ! empty( $order->name ) ? esc_html( stripslashes($order->name) ) : '';?></td>
 							<td>
 								<?php
 									if ( ! empty( $order->user_id ) ) {
@@ -158,11 +158,11 @@
 									}
 								?>
 							</td>
-							<td><?php echo date_i18n( get_option( 'date_format' ), $order->timestamp );?></td>
+							<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->timestamp ) );?></td>
 							<td><?php echo esc_html( $order->commissionrate * 100 );?>%</td>
-							<td><?php echo pmpro_formatPrice( $order->total * $order->commissionrate ); ?></td>
-							<td><?php echo pmpro_formatPrice( $order->total ); ?></td>
-							<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>'; // We escape the $affiliate_paid before outputting further up.?></td>
+							<td><?php echo esc_html( pmpro_formatPrice( $order->total * $order->commissionrate ) ); ?></td>
+							<td><?php echo esc_html( pmpro_formatPrice( $order->total ) ); ?></td>
+							<td><?php echo wp_kses_post( '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>' ); ?></td>
 							<?php
 								/**
 								 * Action to populate additional columns in the affiliates report table.
