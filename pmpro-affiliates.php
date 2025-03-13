@@ -3,14 +3,14 @@
 Plugin Name: Paid Memberships Pro - Affiliates Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/
 Description: Create affiliate accounts with unique referrer URLs to track membership checkouts.
-Version: 0.6.1
+Version: 0.6.2
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-affiliates
 Domain Path: /languages
 */
 
-define( 'PMPRO_AFFILIATES_VERSION', '0.6.1' );
+define( 'PMPRO_AFFILIATES_VERSION', '0.6.2' );
 define( 'PMPRO_AFFILIATES_DIR', dirname( __FILE__ ) );
 
 require_once dirname( __FILE__ ) . '/pages/report.php';
@@ -471,7 +471,7 @@ add_action( 'init', 'pmpro_affiliates_set_discount_code', 30 );
 /**
  * Set the default discount code to the affiliates code for sites updated to PMPro v3.0.
  *
- * @since TBD
+ * @since 0.6.2
  *
  * @param string|null $code The default discount code.
  * @param int         $level_id The level ID.
@@ -516,7 +516,7 @@ add_filter( 'pmpro_default_discount_code', 'pmpro_affiliates_default_discount_co
  * If a discount code is used, check if it is an affiliate code.
  * If so, set the affiliate cookie and 'pa' parameter.
  *
- * @since TBD
+ * @since 0.6.2
  *
  * @param object $level The checkout level object.
  * @return object The checkout level object.
@@ -629,7 +629,7 @@ add_action( 'pmpro_save_membership_level', 'pmpro_affiliate_pmpro_save_membershi
 /**
  * Enqueue scripts and styles on the frontend if shortcode is present on the page.
  *
- * @since TBD
+ * @since 0.6.2
  */
 function pmpro_affiliates_enqueue_scripts() {
 	global $post;
@@ -667,7 +667,7 @@ add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_register_scripts_styles' 
 /**
  * Ajax handler for saving affiliate paid order setting.
  * 
- * @since TBD
+ * @since 0.6.2
  */
 function pmpro_affiliates_mark_as_paid() {
 
@@ -687,7 +687,7 @@ add_action( 'wp_ajax_pmpro_affiliates_mark_as_paid', 'pmpro_affiliates_mark_as_p
 /**
  * Ajax handler for resetting affiliate paid order to unpaid.
  * 
- * @since TBD
+ * @since 0.6.2
  */
 function pmpro_affiliates_reset_paid_status() {
 
@@ -707,7 +707,7 @@ add_action( 'wp_ajax_pmpro_affiliates_reset_paid_status', 'pmpro_affiliates_rese
 /**
  * AJAX handler for searching for affiliates and autocomplete.
  * 
- * @since TBD
+ * @since 0.6.2
  */
 function pmpro_affiliates_autocomplete_user_search() {
 
@@ -785,7 +785,7 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 /**
  * Show affiliate information when editing a user in WordPress.
  * 
- * @since TBD
+ * @since 0.6.2
  */
 function pmpro_affiliates_edit_user_profile( $user ) {
 	if ( ! current_user_can( 'edit_users' ) ) {
@@ -831,7 +831,7 @@ add_action( 'edit_user_profile', 'pmpro_affiliates_edit_user_profile' );
  * Get the order column to use when calculating commisions.
  * Should be either 'total' or 'subtotal'.
  *
- * @since TBD
+ * @since 0.6.2
  *
  * @return string The order column to use.
  */

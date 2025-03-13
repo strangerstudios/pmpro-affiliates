@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 5.2
-Tested up to: 6.1
-Stable tag: 0.6.1
+Tested up to: 6.8
+Stable tag: 0.6.2
 
 Create affiliate accounts with unique referrer URLs to track membership checkouts.
 
@@ -45,6 +45,12 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 0.6.2 - 2025-03-13 =
+* SECURITY: Improved the escaping of strings throughout the plugin. #58 (@dparker1005)
+* ENHANCEMENT: Added a new filter `pmpro_affiliates_commission_calculation_source` to allow calculating commissions based on the order total or subtotal. #53 (@JarrydLong)
+* BUG FIX: Fixed an issue where orders that were not associated with affiliates would still show in the affiliates report. #55 (@dparker1005)
+* BUG FIX: Fixed an issue where some strings would not be translated. #57 (@andrewlimaza)
+
 = 0.6.1 - 2024-01-05 =
 * ENHANCEMENT: Updating `<h3>` tags to `<h2>` tags for better accessibility. #51 (@kimwhite)
 * BUG FIX: Fixed a warning on the reports page when the affiliate name was missing from the report. #52 (@andrewlimaza)
