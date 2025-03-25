@@ -203,7 +203,7 @@ function pmpro_affiliates_pmpro_added_order( $order, $savefirst = false ) {
 			FROM $wpdb->pmpro_membership_orders
 			WHERE user_id = '" . esc_sql( $order->user_id ) . "'
 			AND subscription_transaction_id = '" . esc_sql( $order->subscription_transaction_id ) . "'
-			AND affiliate_id <> ''
+			AND affiliate_id <> 0
 			ORDER BY id DESC LIMIT 1"
 		);
 		if ( ! empty( $lastorder ) ) {
