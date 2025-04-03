@@ -188,27 +188,20 @@ function pmpro_affiliates_wp_head() {
 }
 add_action( 'wp_head', 'pmpro_affiliates_wp_head' );
 
-// update order if cookie is present or the last order in this subscription used an affiliate
+// update order if cookie is present or the first order in this subscription used an affiliate
 function pmpro_affiliates_pmpro_added_order( $order, $savefirst = false ) {
-	 global $wpdb, $pmpro_affiliates_saved_order;
+	global $wpdb, $pmpro_affiliates_saved_order;
 	$pmpro_affiliates_saved_order = true;
 	$pmpro_affiliates_settings    = pmpro_affiliates_get_settings();
 	$pmpro_affiliates_recurring   = $pmpro_affiliates_settings['pmpro_affiliates_recurring'];
 
 	$user_id = $order->user_id;
-	// check for an order for this subscription with an affiliate id
+	// check for an affiliate id in the first order for this subscription
 	if ( ! empty( $order->subscription_transaction_id ) && ! empty( $pmpro_affiliates_recurring ) ) {
-		$lastorder = $wpdb->get_row(
-			"SELECT affiliate_id, affiliate_subid
-			FROM $wpdb->pmpro_membership_orders
-			WHERE user_id = '" . esc_sql( $order->user_id ) . "'
-			AND subscription_transaction_id = '" . esc_sql( $order->subscription_transaction_id ) . "'
-			AND affiliate_id <> ''
-			ORDER BY id DESC LIMIT 1"
-		);
-		if ( ! empty( $lastorder ) ) {
-			$affiliate_id    = $lastorder->affiliate_id;
-			$affiliate_subid = $lastorder->affiliate_subid;
+		$first_order = $order->get_original_subscription_order();
+		if ( ! empty( $first_order ) ) {
+			$affiliate_id    = $first_order->affiliate_id;
+			$affiliate_subid = $first_order->affiliate_subid;
 
 			$affiliate_code = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_affiliates WHERE id = '" . esc_sql( $affiliate_id ) . "' LIMIT 1" );
 		}
