@@ -101,7 +101,17 @@
 		$affiliateuser = '';
 		$trackingcode = '';
 		$cookiedays = 30;
-		$commissionrate = 0;
+		
+		/**
+		 * Filter the default placeholder for the commission rate when creating a new affiliate.
+		 * This is a percentage value, so 5% would be 5.
+		 * 
+		 * @since TBD
+		 * 
+		 * @param integer $rate The default commission rate.
+		 */
+		$commissionrate = apply_filters( 'pmpro_affiliate_default_commission_rate', 5 ); //default to 5%
+		
 		/**
 		 * Filter to adjust the number of days a cookie is valid for by default.
 		 * This can also be set and modified for each individual cookie.
