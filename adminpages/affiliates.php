@@ -101,7 +101,7 @@
 		$affiliateuser = '';
 		$trackingcode = '';
 		$cookiedays = 30;
-		$commissionrate = 0;
+		$commissionrate = apply_filters( 'pmpro_affiliate_default_commission_rate', 5 ); //default to 5%
 		/**
 		 * Filter to adjust the number of days a cookie is valid for by default.
 		 * This can also be set and modified for each individual cookie.
