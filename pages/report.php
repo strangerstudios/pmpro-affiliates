@@ -42,7 +42,8 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 				'export_csv' => '1',
 				'help'       => '1',
 				'fields'     => 'user_login,date,membership_level,total',
-				'show_commissions_table' => '0'
+				'show_commissions_table' => '0',
+				'show_conversion_table' => '0'
 			),
 			$atts
 		)
@@ -85,6 +86,12 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		$show_commissions_table = false;
 	} else {
 		$show_commissions_table = true;
+	}
+
+	if ( $show_conversion_table === '0' || $show_conversion_table === 'false' || $show_conversion_table === 'no' || ! $show_conversion_table ) {
+		$show_conversion_table = false;
+	} else {
+		$show_conversion_table = true;
 	}
 
 	ob_start();
@@ -139,6 +146,21 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			$affiliate_orders = $wpdb->get_results( $sqlQuery );
 
 		if ( ! empty( $affiliate_orders ) ) {
+
+			if ( $show_conversion_table ) { ?>
+				<div class="pmpro_affiliates-table-container pmpro_affiliates-commissions">
+				<div class="table-row table-row-heading">
+					<div class="row-item"><?php esc_html_e( 'Commission Rate', 'pmpro-affiliates' ); ?></div>
+					<div class="row-item"><?php esc_html_e( 'Visits (All Time)', 'pmpro-affiliates' ); ?></div>
+					<div class="row-item"><?php esc_html_e( 'Conversion Rating (All Time)', 'pmpro-affiliates' ); ?></div>
+				</div>
+				<div class="table-row table-row-body">
+					<div class="row-item"><?php echo esc_html( $affiliate->commissionrate * 100 . "%" ); ?></div>
+					<div class="row-item"><?php echo esc_html( $affiliate->visits ); ?></div>
+					<div class="row-item"><?php echo pmpro_affiliates_get_conversion_rate( $affiliate ); ?></div>
+				</div>
+			</div>
+			<?php }
 
 			// Attribute to show/hide commission table.
 			if ( $show_commissions_table ) {		

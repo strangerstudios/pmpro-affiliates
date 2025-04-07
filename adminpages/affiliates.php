@@ -461,13 +461,7 @@
 								?>
 							</td>
 							<td>
-								<?php
-									$norders = $wpdb->get_var("SELECT COUNT(" . esc_sql( pmpro_affiliates_get_commission_calculation_source() ) . ") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
-									if(empty($affiliate->visits))
-										echo "0%";
-									else
-										echo esc_html( round($norders / $affiliate->visits * 100, 2) . "%" );
-								?>
+								<?php echo pmpro_affiliates_get_conversion_rate( $affiliate ); ?>
 							</td>
 							<?php
 							// Calculate earnings so we can show commission earned and total earnings.
