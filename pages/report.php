@@ -135,7 +135,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 
 		?>
 		<?php if ( ! empty( $export ) ) { ?>
-			<span class="pmpro_a-right"><a href="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=affiliates_report_csv&report=<?php echo esc_html( $affiliate->id ); ?>"><?php esc_html_e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
+			<span id="pmpro_affiliates-csv-action" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_a-right','pmpro_affiliates-csv-action' ) ); ?>"><a href="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=affiliates_report_csv&report=<?php echo esc_html( $affiliate->id ); ?>"><?php esc_html_e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
 		<?php } ?>
 		<h2><?php echo esc_html( ucwords( $pmpro_affiliates_singular_name ) ); ?> <?php echo esc_html__( 'Report for Code:', 'pmpro-affiliates' ) . ' ' . esc_html( $affiliate->code ); ?></h2>
 		<?php
@@ -148,7 +148,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		if ( ! empty( $affiliate_orders ) ) {
 
 			if ( $show_conversion_table ) { ?>
-				<div id="pmpro_affiliates_table-conversions" class="pmpro_affiliates-table-container pmpro_affiliates-featured">
+				<div id="pmpro_affiliates_table-conversions" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_affiliates-table-container pmpro_affiliates-featured', 'pmpro_affiliates-conversions' ) ); ?>">
 				<div class="table-row table-row-heading">
 					<div class="row-item"><?php esc_html_e( 'Commission Rate', 'pmpro-affiliates' ); ?></div>
 					<div class="row-item"><?php esc_html_e( 'Visits (All Time)', 'pmpro-affiliates' ); ?></div>
@@ -166,7 +166,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			if ( $show_commissions_table ) {		
 			?>
 			<!-- Commissions Table -->
-			<div id="pmpro_affiliates-commissions" class="pmpro_affiliates-table-container pmpro_affiliates-featured">
+			<div id="pmpro_affiliates-commissions" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_affiliates-table-container pmpro_affiliates-featured', 'pmpro_affiliates-commissions' ) ); ?>">
 				<div class="table-row table-row-heading">
 					<div class="row-item"><?php esc_html_e( 'Commission Earned (All Time)', 'pmpro-affiliates' ); ?></div>
 					<div class="row-item"><?php esc_html_e( 'Commission Paid (All Time)', 'pmpro-affiliates' ); ?></div>
@@ -181,7 +181,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			<?php } ?>
 
 			<!-- Orders Table -->
-			<div class="pmpro_affiliates-table-container pmpro_affiliates-orders">
+			<div id="pmpro_affiliates-orders-container" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_affiliates-table-container pmpro_affiliates-orders', 'pmpro_affiliates-orders-container' ) );?>">
 				<div class="table-row table-row-heading">
 					<?php if ( in_array( 'code', $fields ) ) { ?>
 							<div class="row-item"><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></div>
@@ -270,7 +270,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		}
 		?>
 		<?php if ( ! empty( $help ) ) { ?>
-		<div class="pmpro_affiliates-links">
+		<div id="pmpro_affiliates-links-container" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_affiliates-links', 'pmpro_affiliates-links-container' ) ); ?>">
 			<h2><?php esc_html_e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h2>
 			<p>
 			<?php
