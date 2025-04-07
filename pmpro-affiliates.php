@@ -628,7 +628,7 @@ function pmpro_affiliates_enqueue_scripts() {
 	global $post;
 
 	if ( is_singular() && ( has_shortcode( $post->post_content, 'pmpro_affiliates_report' ) || has_block( 'pmpro-affiliates/pmpro-affiliates-report' ) ) ) {
-		wp_enqueue_style( 'pmpro_affiliates', plugins_url( 'includes/css/frontend.css', __FILE__ ) );
+		wp_enqueue_style( 'pmpro_affiliates', plugins_url( 'includes/css/frontend.css', __FILE__ ), array(), PMPRO_AFFILIATES_VERSION );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'pmpro_affiliates_enqueue_scripts' );

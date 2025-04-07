@@ -148,7 +148,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		if ( ! empty( $affiliate_orders ) ) {
 
 			if ( $show_conversion_table ) { ?>
-				<div class="pmpro_affiliates-table-container pmpro_affiliates-commissions">
+				<div id="pmpro_affiliates_table-conversions" class="pmpro_affiliates-table-container pmpro_affiliates-featured">
 				<div class="table-row table-row-heading">
 					<div class="row-item"><?php esc_html_e( 'Commission Rate', 'pmpro-affiliates' ); ?></div>
 					<div class="row-item"><?php esc_html_e( 'Visits (All Time)', 'pmpro-affiliates' ); ?></div>
@@ -166,7 +166,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 			if ( $show_commissions_table ) {		
 			?>
 			<!-- Commissions Table -->
-			<div class="pmpro_affiliates-table-container pmpro_affiliates-commissions">
+			<div id="pmpro_affiliates-commissions" class="pmpro_affiliates-table-container pmpro_affiliates-featured">
 				<div class="table-row table-row-heading">
 					<div class="row-item"><?php esc_html_e( 'Commission Earned (All Time)', 'pmpro-affiliates' ); ?></div>
 					<div class="row-item"><?php esc_html_e( 'Commission Paid (All Time)', 'pmpro-affiliates' ); ?></div>

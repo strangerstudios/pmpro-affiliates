@@ -25,19 +25,19 @@
 	border-bottom: 0;
 }
 
-/** Commissions Table **/
-.pmpro_affiliates-table-container.pmpro_affiliates-commissions .table-row-heading{
+/** Featured Table (Previously Commissions Table) **/
+.pmpro_affiliates-table-container.pmpro_affiliates-featured .table-row-heading{
 	text-align: right;
 }
-.pmpro_affiliates-commissions .table-row-body .row-item {
+.pmpro_affiliates-featured .table-row-body .row-item {
 	font-size: 20px;
 	font-weight: 700;
 }
-.pmpro_affiliates-table-container.pmpro_affiliates-commissions {
+.pmpro_affiliates-table-container.pmpro_affiliates-featured {
 	display: flex;
 	flex-direction: row;
 }
-.pmpro_affiliates-table-container.pmpro_affiliates-commissions .row-item {
+.pmpro_affiliates-table-container.pmpro_affiliates-featured .row-item {
 	padding: 12px;
 }
 
@@ -75,7 +75,7 @@
 		display: flex;
 		flex-flow: row wrap;
 	}
-	.pmpro_affiliates-table-container.pmpro_affiliates-commissions .table-row-heading {
+	.pmpro_affiliates-table-container.pmpro_affiliates-featured .table-row-heading {
 		text-align: center;
 	}
 	.pmpro_affiliates-table-container .row-item {
@@ -83,7 +83,7 @@
 		flex: 1;
 		align-items: center;
 	}
-	.pmpro_affiliates-table-container.pmpro_affiliates-commissions .row-item {
+	.pmpro_affiliates-table-container.pmpro_affiliates-featured .row-item {
 		justify-content: center;
 	}
 	.pmpro_affiliates-table-container.pmpro_affiliates-orders .table-row-heading {
