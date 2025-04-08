@@ -137,28 +137,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 				$unpaid_commissions = pmpro_affiliates_get_commissions( $affiliate->code, 'unpaid' );
 				$total_commissions  = $paid_commissions + $unpaid_commissions;
 				?>
-				<section id="pmpro_affiliates-report" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section' ) ); ?>">
-					<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_title pmpro_font-x-large' ) ); ?>">
-						<?php echo esc_html( ucwords( $pmpro_affiliates_singular_name ) ); ?> <?php echo esc_html__( 'Report for Code:', 'pmpro-affiliates' ) . ' ' . esc_html( $affiliate->code ); ?>
-					</h2>
-
-					<?php
-					$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
-					if ( $report != 'all' ) {
-						$sqlQuery .= " AND a.id = '" . esc_sql( $report ) . "' ";
-					}
-					$affiliate_orders = $wpdb->get_results( $sqlQuery );
-	}
-	?>
-	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
-		<?php
-			if ( ! empty( $report ) ) {
-				// Get paid and unpaid commissions.
-				$paid_commissions   = pmpro_affiliates_get_commissions( $affiliate->code, 'paid' );
-				$unpaid_commissions = pmpro_affiliates_get_commissions( $affiliate->code, 'unpaid' );
-				$total_commissions  = $paid_commissions + $unpaid_commissions;
-				?>
-				<section id="pmpro_affiliates-report" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section' ) ); ?>">
+				<section id="pmpro_affiliates-report" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_affiliates-report' ) ); ?>">
 					<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section_title pmpro_font-x-large' ) ); ?>">
 						<?php echo esc_html( ucwords( $pmpro_affiliates_singular_name ) ); ?> <?php echo esc_html__( 'Report for Code:', 'pmpro-affiliates' ) . ' ' . esc_html( $affiliate->code ); ?>
 					</h2>
@@ -172,12 +151,13 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 
 					if ( ! empty( $affiliate_orders ) ) {
 
+						// Attribute to show/hide conversion table.
 						if ( $show_conversion_table ) {
 							?>
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 									<!-- Conversion Table -->
-									<table class="pmpro_table">
+									<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table pmpro_table-fixed' ) ); ?>">
 										<thead>
 											<tr>
 												<th><?php esc_html_e( 'Commission Rate', 'pmpro-affiliates' ); ?></th>
@@ -192,7 +172,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 												<td data-title="<?php esc_html_e( 'Conversion Rating (All Time)', 'pmpro-affiliates' ); ?>"><?php echo pmpro_affiliates_get_conversion_rate( $affiliate ); ?></td>
 											</tr>
 										</tbody>
-									</table>
+									</table> <!-- end pmpro_table -->
 								</div> <!-- end pmpro_card_content -->
 							</div> <!-- end pmpro_card -->
 							<?php
@@ -204,7 +184,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
 									<!-- Commissions Table -->
-									<table class="pmpro_table">
+									<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table pmpro_table-fixed' ) ); ?>">
 										<thead>
 											<tr>
 												<th><?php esc_html_e( 'Commission Earned (All Time)', 'pmpro-affiliates' ); ?></th>
@@ -219,40 +199,41 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 												<td data-title="<?php esc_html_e( 'Commission Due', 'pmpro-affiliates' ); ?>"><?php echo esc_html( pmpro_formatPrice( $unpaid_commissions ) ); ?></td>
 											</tr>
 										</tbody>
-									</table>
+									</table> <!-- end pmpro_table -->
 								</div> <!-- end pmpro_card_content -->
 							</div> <!-- end pmpro_card -->
 							<?php
-						} ?>
+						} // End of commissions table.
+						?>
 
 						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
 							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content pmpro_affiliates-table' ) ); ?>">
 								<!-- Orders Table -->
 								<table class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_table' ) ); ?>">
 									<thead>
-										<tr class="table-row table-row-heading">
-										<?php if ( in_array( 'code', $fields ) ) { ?>
+										<tr>
+											<?php if ( in_array( 'code', $fields ) ) { ?>
 												<th><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></th>
 											<?php } ?>
-										<?php if ( in_array( 'subid', $fields ) ) { ?>
+											<?php if ( in_array( 'subid', $fields ) ) { ?>
 												<th><?php esc_html_e( 'Sub-ID', 'pmpro-affiliates' ); ?></th>
 											<?php } ?>
-										<?php if ( in_array( 'name', $fields ) ) { ?>
+											<?php if ( in_array( 'name', $fields ) ) { ?>
 												<th><?php esc_html_e( 'Name', 'pmpro-affiliates' ); ?></th>
 											<?php } ?>
-										<?php if ( in_array( 'user_login', $fields ) ) { ?>
+											<?php if ( in_array( 'user_login', $fields ) ) { ?>
 												<th><?php esc_html_e( 'Member', 'pmpro-affiliates' ); ?></th>
 											<?php } ?>
-										<?php if ( in_array( 'date', $fields ) ) { ?>
+											<?php if ( in_array( 'date', $fields ) ) { ?>
 												<th><?php esc_html_e( 'Date', 'pmpro-affiliates' ); ?></th>
 											<?php } ?>
-										<?php if ( in_array( 'membership_level', $fields ) ) { ?>
+											<?php if ( in_array( 'membership_level', $fields ) ) { ?>
 												<th><?php esc_html_e( 'Level', 'pmpro-affiliates' ); ?></th>
 											<?php } ?>
-										<?php if ( in_array( 'show_commission', $fields ) ) { ?>
+											<?php if ( in_array( 'show_commission', $fields ) ) { ?>
 												<th><?php esc_html_e( 'Commission', 'pmpro-affiliates' ); ?></th>
-										<?php } ?>
-										<?php if ( in_array( 'total', $fields ) ) { ?>
+											<?php } ?>
+											<?php if ( in_array( 'total', $fields ) ) { ?>
 												<th><?php esc_html_e( 'Order Total', 'pmpro-affiliates' ); ?></th>
 											<?php } ?>
 										</tr>
@@ -331,8 +312,8 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 					?>
 
 					<?php if ( ! empty( $help ) ) { ?>
-						<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset pmpro_affiliates-links', 'pmpro_affiliates-links' ) ); ?>">
-							<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+						<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+							<fieldset class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_fieldset pmpro_affiliates-links', 'pmpro_affiliates-links' ) ); ?>">
 								<legend class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_legend' ) ); ?>">
 									<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php esc_html_e( 'How to Create Links for this Code', 'pmpro-affiliates' ); ?></h2>
 								</legend>
@@ -364,23 +345,25 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 										</div> <!-- end pmpro_form_field -->
 									</div> <!-- end pmpro_form_fields -->
 								</div> <!-- end pmpro_card_content -->
-							</div> <!-- end pmpro_card -->
-						</fieldset> <!-- end pmpro_form_fieldset -->
+							</fieldset> <!-- end pmpro_form_fieldset -->
+						</div> <!-- end pmpro_card -->
 					<?php } ?>
 				</section> <!-- end pmpro_section -->
 		<?php } else { ?>
-			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
-				<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Select a Code', 'pmpro-affiliates' ); ?></h2>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-					<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list' ) ); ?>">
-						<?php foreach ( $pmpro_affiliates as $affiliate ) { ?>
-							<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
-								<a href="<?php echo esc_url( get_permalink( $post->ID ) ); ?>?report=<?php echo esc_attr( $affiliate->id ); ?>"><?php echo esc_html( $affiliate->code ); ?></a>
-							</li>
-						<?php } ?>
-					</ul>
-				</div> <!-- end pmpro_card_content -->
-			</div> <!-- end pmpro_card -->
+			<section id="pmpro_affiliates-all-codes" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_section', 'pmpro_affiliates-all-codes' ) ); ?>">
+				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
+					<h2 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>"><?php esc_html_e( 'Select a Code', 'pmpro-affiliates' ); ?></h2>
+					<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+						<ul class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list' ) ); ?>">
+							<?php foreach ( $pmpro_affiliates as $affiliate ) { ?>
+								<li class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_list_item' ) ); ?>">
+									<a href="<?php echo esc_url( get_permalink( $post->ID ) ); ?>?report=<?php echo esc_attr( $affiliate->id ); ?>"><?php echo esc_html( $affiliate->code ); ?></a>
+								</li>
+							<?php } ?>
+						</ul>
+					</div> <!-- end pmpro_card_content -->
+				</div> <!-- end pmpro_card -->
+			</section> <!-- end pmpro_section -->
 		<?php } ?>
 
 		<?php if ( ! empty( $back_link ) ) {
