@@ -46,6 +46,10 @@ function pmpro_affiliates_register_block_type() {
 					'type' => 'boolean',
 					'default' => true,
 				),
+				'show_conversion_table' => array(
+					'type' => 'boolean',
+					'default' => false,
+				),
 				'show_commissions_table' => array(
 					'type' => 'boolean',
 					'default' => false,
@@ -73,7 +77,9 @@ function pmpro_affiliates_block_scripts() {
 	wp_enqueue_script(
 		'pmpro_affiliates_block_report',
 		plugins_url( 'blocks/build/pmpro_affiliates_report/index.js', __DIR__ ),
-		plugins_url( 'blocks/build/pmpro_affiliates_report/index.asset.php', __DIR__)
+		plugins_url( 'blocks/build/pmpro_affiliates_report/index.asset.php', __DIR__),
+		array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n' ),
+		PMPRO_AFFILIATES_VERSION
 	);
 
 }

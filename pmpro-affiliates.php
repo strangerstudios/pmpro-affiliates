@@ -628,7 +628,7 @@ function pmpro_affiliates_enqueue_scripts() {
 	global $post;
 
 	if ( is_singular() && ( has_shortcode( $post->post_content, 'pmpro_affiliates_report' ) || has_block( 'pmpro-affiliates/pmpro-affiliates-report' ) ) ) {
-		wp_enqueue_style( 'pmpro_affiliates', plugins_url( 'includes/css/frontend.css', __FILE__ ) );
+		wp_enqueue_style( 'pmpro_affiliates', plugins_url( 'includes/css/frontend.css', __FILE__ ), array(), PMPRO_AFFILIATES_VERSION );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'pmpro_affiliates_enqueue_scripts' );
@@ -773,6 +773,41 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 	}
 
 	return $paid_commission;
+}
+
+/**
+ * Get the conversion rate (percentage) for a specific affiliate code.
+ *
+ * @since TBD
+ * 
+ * @param object $affiliate The affiliate object from the custom table to get the conversion rate for.
+ * @return string $conversion_rate The conversion rate as a percentage (i.e. "10%")
+ */
+function pmpro_affiliates_get_conversion_rate( $affiliate ) {
+	global $wpdb;
+
+	// No affiliate ID passed through, let's bail.
+	if ( empty( $affiliate->id ) ) {
+		return;
+	}
+
+	// Calculate the number of orders for this affiliate.
+	$norders = $wpdb->get_var( 
+		$wpdb->prepare( 
+			"SELECT COUNT(%s) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = %d AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')", 
+			pmpro_affiliates_get_commission_calculation_source(), 
+			$affiliate->id 
+		) 
+	);
+	
+	// Get the number of visits and calculate the conversion rate.
+	if ( empty( $affiliate->visits ) ) {
+		$conversion_rate = "0%";
+	} else {
+		$conversion_rate = esc_html( round( $norders / $affiliate->visits * 100, 2 ) . "%" );
+	}
+
+	return $conversion_rate;
 }
 
 /**
