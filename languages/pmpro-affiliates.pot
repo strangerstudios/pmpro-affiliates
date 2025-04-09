@@ -679,5 +679,5 @@ msgstr ""
 #: blocks/build/pmpro_affiliates_report/block.json
 #: blocks/src/pmpro_affiliates_report/block.json
 msgctxt "block description"
-msgid "Frontend affilaites report for PMPro."
+msgid "Frontend affiliates report for PMPro."
 msgstr ""
