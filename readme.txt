@@ -47,7 +47,7 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 == Changelog ==
 = 0.7 - 2025-04-09 =
 * ENHANCEMENT: Improved frontend styling for PMPro V3.1+. Includes updates to overall CSS classes used. (@kimcoleman)
-* ENHANCEMENT: Added frontend "show_conversion_table" attribute to the report so affiliates may see their commision rate, visits and conversion rate percentage. (@andrewlimaza)
+* ENHANCEMENT: Added frontend "show_conversion_table" attribute to the report shortcode. Allowing affiliates to see their commission rate, visits and conversion rate percentage. (@andrewlimaza)
 * ENHANCEMENT: Now defaults to 5% as the commission rate when creating a new affiliate. New filter added `pmpro_affiliate_default_commission_rate` (@andrewlimaza)
 * REFACTOR: General code improvements to shortcode attributes that expect boolean values ( @andrewlimaza)
 * BUG FIX: Fixed an issue where recurring orders were not being tracked correctly for affiliates. #60 (@dwanjuki)
