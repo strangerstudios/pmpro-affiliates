@@ -106,7 +106,7 @@
 		 * Filter the default placeholder for the commission rate when creating a new affiliate.
 		 * This is a percentage value, so 5% would be 5.
 		 * 
-		 * @since TBD
+		 * @since 0.7
 		 * 
 		 * @param integer $rate The default commission rate.
 		 */

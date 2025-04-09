@@ -3,14 +3,14 @@
 Plugin Name: Paid Memberships Pro - Affiliates Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/
 Description: Create affiliate accounts with unique referrer URLs to track membership checkouts.
-Version: 0.6.2
+Version: 0.7
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-affiliates
 Domain Path: /languages
 */
 
-define( 'PMPRO_AFFILIATES_VERSION', '0.6.2' );
+define( 'PMPRO_AFFILIATES_VERSION', '0.7' );
 define( 'PMPRO_AFFILIATES_DIR', dirname( __FILE__ ) );
 
 require_once dirname( __FILE__ ) . '/pages/report.php';
@@ -778,7 +778,7 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 /**
  * Get the conversion rate (percentage) for a specific affiliate code.
  *
- * @since TBD
+ * @since 0.7
  * 
  * @param object $affiliate The affiliate object from the custom table to get the conversion rate for.
  * @return string $conversion_rate The conversion rate as a percentage (i.e. "10%")
