@@ -59,40 +59,18 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 		$fields = array_keys( array_filter( $atts ) );
 	}
 
-	if ( $back_link === '0' || $back_link === 'false' || $back_link === 'no' || ! $back_link ) {
-		$back_link = false;
-	} else {
-		$back_link = true;
-	}
-
 	// Check if the block attribute export_csv value is false and set it to "export" to override the shortcode value.
 	if ( ! $export_csv ) {
 		$export = $export_csv;
 	}
 
-	if ( $export === '0' || $export === 'false' || $export === 'no' || ! $export ) {
-		$export = false;
-	} else {
-		$export = true;
-	}
+	// Convert to a boolean value based on attribute input.
+	$back_link = filter_var( $back_link, FILTER_VALIDATE_BOOLEAN );
+	$export = filter_var( $export, FILTER_VALIDATE_BOOLEAN );
+	$help = filter_var( $help, FILTER_VALIDATE_BOOLEAN );
+	$show_conversion_table = filter_var( $show_conversion_table, FILTER_VALIDATE_BOOLEAN );
+	$show_commissions_table = filter_var( $show_commissions_table, FILTER_VALIDATE_BOOLEAN );
 
-	if ( $help === '0' || $help === 'false' || $help === 'no' || ! $help ) {
-		$help = false;
-	} else {
-		$help = true;
-	}
-
-	if ( $show_conversion_table === '0' || $show_conversion_table === 'false' || $show_conversion_table === 'no' || ! $show_conversion_table ) {
-		$show_conversion_table = false;
-	} else {
-		$show_conversion_table = true;
-	}
-
-	if ( $show_commissions_table === '0' || $show_commissions_table === 'false' || $show_commissions_table === 'no' || ! $show_commissions_table ) {
-		$show_commissions_table = false;
-	} else {
-		$show_commissions_table = true;
-	}
 
 	ob_start();
 	/*
