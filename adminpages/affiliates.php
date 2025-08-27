@@ -344,6 +344,8 @@
 				<input name="cancel" class="button" type="button" value="Cancel" onclick="location.href='<?php echo esc_url( get_admin_url( NULL, '/admin.php?page=pmpro-affiliates' ) ); ?>';" />
 			</p>
 			</form>
+	
+
 		</div>
 		<?php
 	} elseif ( $settings ) {
@@ -368,8 +370,23 @@
 		<?php } ?>
 
 		<?php
-			$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates");
-			if ( empty( $affiliates ) ) { ?>
+			// Get pagination settings.
+			$items_per_page = get_user_option( 'pmpro_affiliates_per_page' );
+			if ( empty( $items_per_page ) || $items_per_page < 1 ) {
+				$items_per_page = 20; // Default.
+			}
+			
+			// Get current page.
+			$current_page = isset( $_GET['paged'] ) ? max( 1, intval( $_GET['paged'] ) ) : 1;
+			$offset       = ( $current_page - 1 ) * $items_per_page;
+			
+			// Get total count for pagination.
+			$total_affiliates = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->pmpro_affiliates" );
+			
+			// Get affiliates for current page.
+			$affiliates = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_affiliates LIMIT %d OFFSET %d", $items_per_page, $offset ) );
+			
+			if ( empty( $affiliates ) && $total_affiliates == 0 ) { ?>
 				<p><?php echo esc_html( sprintf( __('Use %s to track orders coming in from different sales campaigns and partners.', 'pmpro-affiliates'), $pmpro_affiliates_plural_name ) ); ?> <a href="admin.php?page=pmpro-affiliates&edit=-1"><?php echo esc_html( sprintf( esc_html__( 'Create your first %s now', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ) ); ?></a>.</p>
 			<?php } else { ?>
 				<p class="search-box">
@@ -406,9 +423,17 @@
 				</thead>
 				<tbody>
 					<?php
-						// Is there a search term?
+						// Handle search functionality with pagination.
 						if ( ! empty( $s ) ) {
-							$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates WHERE code LIKE '%" . esc_sql( $s ) . "%' OR name LIKE '%" . esc_sql( $s ) . "%' OR affiliateuser LIKE '%" . esc_sql( $s ) . "%'");
+							// Get total count for search.
+							$search_total = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->pmpro_affiliates WHERE code LIKE %s OR name LIKE %s OR affiliateuser LIKE %s", '%' . $wpdb->esc_like( $s ) . '%', '%' . $wpdb->esc_like( $s ) . '%', '%' . $wpdb->esc_like( $s ) . '%' ) );
+							
+							// Update total for pagination.
+							$total_affiliates = $search_total;
+							
+							// Get search results for current page.
+							$affiliates = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $wpdb->pmpro_affiliates WHERE code LIKE %s OR name LIKE %s OR affiliateuser LIKE %s LIMIT %d OFFSET %d", '%' . $wpdb->esc_like( $s ) . '%', '%' . $wpdb->esc_like( $s ) . '%', '%' . $wpdb->esc_like( $s ) . '%', $items_per_page, $offset ) );
+							
 							if ( empty( $affiliates ) ) {
 								echo '<tr><td colspan="100%">' . esc_html__( 'No affiliates found.', 'pmpro-affiliates' ) . '</td></tr>';
 							}
@@ -453,8 +478,8 @@
 							<td><?php echo esc_html( stripslashes($affiliate->name) ); ?></td>
 							<td><?php echo wp_kses_post( $affiliate_user_name ); ?></td>
 							<td><?php echo esc_html( $affiliate->cookiedays . " days" ); ?></td>
-							<td><?php echo esc_html( pmpro_affiliates_yesorno($affiliate->enabled) ); ?></td>
-							<td><?php echo intval($affiliate->visits);?></td>
+							<td><?php echo esc_html( pmpro_affiliates_yesorno( $affiliate->enabled ) ); ?></td>
+							<td><?php echo intval( $affiliate->visits ); ?></td>
 							<td>
 								<?php
 								echo esc_html( $affiliate->commissionrate * 100 . "%" );
@@ -464,9 +489,8 @@
 								<?php echo pmpro_affiliates_get_conversion_rate( $affiliate ); ?>
 							</td>
 							<?php
-							// Calculate earnings so we can show commission earned and total earnings.
-								$earnings = $wpdb->get_var("SELECT SUM(" . esc_sql( pmpro_affiliates_get_commission_calculation_source() ) . ") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
-								
+								// Calculate earnings so we can show commission earned and total earnings.
+								$earnings = $wpdb->get_var( "SELECT SUM(" . esc_sql( pmpro_affiliates_get_commission_calculation_source() ) . ") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql( $affiliate->id ) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')" );
 							?>
 							
 							<td>
@@ -481,15 +505,71 @@
 								/**
 								 * Action to populate additional columns in the affiliates table.
 								 *
-								 * @param object $affiliate The affiliate object
-								 * @param float $earnings The earnings for the affiliate
+								 * @param object $affiliate The affiliate object.
+								 * @param float  $earnings  The earnings for the affiliate.
 								 */
-								do_action( "pmpro_affiliate_extra_cols_body", $affiliate, $earnings );
+								do_action( 'pmpro_affiliate_extra_cols_body', $affiliate, $earnings );
 							?>
 						</tr>
 					<?php } ?>
 				</tbody>
 				</table>
+				
+				<?php
+				// Display pagination.
+				$total_pages = ceil( $total_affiliates / $items_per_page );
+				if ( $total_pages > 1 ) {
+					$base_url = admin_url( 'admin.php?page=pmpro-affiliates' );
+					if ( ! empty( $s ) ) {
+						$base_url = add_query_arg( 's', urlencode( $s ), $base_url );
+					}
+					?>
+					<div class="tablenav bottom">
+						<div class="alignleft actions">
+							<span class="displaying-num"><?php echo esc_html( sprintf( _n( '%s item', '%s items', $total_affiliates, 'pmpro-affiliates' ), number_format_i18n( $total_affiliates ) ) ); ?></span>
+						</div>
+						<div class="tablenav-pages">
+							<span class="pagination-links">
+								<?php if ( $current_page > 1 ) : ?>
+									<a class="first-page button" href="<?php echo esc_url( $base_url ); ?>">
+										<span class="screen-reader-text"><?php esc_html_e( 'First page', 'pmpro-affiliates' ); ?></span>
+										<span aria-hidden="true">&laquo;</span>
+									</a>
+									<a class="prev-page button" href="<?php echo esc_url( add_query_arg( 'paged', $current_page - 1, $base_url ) ); ?>">
+										<span class="screen-reader-text"><?php esc_html_e( 'Previous page', 'pmpro-affiliates' ); ?></span>
+										<span aria-hidden="true">&lsaquo;</span>
+									</a>
+								<?php else : ?>
+									<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&laquo;</span>
+									<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&lsaquo;</span>
+								<?php endif; ?>
+								
+								<span class="paging-input">
+									<label for="current-page-selector" class="screen-reader-text"><?php esc_html_e( 'Current Page', 'pmpro-affiliates' ); ?></label>
+									<input class="current-page" id="current-page-selector" type="text" name="paged" value="<?php echo esc_attr( $current_page ); ?>" size="<?php echo strlen( $total_pages ); ?>" aria-describedby="table-paging" />
+									<span class="tablenav-paging-text"><?php echo sprintf( __( 'of %s', 'pmpro-affiliates' ), '<span class="total-pages">' . number_format_i18n( $total_pages ) . '</span>' ); ?></span>
+								</span>
+								
+								<?php if ( $current_page < $total_pages ) : ?>
+									<a class="next-page button" href="<?php echo esc_url( add_query_arg( 'paged', $current_page + 1, $base_url ) ); ?>">
+										<span class="screen-reader-text"><?php esc_html_e( 'Next page', 'pmpro-affiliates' ); ?></span>
+										<span aria-hidden="true">&rsaquo;</span>
+									</a>
+									<a class="last-page button" href="<?php echo esc_url( add_query_arg( 'paged', $total_pages, $base_url ) ); ?>">
+										<span class="screen-reader-text"><?php esc_html_e( 'Last page', 'pmpro-affiliates' ); ?></span>
+										<span aria-hidden="true">&raquo;</span>
+									</a>
+								<?php else : ?>
+									<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>
+									<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&raquo;</span>
+								<?php endif; ?>
+							</span>
+						</div>
+						<br class="clear" />
+					</div>
+					<?php
+				}
+				?>
 			<?php }
 	}
 	?>

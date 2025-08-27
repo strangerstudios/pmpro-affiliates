@@ -343,6 +343,50 @@ function pmpro_affiliates_add_pages() {
 }
 add_action( 'admin_menu', 'pmpro_affiliates_add_pages', 20 );
 
+/**
+ * Hook screen options for affiliates page.
+ */
+function pmpro_affiliates_hook_screen_options() {
+	add_screen_option(
+		'per_page',
+		array(
+			'default' => 20,
+			'label'   => __( 'Affiliates per page', 'pmpro-affiliates' ),
+			'option'  => 'pmpro_affiliates_per_page',
+		)
+	);
+}
+
+/**
+ * Add screen options to affiliates page.
+ */
+function pmpro_affiliates_add_screen_options() {
+	$hook = get_plugin_page_hookname( 'pmpro-affiliates', 'pmpro-dashboard' );
+	if ( ! $hook ) {
+		$hook = get_plugin_page_hookname( 'pmpro-affiliates', 'pmpro-membershiplevels' );
+	}
+	if ( $hook ) {
+		add_action( 'load-' . $hook, 'pmpro_affiliates_hook_screen_options' );
+	}
+}
+add_action( 'admin_menu', 'pmpro_affiliates_add_screen_options', 21 );
+
+/**
+ * Handle screen option saving.
+ *
+ * @param mixed  $status Screen option value. Default false to skip.
+ * @param string $option The option name.
+ * @param int    $value  The number of rows to use.
+ * @return mixed
+ */
+function pmpro_affiliates_set_screen_option( $status, $option, $value ) {
+	if ( 'pmpro_affiliates_per_page' === $option ) {
+		return $value;
+	}
+	return $status;
+}
+add_filter( 'set-screen-option', 'pmpro_affiliates_set_screen_option', 10, 3 );
+
 // affiliates page (add new)
 function pmpro_affiliates_adminpage() {
 	 require_once dirname( __FILE__ ) . '/adminpages/affiliates.php';
