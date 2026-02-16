@@ -131,7 +131,7 @@
 							}
 							?>
 						</td>
-							<td><?php echo "<a href='" . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-orders&order=' . (int) $order->order_id ) ) . "'>" . esc_html( $order->order_code ) . "</a>"; ?></td>
+							<td><?php echo "<a href='" . esc_url( get_admin_url( NULL, '/admin.php?page=pmpro-orders&order=' . (int) $order->order_id . '&id=' . (int) $order->order_id ) ) . "'>" . esc_html( $order->order_code ) . "</a>"; ?></td>
 							<td><?php echo ! empty( $order->name ) ? esc_html( stripslashes($order->name) ) : '';?></td>
 							<td>
 								<?php
