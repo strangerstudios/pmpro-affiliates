@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "title": "PMPro: Affiliates Report",
     "icon": "editor-table",
-    "description": "Frontend affilaites report for PMPro.",
+    "description": "Frontend affiliates report for PMPro.",
     "supports": {
         "html": false
     },
