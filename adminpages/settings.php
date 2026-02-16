@@ -42,7 +42,7 @@ if(!empty($save))
 
 	?>
 		<div id="message" class="updated fade">
-			<p><?php esc_html_e( 'Settings successfully saved.', 'pmpro-affilaites' ); ?></p>
+			<p><?php esc_html_e( 'Settings successfully saved.', 'pmpro-affiliates' ); ?></p>
 		</div>
 	<?php
 }
