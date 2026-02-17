@@ -313,10 +313,8 @@ function pmpro_affiliates_display_pagination( $current_page, $total_items, $per_
 		return;
 	}
 
-	// Build the current URL preserving existing query args.
-	$current_url = set_url_scheme( 'http://' . sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) );
-	$base_url = remove_query_arg( $page_var, $current_url ); // Remove the paged variable from the URL if present.
-
+	// Build the base URL from the current request, removing the pagination query arg if present.
+	$base_url = remove_query_arg( $page_var ); // Remove the paged variable from the URL if present.
 	// Build pagination URLs.
 	$first_page_url = add_query_arg( $page_var, 1, $base_url );
 	$prev_page_url  = add_query_arg( $page_var, max( 1, $current_page - 1 ), $base_url );
