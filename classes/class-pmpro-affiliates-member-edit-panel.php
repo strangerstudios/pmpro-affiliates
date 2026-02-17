@@ -8,7 +8,7 @@ class PMPRO_AFFILIATES_Member_Edit_Panel extends PMPro_Member_Edit_Panel {
 		$this->title       = __( 'Affiliate', 'pmpro-affiliates' );
 
 		// Get the affiliate for the user.
-		$affiliate = pmpro_affiliates_getAffiliatesForUser( get_current_user_id() );
+		$affiliate = pmpro_affiliates_getAffiliatesForUser( self::get_user()->ID );
 		if ( ! empty( $affiliate ) ) {
 			$affiliate = $affiliate[0];
 			$this->title_link = '<a class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users" href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&report=' . $affiliate->id ) ) . '">' . esc_html__( 'View Full Report', 'pmpro-affiliates' ) . '</a>  ' . '<a class="page-title-action pmpro-has-icon pmpro-has-icon-admin-users" href="' . esc_url( admin_url( 'admin.php?page=pmpro-affiliates&edit=' . $affiliate->id ) ) . '">' . esc_html__( 'Edit Affiliate', 'pmpro-affiliates' ) . '</a>';
