@@ -1,80 +1,340 @@
-<?php	
-	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
-	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
-	$pmpro_affiliates_plural_name = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
+<?php
+/**
+ * Get affiliate orders from the database.
+ *
+ * @since TBD
+ *
+ * @param int|string $affiliate_id The affiliate ID or 'all' for all affiliates.
+ * @param array      $args {
+ *     Optional. Arguments for the query.
+ *
+ *     @type int $limit  Number of orders to return. Default 0 (no limit).
+ *     @type int $offset Number of orders to offset. Default 0.
+ *     @type int $paged  Page number. Default 1. Used with $limit to calculate offset.
+ * }
+ * @return array The affiliate orders.
+ */
+function pmpro_affiliates_get_orders( $affiliate_id = 'all', $args = array() ) {
+	global $wpdb;
 
-	if(isset($_REQUEST['report']))	
-		$report = sanitize_text_field( $_REQUEST['report'] );
-	else
-		$report = false;
-	
-	if($report && $report != "all")
-	{
-		//get values from DB
-		$affiliate_id = $report;		
-		$affiliate = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . intval($affiliate_id) . "' LIMIT 1");
-		if(!empty($affiliate) && !empty($affiliate->id))
-		{
-			$code = $affiliate->code;
-			$name = $affiliate->name;
-			$affiliateuser = $affiliate->affiliateuser;
-			$trackingcode = $affiliate->trackingcode;
-			$cookiedays = $affiliate->cookiedays;
-			$enabled = $affiliate->enabled;
+	$defaults = array(
+		'limit'  => 0,
+		'offset' => 0,
+		'paged'  => 1,
+	);
+
+	$args = wp_parse_args( $args, $defaults );
+
+	$sql_query = 
+		"SELECT o.id as order_id, o.code as order_code, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.status, om.meta_value as affiliate_paid
+		FROM $wpdb->pmpro_membership_orders o 
+		LEFT JOIN $wpdb->pmpro_affiliates a 
+		ON o.affiliate_id = a.id 
+		LEFT JOIN $wpdb->users u 
+		ON o.user_id = u.ID
+		LEFT JOIN $wpdb->pmpro_membership_ordermeta om
+		ON o.id = om.pmpro_membership_order_id
+		AND om.meta_key = 'pmpro_affiliate_paid'
+		WHERE o.affiliate_id <> ''
+		AND o.affiliate_id IS NOT NULL
+		AND o.affiliate_id <> 0
+		AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')";
+
+	if ( 'all' !== $affiliate_id ) {
+		$sql_query .= $wpdb->prepare( " AND a.id = %d", (int) $affiliate_id );
+	}
+
+	$sql_query .= " ORDER BY o.timestamp DESC";
+
+	$limit = (int) $args['limit'];
+	if ( $limit > 0 ) {
+		if ( ! empty( $args['paged'] ) && $args['paged'] > 1 ) {
+			$offset = ( (int) $args['paged'] - 1 ) * $limit;
+		} else {
+			$offset = (int) $args['offset'];
 		}
-	}	
+		$sql_query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
+	}
 
-	// Get current page for pagination.
-	$paged = isset( $_REQUEST['paged'] ) ? max( 1, intval( $_REQUEST['paged'] ) ) : 1;
+	return $wpdb->get_results( $sql_query );
+}
 
-	/**
-	 * Filter the number of orders to show per page.
-	 *
-	 * @since TBD
-	 *
-	 * @param int $limit The number of orders per page. Default 20.
-	 */
-	$limit = apply_filters( 'pmpro_affiliates_report_orders_per_page', 20 );
-?>
-	<h2>
-		<?php echo esc_html( ucwords($pmpro_affiliates_singular_name) ); ?> Report
-		<?php 
-			if(empty($affiliate_id))
-				echo esc_html( sprintf( esc_html__("for All %s", 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ) );
-			else
-				echo esc_html( sprintf( esc_html__("for Code %s", 'pmpro-affiliates' ), stripslashes( $code ) ) );
-		?>
-		<a href="<?php echo esc_url( admin_url('admin-ajax.php') );?>?action=affiliates_report_csv&report=<?php echo esc_attr( $report );?>" class="add-new-h2"><?php esc_html_e('Export to CSV', 'pmpro-affiliates' ); ?></a>
-		<?php 
-			if(!empty($affiliate_id))
-			{
+/**
+ * Get the total count of affiliate orders.
+ *
+ * @since TBD
+ *
+ * @param int|string $affiliate_id The affiliate ID or 'all' for all affiliates.
+ * @return int The total number of affiliate orders.
+ */
+function pmpro_affiliates_get_orders_count( $affiliate_id = 'all' ) {
+	global $wpdb;
+
+	$sql_query = 
+		"SELECT COUNT(DISTINCT o.id)
+		FROM $wpdb->pmpro_membership_orders o 
+		LEFT JOIN $wpdb->pmpro_affiliates a 
+		ON o.affiliate_id = a.id 
+		WHERE o.affiliate_id <> ''
+		AND o.affiliate_id IS NOT NULL
+		AND o.affiliate_id <> 0
+		AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')";
+
+	if ( 'all' !== $affiliate_id ) {
+		$sql_query .= $wpdb->prepare( " AND a.id = %d", (int) $affiliate_id );
+	}
+
+	return (int) $wpdb->get_var( $sql_query );
+}
+
+/**
+ * Display the affiliate orders table.
+ *
+ * @since TBD
+ *
+ * @param array $args {
+ *     Optional. Arguments for displaying the affiliate orders table.
+ *
+ *     @type int|string $affiliate_id   The affiliate ID or 'all' for all affiliates. Default 'all'.
+ *     @type array      $orders         The affiliate orders to display. If not provided, will be fetched from DB.
+ *     @type bool       $show_code      Whether to show the affiliate code column. Default true.
+ *     @type bool       $show_order     Whether to show the order column. Default true.
+ *     @type bool       $show_name      Whether to show the affiliate name column. Default true.
+ *     @type bool       $show_member    Whether to show the member column. Default true.
+ *     @type bool       $show_level     Whether to show the membership level column. Default true.
+ *     @type bool       $show_date      Whether to show the date column. Default true.
+ *     @type bool       $show_commission_pct Whether to show the commission percentage column. Default true.
+ *     @type bool       $show_commission_earned Whether to show the commission earned column. Default true.
+ *     @type bool       $show_order_total Whether to show the order total column. Default true.
+ *     @type bool       $show_status    Whether to show the status column. Default true.
+ *     @type string     $empty_message  Message to show when no orders. Default ''.
+ *     @type string     $table_class    CSS class for the table. Default 'widefat striped fixed'.
+ *     @type int        $limit          Number of orders per page. Default 0 (no pagination).
+ *     @type int        $paged          Current page number. Default 1.
+ *     @type string     $page_var       Query var name for pagination. Default 'paged'.
+ *     @type bool       $show_pagination Whether to show pagination. Default true.
+ * }
+ */
+function pmpro_affiliates_display_orders_table( $args = array() ) {
+	$defaults = array(
+		'affiliate_id'           => 'all',
+		'orders'                 => array(),
+		'show_code'              => true,
+		'show_order'             => true,
+		'show_name'              => true,
+		'show_member'            => true,
+		'show_level'             => true,
+		'show_date'              => true,
+		'show_commission_pct'    => true,
+		'show_commission_earned' => true,
+		'show_order_total'       => true,
+		'show_status'            => true,
+		'empty_message'          => '',
+		'table_class'            => 'widefat striped fixed',
+		'limit'                  => 0,
+		'paged'                  => 1,
+		'page_var'               => 'paged',
+		'show_pagination'        => true,
+	);
+
+	$args = wp_parse_args( $args, $defaults );
+
+	$total_orders = 0;
+	$orders       = $args['orders'];
+
+	// If limit is set, get total count and paginated results.
+	if ( $args['limit'] > 0 && empty( $orders ) ) {
+		$total_orders = pmpro_affiliates_get_orders_count( $args['affiliate_id'] );
+		$orders = pmpro_affiliates_get_orders( $args['affiliate_id'], array(
+			'limit' => $args['limit'],
+			'paged' => $args['paged'],
+		) );
+	} elseif ( empty( $orders ) ) {
+		$orders = pmpro_affiliates_get_orders( $args['affiliate_id'] );
+	}
+
+	// Show an empty message if there are no orders to display.
+	if ( empty( $orders ) ) {
+		if ( ! empty( $args['empty_message'] ) ) {
+			echo '<p>' . esc_html( $args['empty_message'] ) . '</p>';
+		}
+		return;
+	}
+	?>
+	<table class="<?php echo esc_attr( $args['table_class'] ); ?>">
+		<thead>
+			<tr>
+				<?php if ( $args['show_code'] ) : ?>
+					<th><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_order'] ) : ?>
+					<th><?php esc_html_e( 'Order', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_name'] ) : ?>
+					<th><?php esc_html_e( 'Name', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_member'] ) : ?>
+					<th><?php esc_html_e( 'Member', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_level'] ) : ?>
+					<th><?php esc_html_e( 'Membership Level', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_date'] ) : ?>
+					<th><?php esc_html_e( 'Date', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_commission_pct'] ) : ?>
+					<th><?php esc_html_e( 'Commission %', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_commission_earned'] ) : ?>
+					<th><?php esc_html_e( 'Commission Earned', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_order_total'] ) : ?>
+					<th><?php esc_html_e( 'Order Total', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php if ( $args['show_status'] ) : ?>
+					<th><?php esc_html_e( 'Status', 'pmpro-affiliates' ); ?></th>
+				<?php endif; ?>
+				<?php do_action( 'pmpro_affiliate_report_extra_cols_header' ); ?>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			foreach ( $orders as $order ) {
+				$level = pmpro_getLevel( $order->membership_id );
+				$affiliate_paid = $order->affiliate_paid;
+				
+				if ( $affiliate_paid == '1' ) {
+					$nonce = wp_create_nonce( 'pmpro_affiliates_reset_paid_status' );
+					$affiliate_paid = esc_html__( 'Paid', 'pmpro-affiliates' );
+					$affiliate_paid .= ' [<a class="pmpro_affiliates_reset_paid_status" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" title="' . esc_html__( 'Reset Payment Status', 'pmpro-affiliates' ) . '" >x</a>]';
+				} else {
+					$nonce = wp_create_nonce( 'pmpro_affiliates_mark_as_paid' );
+					$affiliate_paid = '<a class="pmpro_affiliates_mark_as_paid" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" title="' . esc_html__( 'Mark as Paid', 'pmpro-affiliates' ) . '" >' . esc_html__( 'Mark as Paid', 'pmpro-affiliates' ) . '</a>';
+				}
 				?>
-				<a href="admin.php?page=pmpro-affiliates&report=all" class="add-new-h2"><?php echo esc_html( sprintf( esc_html__('View All %s Report', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ) ); ?></a>
+				<tr>
+					<?php if ( $args['show_code'] ) : ?>
+						<td>
+							<?php
+							echo "<a href='" . esc_url( get_admin_url( null, '/admin.php?page=pmpro-affiliates&edit=' . (int) $order->affiliate_id ) ) . "'>" . esc_html( $order->code ) . "</a>";
+							if ( $order->subid ) {
+								echo '<br><span class="pmpro-affiliates-sub-id-report" style="font-size:12px;">';
+								echo '<strong>' . esc_html__( 'Sub-ID', 'pmpro-affiliates' ) . ':</strong> ' . esc_html( $order->subid );
+								echo '</span>';
+							}
+							?>
+						</td>
+					<?php endif; ?>
+					<?php if ( $args['show_order'] ) : ?>
+						<td>
+							<?php
+							echo "<a href='" . esc_url( get_admin_url( null, '/admin.php?page=pmpro-orders&order=' . (int) $order->order_id . '&id=' . (int) $order->order_id ) ) . "'>" . esc_html( $order->order_code ) . "</a>";
+							?>
+						</td>
+					<?php endif; ?>
+					<?php if ( $args['show_name'] ) : ?>
+						<td><?php echo ! empty( $order->name ) ? esc_html( stripslashes( $order->name ) ) : ''; ?></td>
+					<?php endif; ?>
+					<?php if ( $args['show_member'] ) : ?>
+						<td>
+							<?php
+							if ( ! empty( $order->user_id ) ) {
+								if ( ! empty( get_user_by( 'id', $order->user_id ) ) ) {
+									?>
+									<a href="<?php echo esc_url( get_edit_user_link( $order->user_id ) ); ?>"><?php echo esc_html( $order->user_login ); ?></a>
+									<?php
+								} else {
+									echo esc_html( $order->user_login );
+								}
+							} else {
+								?>[<?php esc_html_e( 'deleted', 'pmpro-affiliates' ); ?>]<?php
+							}
+							?>
+						</td>
+					<?php endif; ?>
+					<?php if ( $args['show_level'] ) : ?>
+						<td>
+							<?php
+							if ( ! empty( $level ) ) {
+								echo esc_html( $level->name );
+							} elseif ( $order->membership_id > 0 ) {
+								?>[<?php esc_html_e( 'deleted', 'pmpro-affiliates' ); ?>]<?php
+							} else {
+								echo '&#8212;';
+							}
+							?>
+						</td>
+					<?php endif; ?>
+					<?php if ( $args['show_date'] ) : ?>
+						<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->timestamp ) ); ?></td>
+					<?php endif; ?>
+					<?php if ( $args['show_commission_pct'] ) : ?>
+						<td><?php echo esc_html( $order->commissionrate * 100 ); ?>%</td>
+					<?php endif; ?>
+					<?php if ( $args['show_commission_earned'] ) : ?>
+						<td><?php echo esc_html( pmpro_formatPrice( $order->total * $order->commissionrate ) ); ?></td>
+					<?php endif; ?>
+					<?php if ( $args['show_order_total'] ) : ?>
+						<td><?php echo esc_html( pmpro_formatPrice( $order->total ) ); ?></td>
+					<?php endif; ?>
+					<?php if ( $args['show_status'] ) : ?>
+						<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>'; ?></td>
+					<?php endif; ?>
+					<?php do_action( 'pmpro_affiliate_report_extra_cols_body', $order ); ?>
+				</tr>
 				<?php
 			}
-		?>
-	</h2>
-<?php
-	$affiliate_user_object = get_user_by( 'login', stripslashes( $affiliateuser ) );
-	if ( ! empty( $affiliate_user_object ) ) {
-		$affiliate_user_shown = '<a href="' . esc_url( get_edit_user_link( $affiliate_user_object->ID ) ) . '">' . esc_html( $affiliate_user_object->display_name ) . '</a>';
-	} else {
-		$affiliate_user_shown = esc_html( stripslashes( $affiliateuser ) );
+			?>
+		</tbody>
+	</table>
+	<?php
+
+	// Show pagination if enabled, limit is set, and there are more orders than the limit.
+	if ( $args['show_pagination'] && $args['limit'] > 0 && $total_orders > $args['limit'] ) {
+		pmpro_affiliates_display_pagination( $args['paged'], $total_orders, $args['limit'], $args['page_var'] );
+	}
+}
+
+/**
+ * Display WP List Table style pagination.
+ *
+ * @since TBD
+ *
+ * @param int    $current_page Current page number.
+ * @param int    $total_items  Total number of items.
+ * @param int    $per_page     Items per page.
+ * @param string $page_var     Query var name for pagination.
+ */
+function pmpro_affiliates_display_pagination( $current_page, $total_items, $per_page, $page_var = 'paged' ) {
+	$total_pages = ceil( $total_items / $per_page );
+	
+	if ( $total_pages <= 1 ) {
+		return;
 	}
 
-	if ( ! empty( $name ) ) {
-		echo "<p>". esc_html( sprintf( esc_html__("Business/Contact Name: %s", 'pmpro-affiliates' ), stripslashes($name) ) ) . "</p>";
-	}
+	// Build the current URL preserving existing query args.
+	$current_url = set_url_scheme( 'http://' . sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) );
+	$base_url = remove_query_arg( $page_var, $current_url );
 
-	if ( ! empty( $affiliateuser ) ) {
-		// The $affiliate_user_shown is escaped before echoing it out.
-		echo "<p>" . esc_html( ucwords($pmpro_affiliates_singular_name) ) . " ". esc_html__("User:", 'pmpro-affiliates' )." " . wp_kses_post( $affiliate_user_shown ) . "</p>";
-	}
-
-	// Output the table.
-	pmpro_affiliates_display_orders_table( array(
-		'affiliate_id'  => $report,
-		'empty_message' => sprintf( esc_html__( 'No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ),
-		'limit'         => $limit,
-		'paged'         => $paged,
-	) );
+	// Build the link text with the page var.
+	$link_text = '&' . esc_attr( $page_var ) . '=';
+	?>
+	<div class="tablenav bottom">
+		<div class="tablenav-pages">
+			<?php
+			echo wp_kses_post(
+				pmpro_getPaginationString(
+					$current_page,
+					$total_items,
+					$per_page,
+					1,
+					$base_url,
+					$link_text,
+					__( 'Affiliate Orders Pagination', 'pmpro-affiliates' )
+				)
+			);
+			?>
+		</div>
+	</div>
+	<?php
+}
