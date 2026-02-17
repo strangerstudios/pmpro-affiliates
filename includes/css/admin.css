@@ -1,0 +1,59 @@
+/* Affiliate Member Edit Panel Styles */
+
+/* Panel wrapper */
+.pmpro-affiliates-panel {
+	margin-bottom: var(--pmpro--spacing--medium, 30px);
+}
+
+/* Panel header links */
+.pmpro-affiliates-panel h3 .pmpro-affiliates-header-links {
+	font-weight: normal;
+	font-size: 14px;
+	margin-left: var(--pmpro--spacing--small, 10px);
+}
+
+/* Stats card grid */
+.pmpro-affiliates-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: calc(var(--pmpro--spacing--medium, 30px) / 1.5);
+	margin-bottom: var(--pmpro--spacing--medium, 30px);
+}
+
+/* Stats card postbox styling */
+.pmpro-affiliates-stats-grid .postbox {
+	margin: 0;
+	overflow: hidden;
+}
+
+.pmpro-affiliates-stats-grid .postbox .inside {
+	padding: calc(var(--pmpro--spacing--medium, 30px) / 2);
+}
+
+/* Stats card title */
+.pmpro-affiliates-stat-title {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0;
+	padding: 8px 12px;
+}
+
+/* Stats card value */
+p.pmpro-affiliates-stat-value {
+	font-size: 18px;
+	font-weight: bold;
+	margin: calc(var(--pmpro--spacing--small, 10px) / 2) 0;
+}
+
+/* Responsive grid */
+@media only screen and (max-width: 1200px) {
+	.pmpro-affiliates-stats-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media only screen and (max-width: 782px) {
+	.pmpro-affiliates-stats-grid {
+		grid-template-columns: 1fr;
+	}
+}

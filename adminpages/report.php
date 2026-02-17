@@ -23,6 +23,18 @@
 			$enabled = $affiliate->enabled;
 		}
 	}	
+
+	// Get current page for pagination.
+	$paged = isset( $_REQUEST['paged'] ) ? max( 1, intval( $_REQUEST['paged'] ) ) : 1;
+
+	/**
+	 * Filter the number of orders to show per page.
+	 *
+	 * @since TBD
+	 *
+	 * @param int $limit The number of orders per page. Default 20.
+	 */
+	$limit = apply_filters( 'pmpro_affiliates_report_orders_per_page', 20 );
 ?>
 	<h2>
 		<?php echo esc_html( ucwords($pmpro_affiliates_singular_name) ); ?> Report
@@ -58,125 +70,11 @@
 		// The $affiliate_user_shown is escaped before echoing it out.
 		echo "<p>" . esc_html( ucwords($pmpro_affiliates_singular_name) ) . " ". esc_html__("User:", 'pmpro-affiliates' )." " . wp_kses_post( $affiliate_user_shown ) . "</p>";
 	}
-?>
 
-<?php
-	$sqlQuery = 
-	"SELECT o.id as order_id, o.code as order_code, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.status, om.meta_value as affiliate_paid
-	FROM $wpdb->pmpro_membership_orders o 
-	LEFT JOIN $wpdb->pmpro_affiliates a 
-	ON o.affiliate_id = a.id 
-	LEFT JOIN $wpdb->users u 
-	ON o.user_id = u.ID
-	LEFT JOIN $wpdb->pmpro_membership_ordermeta om
-	ON o.id = om.pmpro_membership_order_id
-	AND om.meta_key = 'pmpro_affiliate_paid'
-	WHERE o.affiliate_id <> ''
-	AND o.affiliate_id IS NOT NULL
-	AND o.affiliate_id <> 0
-	AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')";
-
-	if ( $report != "all" ) {
-		$sqlQuery .= " AND a.id = '" . esc_sql($report) . "' ";
-	}
-	$affiliate_orders = $wpdb->get_results($sqlQuery);
-
-	// Show a message of there are no affiliate orders.
-	if ( empty( $affiliate_orders ) ) { ?>
-		<p><?php echo esc_html( sprintf( esc_html__('No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ) ); ?></p>
-	<?php } else { ?>
-		<table class="widefat striped fixed">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Code', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Order', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Name', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Member', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Membership Level', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Date', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Comission %', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Commission Earned', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Order Total', 'pmpro-affiliates' ); ?></th>
-					<th><?php esc_html_e( 'Status', 'pmpro-affiliates' ); ?></th>
-					<?php
-						/**
-						 * Action to add additional columns to the affiliates report table.
-						 */
-						do_action( "pmpro_affiliate_report_extra_cols_header" );
-					?>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
-					global $pmpro_currency_symbol;
-					foreach ( $affiliate_orders as $order ) {
-						$level = pmpro_getLevel( $order->membership_id ); 
-						// Get the affiliate paid status and generate a mark as paid link if not paid. Add nonce.
-						$affiliate_paid = $order->affiliate_paid;
-						if ( $affiliate_paid == '1' ) {
-							$nonce = wp_create_nonce( 'pmpro_affiliates_reset_paid_status' );
-							$affiliate_paid = esc_html__( 'Paid', 'pmpro-affiliates' );
-							$affiliate_paid .= ' [<a class="pmpro_affiliates_reset_paid_status" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" title="' . esc_html__( 'Reset Payment Status', 'pmpro-affiliates' ) . '" >x</a>]'  ;
-						} else {
-							$nonce = wp_create_nonce( 'pmpro_affiliates_mark_as_paid' );
-							$affiliate_paid = '<a class="pmpro_affiliates_mark_as_paid" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" title="' . esc_html__( 'Mark as Paid', 'pmpro-affiliates' ) . '" >' . esc_html__( 'Mark as Paid', 'pmpro-affiliates' ) . '</a>';
-						}
-						?>
-						<tr>
-							<td><?php echo "<a href='" . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-affiliates&edit=' . (int) $order->affiliate_id  ) ) . "'>" . esc_html( $order->code ) . "</a>";
-							if ( $order->subid ) {
-								echo '<br><span class="pmpro-affiliates-sub-id-report" style="font-size:12px;">';
-								echo  '<strong>' . esc_html__( 'Sub-ID', 'pmpro-affiliates' ) . ':</strong> ' . esc_html( $order->subid );
-								echo '</span>';
-							}
-							?>
-						</td>
-							<td><?php echo "<a href='" . esc_url( get_admin_url( NULL, '/admin.php?page=pmpro-orders&order=' . (int) $order->order_id . '&id=' . (int) $order->order_id ) ) . "'>" . esc_html( $order->order_code ) . "</a>"; ?></td>
-							<td><?php echo ! empty( $order->name ) ? esc_html( stripslashes($order->name) ) : '';?></td>
-							<td>
-								<?php
-									if ( ! empty( $order->user_id ) ) {
-										if ( ! empty( get_user_by( 'id', $order->user_id ) ) ) { ?>
-											<a href="<?php echo esc_url( get_edit_user_link( $order->user_id ) ); ?>"><?php echo esc_html( $order->user_login ); ?></a>
-											<?php
-										} else {
-											echo esc_html( $order->user_login );
-										}
-									} else { ?>
-										[<?php esc_html_e( 'deleted', 'pmpro-affiliates' ); ?>]<?php
-									}
-								?>
-							</td>
-							<td>
-								<?php
-									if ( ! empty( $level ) ) {
-										echo esc_html( $level->name );
-									} elseif ( $order->membership_id > 0 ) { ?>
-										[<?php esc_html_e( 'deleted', 'pmpro-affiliates' ); ?>]
-									<?php } else {
-										esc_html_e( '&#8212;', 'pmpro-affiliates' );
-									}
-								?>
-							</td>
-							<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->timestamp ) );?></td>
-							<td><?php echo esc_html( $order->commissionrate * 100 );?>%</td>
-							<td><?php echo esc_html( pmpro_formatPrice( $order->total * $order->commissionrate ) ); ?></td>
-							<td><?php echo esc_html( pmpro_formatPrice( $order->total ) ); ?></td>
-							<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>'; ?></td>
-							<?php
-								/**
-								 * Action to populate additional columns in the affiliates report table.
-								 *
-								 * @param object $order The order object.
-								 */
-								do_action( "pmpro_affiliate_report_extra_cols_body", $order );
-							?>
-						</tr>
-						<?php
-					}
-				?>
-			</tbody>
-		</table>
-		<?php
-	}
-?>
+	// Output the table.
+	pmpro_affiliates_display_orders_table( array(
+		'affiliate_id'  => $report,
+		'empty_message' => sprintf( esc_html__( 'No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ),
+		'limit'         => $limit,
+		'paged'         => $paged,
+	) );
