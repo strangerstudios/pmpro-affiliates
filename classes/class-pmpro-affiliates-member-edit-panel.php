@@ -24,7 +24,7 @@ class PMPRO_AFFILIATES_Member_Edit_Panel extends PMPro_Member_Edit_Panel {
 		// Show affiliate ID, status, referral count, paid commission and link to report.
 		$affiliates = pmpro_affiliates_getAffiliatesForUser( $user->ID );
 		if ( empty( $affiliates ) ) {
-			echo '<p>' . __( 'This member is not an affiliate.', 'pmpro-affiliates' ) . '</p>';
+			echo '<p>' . esc_html__( 'This member is not an affiliate.', 'pmpro-affiliates' ) . '</p>';
 			return;
 		}
 
