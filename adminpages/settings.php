@@ -47,7 +47,7 @@ if(!empty($save))
 	<?php
 }
 ?>
-
+<h1><?php esc_html_e('Affiliate Settings', 'pmpro-affiliates'); ?></h1>
 <form action="" method="post">
 	<input name="saveid" type="hidden" value="<?php echo esc_attr( $edit ); ?>" />
 	<table class="form-table">

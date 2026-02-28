@@ -595,7 +595,7 @@ function pmpro_affiliates_pmpro_membership_level_after_other_settings() {
 <h2 class="topborder"><?php echo esc_html( sprintf( esc_html__( '%s Settings', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_singular_name ) ) ); ?></h2>
 <p>
 	<?php
-	$affiliate_settings_link = '<a title="' . esc_attr__( 'Lightweight Affiliate Tracking', 'pmpro-affiliates' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/?utm_source=plugin&utm_medium=pmpro-affiliates&utm_campaign=add-ons&utm_content=&utm_term=">' . esc_html__( 'Affiliate Settings', 'pmpro-affiliates' ) . '</a>';
+	$affiliate_settings_link = '<a title="' . esc_attr__( 'Lightweight Affiliate Tracking Documentation', 'pmpro-affiliates' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/?utm_source=plugin&utm_medium=pmpro-affiliates&utm_campaign=add-ons">' . esc_html__( 'Affiliate Settings', 'pmpro-affiliates' ) . '</a>';
 	printf( esc_html__( 'Learn more about %s.', 'pmpro-affiliates' ), $affiliate_settings_link ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>
 </p>
