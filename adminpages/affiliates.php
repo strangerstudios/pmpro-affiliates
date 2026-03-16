@@ -193,7 +193,7 @@
 	require_once( PMPRO_DIR . "/adminpages/admin_header.php" );
 	?>
 	<nav class="pmpro-nav-primary" aria-labelledby="pmpro-affiliates-menu">
-		<h2 id="pmpro-affiliates-menu" class="screen-reader-text"><?php esc_html_e( 'Affiliates Area Menu', 'paid-memberships-pro' ); ?></h2>
+		<h2 id="pmpro-affiliates-menu" class="screen-reader-text"><?php esc_html_e( 'Affiliates Area Menu', 'pmpro-affiliates' ); ?></h2>
 		<ul>
 			<li><a href="admin.php?page=pmpro-affiliates"<?php if(empty($report) && empty($settings)) { ?> class="current"<?php } ?>><?php esc_html_e('Manage', 'pmpro-affiliates' ); ?> <?php echo esc_html( ucwords($pmpro_affiliates_plural_name ) ); ?></a></li>
 			<li><a href="admin.php?page=pmpro-affiliates&report=all"<?php if(!empty($report)) { ?> class="current"<?php } ?>><?php esc_html_e('Reports', 'pmpro-affiliates' ); ?></a></li>
