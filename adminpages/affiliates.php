@@ -192,14 +192,13 @@
 <?php
 	require_once( PMPRO_DIR . "/adminpages/admin_header.php" );
 	?>
-	<h2>
-		<?php echo esc_html( sprintf( esc_html__('%s Add On: Lightweight %s Tracking', 'pmpro-affiliates' ), ucwords($pmpro_affiliates_plural_name), ucwords($pmpro_affiliates_plural_name) ) ); ?>
-	</h2>
-
-	<nav class="nav-tab-wrapper">
-		<a href="admin.php?page=pmpro-affiliates" class="nav-tab<?php if(empty($report) && empty($settings)) { ?> nav-tab-active<?php } ?>"><?php esc_html_e('Manage', 'pmpro-affiliates' ); ?> <?php echo esc_html( ucwords($pmpro_affiliates_plural_name ) ); ?></a>
-		<a href="admin.php?page=pmpro-affiliates&report=all" class="nav-tab<?php if(!empty($report)) { ?> nav-tab-active<?php } ?>"><?php esc_html_e('Reports', 'pmpro-affiliates' ); ?></a>
-		<a href="admin.php?page=pmpro-affiliates&settings=1" class="nav-tab<?php if(!empty($settings)) { ?> nav-tab-active<?php } ?>"><?php esc_html_e('Settings', 'pmpro-affiliates' ); ?></a>
+	<nav class="pmpro-nav-primary" aria-labelledby="pmpro-affiliates-menu">
+		<h2 id="pmpro-affiliates-menu" class="screen-reader-text"><?php esc_html_e( 'Affiliates Area Menu', 'pmpro-affiliates' ); ?></h2>
+		<ul>
+			<li><a href="admin.php?page=pmpro-affiliates"<?php if(empty($report) && empty($settings)) { ?> class="current"<?php } ?>><?php esc_html_e('Manage', 'pmpro-affiliates' ); ?> <?php echo esc_html( ucwords($pmpro_affiliates_plural_name ) ); ?></a></li>
+			<li><a href="admin.php?page=pmpro-affiliates&report=all"<?php if(!empty($report)) { ?> class="current"<?php } ?>><?php esc_html_e('Reports', 'pmpro-affiliates' ); ?></a></li>
+			<li><a href="admin.php?page=pmpro-affiliates&settings=1"<?php if(!empty($settings)) { ?> class="current"<?php } ?>><?php esc_html_e('Settings', 'pmpro-affiliates' ); ?></a></li>
+		</ul>
 	</nav>
 	<br class="clear" />
 	<?php
@@ -207,14 +206,14 @@
 	if($edit)
 	{
 		?>
-		<h2>
+		<h1>
 			<?php
 				if($edit > 0)
 					echo esc_html( sprintf( esc_html__( 'Edit %s', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_singular_name ) ) );
 				else
 					echo esc_html( sprintf( esc_html__('Add New %s', 'pmpro-affiliates'), ucwords($pmpro_affiliates_singular_name) ) );
 			?>
-		</h2>
+		</h1>
 
 		<?php if(!empty($pmpro_msg)) { ?>
 			<div id="message" class="<?php if($pmpro_msgt == "success") echo "updated fade"; else echo "error"; ?>"><p><?php echo esc_html( $pmpro_msg )?></p></div>
