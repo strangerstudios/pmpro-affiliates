@@ -74,6 +74,6 @@
 	pmpro_affiliates_display_orders_table( array(
 		'affiliate_id'  => $report,
 		'empty_message' => sprintf( esc_html__( 'No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ),
-		'limit'         => 1,
-		'paged'         => $paged,
+		'limit'         => (int) $limit,
+		'paged'         => (int) $paged,
 	) );

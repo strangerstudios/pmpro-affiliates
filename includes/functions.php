@@ -203,7 +203,7 @@ function pmpro_affiliates_display_orders_table( $args = array() ) {
 				$level = pmpro_getLevel( $order->membership_id );
 				$affiliate_paid = $order->affiliate_paid;
 				
-				if ( $affiliate_paid == '1' ) {
+				if ( $affiliate_paid === '1' ) {
 					$nonce = wp_create_nonce( 'pmpro_affiliates_reset_paid_status' );
 					$affiliate_paid = esc_html__( 'Paid', 'pmpro-affiliates' );
 					$affiliate_paid .= ' [<a class="pmpro_affiliates_reset_paid_status" href="javascript:void(0)" order_id="' . esc_attr( $order->order_id ) . '" _wpnonce="' . esc_attr( $nonce ) . '" title="' . esc_html__( 'Reset Payment Status', 'pmpro-affiliates' ) . '" >x</a>]';
@@ -238,7 +238,7 @@ function pmpro_affiliates_display_orders_table( $args = array() ) {
 					<?php if ( $args['show_member'] ) : ?>
 						<td>
 							<?php
-							if ( ! empty( $order->user_id ) ) {
+							if ( ! empty( $order->user_id ) && $order->user_id > 0 ) {
 								if ( ! empty( get_user_by( 'id', $order->user_id ) ) ) {
 									?>
 									<a href="<?php echo esc_url( get_edit_user_link( $order->user_id ) ); ?>"><?php echo esc_html( $order->user_login ); ?></a>
