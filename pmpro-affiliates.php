@@ -16,6 +16,7 @@ define( 'PMPRO_AFFILIATES_DIR', dirname( __FILE__ ) );
 require_once dirname( __FILE__ ) . '/pages/report.php';
 require_once dirname( __FILE__ ) . '/includes/blocks.php';
 require_once dirname( __FILE__ ) . '/includes/scheduled-actions.php';
+require_once dirname( __FILE__ ) . '/includes/functions.php';
 
 /**
  * Load the languages folder for translations.
