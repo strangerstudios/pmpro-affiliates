@@ -37,6 +37,19 @@ function pmpro_affiliates_dependencies() {
 }
 add_action( 'init', 'pmpro_affiliates_dependencies' );
 
+/**
+ * Enqueue admin styles for the Affiliates add on.
+ */
+function pmpro_affiliates_admin_enqueue_styles() {
+	wp_enqueue_style(
+		'pmpro-affiliates-admin',
+		plugins_url( 'includes/css/admin.css', __FILE__ ),
+		array(),
+		PMPRO_AFFILIATES_VERSION
+	);
+}
+add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_admin_enqueue_styles' );
+
 // setup options
 function pmpro_affiliates_set_wpdb() {
 	global $wpdb, $table_prefix;

@@ -53,7 +53,6 @@ function pmpro_affiliates_backfill_for_level( $level_id ) {
 			     ON u.ID = mu.user_id
 			 LEFT JOIN {$wpdb->pmpro_affiliates} a
 			     ON u.user_login = a.affiliateuser
-			     AND a.enabled = 1
 			 WHERE mu.membership_id = %d
 			   AND mu.status = 'active'
 			   AND a.affiliateuser IS NULL",
