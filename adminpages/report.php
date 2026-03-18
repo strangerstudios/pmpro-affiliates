@@ -35,7 +35,7 @@
 	 */
 	$limit = apply_filters( 'pmpro_affiliates_report_orders_per_page', 20 );
 ?>
-	<h2>
+	<h1>
 		<?php echo esc_html( ucwords($pmpro_affiliates_singular_name) ); ?> Report
 		<?php 
 			if ( empty( $affiliate_id ) ) {
@@ -52,7 +52,7 @@
 				<?php
 			}
 		?>
-	</h2>
+	</h1>
 <?php
 	$affiliate_user_object = get_user_by( 'login', stripslashes( $affiliateuser ) );
 	if ( ! empty( $affiliate_user_object ) ) {
