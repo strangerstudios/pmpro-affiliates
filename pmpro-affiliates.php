@@ -14,8 +14,8 @@ define( 'PMPRO_AFFILIATES_VERSION', '0.7' );
 define( 'PMPRO_AFFILIATES_DIR', dirname( __FILE__ ) );
 
 require_once dirname( __FILE__ ) . '/pages/report.php';
+require_once dirname( __FILE__ ) . '/includes/functions.php';
 require_once dirname( __FILE__ ) . '/includes/blocks.php';
-
 
 /**
  * Load the languages folder for translations.
@@ -24,6 +24,21 @@ function pmpro_affiliates_load_textdomain() {
 	load_plugin_textdomain( 'pmpro-affiliates', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 add_action( 'plugins_loaded', 'pmpro_affiliates_load_textdomain' );
+
+/**
+ * Enqueue admin styles.
+ *
+ * @since TBD
+ */
+function pmpro_affiliates_admin_enqueue_styles() {
+	wp_enqueue_style(
+		'pmpro-affiliates-admin',
+		plugins_url( 'includes/css/admin.css', __FILE__ ),
+		array(),
+		PMPRO_AFFILIATES_VERSION
+	);
+}
+add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_admin_enqueue_styles' );
 
 // require Paid Memberships Pro
 function pmpro_affiliates_dependencies() {
@@ -648,8 +663,8 @@ add_action( 'wp_enqueue_scripts', 'pmpro_affiliates_enqueue_scripts' );
  * Register scripts needed for admin area.
  */
 function pmpro_affiliates_register_scripts_styles() {
-	// Only load script on PMPro affiliates pages.
-	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) {
+	// Only load script on PMPro affiliates pages and member edit page.
+	if ( ! isset( $_REQUEST['page'] ) || ( $_REQUEST['page'] != 'pmpro-affiliates' && $_REQUEST['page'] != 'pmpro-member' ) ) {
 		return;
 	}
 
@@ -891,6 +906,33 @@ function pmpro_affiliates_get_commission_calculation_source() {
 
 	return $source;
 }
+
+/**
+ * Adds an Affiliate member panel.
+ * 
+ * @since TBD
+ *
+ * @param array $panels The existing member edit panels.
+ * @return array The modified member edit panels.
+ */
+function pmpro_affiliates_pmpro_member_edit_panels( $panels ) {
+
+	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
+
+	// Let's check if the member is an affiliate before we add the panel.
+	$affiliates = pmpro_affiliates_getAffiliatesForUser( $user_id );
+	if ( empty( $affiliates ) ) {
+		return $panels;
+	}
+
+	// If the class doesn't exist and the abstract class does, require the class.
+	require_once( PMPRO_AFFILIATES_DIR . '/classes/class-pmpro-affiliates-member-edit-panel.php' );
+	$panels[] = new PMPRO_AFFILIATES_Member_Edit_Panel();
+	
+
+	return $panels;
+}
+add_filter( 'pmpro_member_edit_panels', 'pmpro_affiliates_pmpro_member_edit_panels' );
 
 /*
 Function to add links to the plugin action links
