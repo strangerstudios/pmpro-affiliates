@@ -45,6 +45,10 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 0.8 - 2026-03-19 =
+* ENHANCEMENT: Retroactively create affiliates for any member that belongs to a level with the "Automatically create affiliate code?" option enabled.
+* ENHANCEMENT: Added an Affiliate Edit Member Panel screen for all affiliate users with pagination.
+
 = 0.7 - 2025-04-09 =
 * ENHANCEMENT: Improved frontend styling for PMPro V3.1+. Includes updates to overall CSS classes used. (@kimcoleman)
 * ENHANCEMENT: Added frontend "show_conversion_table" attribute to the report shortcode. Allowing affiliates to see their commission rate, visits and conversion rate percentage. (@andrewlimaza)
