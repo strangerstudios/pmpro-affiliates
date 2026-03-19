@@ -45,6 +45,16 @@ function pmpro_affiliates_backfill_for_level( $level_id ) {
 		return;
 	}
 
+	/**
+	 * Allow sites to manipulate their default batch sizes to run per hourly event.
+	 * Defaults to 50.
+	 * 
+	 * @since TBD
+	 * 
+	 * @param int $limit Number of records per batch process.
+	 */
+	$limit = intval( apply_filters( 'pmpro_affiliates_backfill_batch_size', 50 ) );
+
 	$users = $wpdb->get_results(
 		$wpdb->prepare(
 			"SELECT u.ID, u.display_name, u.user_login
@@ -55,8 +65,10 @@ function pmpro_affiliates_backfill_for_level( $level_id ) {
 			     ON u.user_login = a.affiliateuser
 			 WHERE mu.membership_id = %d
 			   AND mu.status = 'active'
-			   AND a.affiliateuser IS NULL",
-			$level_id
+			   AND a.affiliateuser IS NULL
+			 LIMIT %d",
+			$level_id,
+			$limit
 		)
 	);
 
