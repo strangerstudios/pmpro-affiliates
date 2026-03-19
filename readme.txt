@@ -46,8 +46,9 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 
 == Changelog ==
 = 0.8 - 2026-03-19 =
-* ENHANCEMENT: Retroactively create affiliates for any member that belongs to a level with the "Automatically create affiliate code?" option enabled.
-* ENHANCEMENT: Added an Affiliate Edit Member Panel screen for all affiliate users with pagination.
+* ENHANCEMENT: Retroactively create affiliates for any member that belongs to a level with the "Automatically create affiliate code?" option enabled. (@andrewlimaza)
+* ENHANCEMENT: Added an Affiliate Edit Member Panel screen for all affiliate users with pagination. (@andrewlimaza, @jahidhasan018)
+* ENHANCEMENT: General improvements to the admin UI as well as helpful links added in the admin. (@kimcoleman)
 
 = 0.7 - 2025-04-09 =
 * ENHANCEMENT: Improved frontend styling for PMPro V3.1+. Includes updates to overall CSS classes used. (@kimcoleman)
