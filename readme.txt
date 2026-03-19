@@ -1,9 +1,9 @@
 === Paid Memberships Pro - Affiliates Add On ===
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
-Requires at least: 5.2
-Tested up to: 6.8
-Stable tag: 0.7
+Requires at least: 6.0
+Tested up to: 6.9
+Stable tag: 0.8
 
 Create affiliate accounts with unique referrer URLs to track membership checkouts.
 
