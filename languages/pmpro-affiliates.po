@@ -1,17 +1,17 @@
-# Copyright (C) 2025 Paid Memberships Pro
+# Copyright (C) 2026 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro - Affiliates Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Affiliates Add On 0.7\n"
+"Project-Id-Version: Paid Memberships Pro - Affiliates Add On 0.8\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-04-09T10:04:19+00:00\n"
+"POT-Creation-Date: 2026-03-19T11:09:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-affiliates\n"
 
 #. Plugin Name of the plugin
@@ -84,12 +84,14 @@ msgstr ""
 #: adminpages/affiliates.php:169
 #: adminpages/affiliates.php:190
 #: adminpages/affiliates.php:200
+#: adminpages/affiliates.php:198
 msgid "Manage"
 msgstr ""
 
 #: adminpages/affiliates.php:170
 #: adminpages/affiliates.php:191
 #: adminpages/affiliates.php:201
+#: adminpages/affiliates.php:199
 msgid "Reports"
 msgstr ""
 
@@ -100,6 +102,7 @@ msgstr ""
 #: adminpages/affiliates.php:202
 #: blocks/build/pmpro_affiliates_report/index.js:63
 #: blocks/build/pmpro_affiliates_report/index.js:11
+#: adminpages/affiliates.php:200
 msgid "Settings"
 msgstr ""
 
@@ -108,6 +111,7 @@ msgstr ""
 #: adminpages/affiliates.php:409
 #: adminpages/affiliates.php:419
 #: adminpages/affiliates.php:429
+#: adminpages/affiliates.php:428
 msgid "Edit"
 msgstr ""
 
@@ -116,30 +120,36 @@ msgstr ""
 #: adminpages/affiliates.php:347
 #: adminpages/affiliates.php:352
 #: adminpages/affiliates.php:362
+#: adminpages/affiliates.php:361
 msgid "Add New"
 msgstr ""
 
 #: adminpages/affiliates.php:199
 #: adminpages/affiliates.php:220
 #: adminpages/affiliates.php:230
+#: adminpages/affiliates.php:229
 msgid "ID:"
 msgstr ""
 
 #: adminpages/affiliates.php:200
 #: adminpages/affiliates.php:221
 #: adminpages/affiliates.php:231
+#: adminpages/affiliates.php:230
 msgid "This will be generated when you save."
 msgstr ""
 
 #: adminpages/affiliates.php:204
 #: adminpages/affiliates.php:225
 #: adminpages/affiliates.php:235
+#: adminpages/affiliates.php:234
 msgid "Code:"
 msgstr ""
 
 #: adminpages/affiliates.php:207
 #: adminpages/affiliates.php:228
 #: adminpages/affiliates.php:238
+#: adminpages/affiliates.php:237
+#, php-format
 msgid "Value added to the site URL to designate the %s link. (e.g. \"&pa=CODE\" or \"?pa=CODE\")"
 msgstr ""
 
@@ -147,42 +157,51 @@ msgstr ""
 #: adminpages/report.php:53
 #: adminpages/affiliates.php:233
 #: adminpages/affiliates.php:243
+#: adminpages/affiliates.php:242
 msgid "Business/Contact Name:"
 msgstr ""
 
 #: adminpages/affiliates.php:222
 #: adminpages/affiliates.php:243
 #: adminpages/affiliates.php:253
+#: adminpages/affiliates.php:252
+#, php-format
 msgid "The username of a WordPress user in your site who should have access to %s reports."
 msgstr ""
 
 #: adminpages/affiliates.php:227
 #: adminpages/affiliates.php:256
 #: adminpages/affiliates.php:266
+#: adminpages/affiliates.php:265
 msgid "Tracking Code:"
 msgstr ""
 
 #: adminpages/affiliates.php:230
 #: adminpages/affiliates.php:259
 #: adminpages/affiliates.php:269
+#: adminpages/affiliates.php:268
+#, php-format
 msgid "(Optional) If you are tracking this %s through another system, you can add HTML/JS code here to run on the confirmation page after checkout. Variables:"
 msgstr ""
 
 #: adminpages/affiliates.php:235
 #: adminpages/affiliates.php:264
 #: adminpages/affiliates.php:274
+#: adminpages/affiliates.php:273
 msgid "Cookie Length:"
 msgstr ""
 
 #: adminpages/affiliates.php:238
 #: adminpages/affiliates.php:267
 #: adminpages/affiliates.php:277
+#: adminpages/affiliates.php:276
 msgid "In days."
 msgstr ""
 
 #: adminpages/affiliates.php:243
 #: adminpages/affiliates.php:272
 #: adminpages/affiliates.php:282
+#: adminpages/affiliates.php:281
 msgid "Enabled:"
 msgstr ""
 
@@ -192,6 +211,8 @@ msgstr ""
 #: pmpro-affiliates.php:388
 #: adminpages/affiliates.php:284
 #: pmpro-affiliates.php:389
+#: adminpages/affiliates.php:283
+#: pmpro-affiliates.php:403
 msgid "Yes"
 msgstr ""
 
@@ -201,6 +222,8 @@ msgstr ""
 #: pmpro-affiliates.php:390
 #: adminpages/affiliates.php:286
 #: pmpro-affiliates.php:391
+#: adminpages/affiliates.php:285
+#: pmpro-affiliates.php:405
 msgid "No"
 msgstr ""
 
@@ -208,6 +231,8 @@ msgstr ""
 #: adminpages/affiliates.php:328
 #: adminpages/affiliates.php:333
 #: adminpages/affiliates.php:343
+#: adminpages/affiliates.php:342
+#, php-format
 msgid "Save %s"
 msgstr ""
 
@@ -215,6 +240,7 @@ msgstr ""
 #: adminpages/affiliates.php:349
 #: adminpages/affiliates.php:354
 #: adminpages/affiliates.php:364
+#: adminpages/affiliates.php:363
 msgid "View"
 msgstr ""
 
@@ -232,6 +258,8 @@ msgstr ""
 #: blocks/build/pmpro_affiliates_report/index.js:198
 #: blocks/src/pmpro_affiliates_report/edit.js:101
 #: blocks/build/pmpro_affiliates_report/index.js:101
+#: adminpages/affiliates.php:363
+#: adminpages/affiliates.php:425
 msgid "Report"
 msgstr ""
 
@@ -239,6 +267,8 @@ msgstr ""
 #: adminpages/affiliates.php:358
 #: adminpages/affiliates.php:363
 #: adminpages/affiliates.php:373
+#: adminpages/affiliates.php:372
+#, php-format
 msgid "Use %s to track orders coming in from different sales campaigns and partners."
 msgstr ""
 
@@ -246,6 +276,8 @@ msgstr ""
 #: adminpages/affiliates.php:358
 #: adminpages/affiliates.php:363
 #: adminpages/affiliates.php:373
+#: adminpages/affiliates.php:372
+#, php-format
 msgid "Create your first %s now"
 msgstr ""
 
@@ -265,6 +297,8 @@ msgstr ""
 #: blocks/build/pmpro_affiliates_report/index.js:119
 #: blocks/src/pmpro_affiliates_report/edit.js:51
 #: blocks/build/pmpro_affiliates_report/index.js:51
+#: adminpages/affiliates.php:388
+#: includes/functions.php:168
 msgid "Code"
 msgstr ""
 
@@ -284,6 +318,8 @@ msgstr ""
 #: blocks/build/pmpro_affiliates_report/index.js:137
 #: blocks/src/pmpro_affiliates_report/edit.js:63
 #: blocks/build/pmpro_affiliates_report/index.js:63
+#: adminpages/affiliates.php:389
+#: includes/functions.php:174
 msgid "Name"
 msgstr ""
 
@@ -291,6 +327,7 @@ msgstr ""
 #: adminpages/affiliates.php:376
 #: adminpages/affiliates.php:381
 #: adminpages/affiliates.php:391
+#: adminpages/affiliates.php:390
 msgid "User"
 msgstr ""
 
@@ -298,6 +335,7 @@ msgstr ""
 #: adminpages/affiliates.php:377
 #: adminpages/affiliates.php:382
 #: adminpages/affiliates.php:392
+#: adminpages/affiliates.php:391
 msgid "Cookie"
 msgstr ""
 
@@ -305,6 +343,7 @@ msgstr ""
 #: adminpages/affiliates.php:378
 #: adminpages/affiliates.php:383
 #: adminpages/affiliates.php:393
+#: adminpages/affiliates.php:392
 msgid "Enabled"
 msgstr ""
 
@@ -312,6 +351,7 @@ msgstr ""
 #: adminpages/affiliates.php:379
 #: adminpages/affiliates.php:384
 #: adminpages/affiliates.php:394
+#: adminpages/affiliates.php:393
 msgid "Visits"
 msgstr ""
 
@@ -319,6 +359,7 @@ msgstr ""
 #: adminpages/affiliates.php:381
 #: adminpages/affiliates.php:386
 #: adminpages/affiliates.php:396
+#: adminpages/affiliates.php:395
 msgid "Conversion %"
 msgstr ""
 
@@ -330,6 +371,8 @@ msgstr ""
 #: adminpages/affiliates.php:403
 #: adminpages/affiliates.php:413
 #: adminpages/affiliates.php:423
+#: adminpages/affiliates.php:422
+#, php-format
 msgid "ID: %s"
 msgstr ""
 
@@ -337,6 +380,7 @@ msgstr ""
 #: adminpages/affiliates.php:412
 #: adminpages/affiliates.php:422
 #: adminpages/affiliates.php:432
+#: adminpages/affiliates.php:431
 msgid "Copy"
 msgstr ""
 
@@ -344,6 +388,7 @@ msgstr ""
 #: adminpages/affiliates.php:415
 #: adminpages/affiliates.php:425
 #: adminpages/affiliates.php:435
+#: adminpages/affiliates.php:434
 msgid "Link"
 msgstr ""
 
@@ -351,6 +396,8 @@ msgstr ""
 #: adminpages/affiliates.php:418
 #: adminpages/affiliates.php:428
 #: adminpages/affiliates.php:438
+#: adminpages/affiliates.php:437
+#, php-format
 msgid "Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?"
 msgstr ""
 
@@ -358,6 +405,7 @@ msgstr ""
 #: adminpages/affiliates.php:418
 #: adminpages/affiliates.php:428
 #: adminpages/affiliates.php:438
+#: adminpages/affiliates.php:437
 msgid "Delete"
 msgstr ""
 
@@ -365,6 +413,7 @@ msgstr ""
 #: adminpages/affiliates.php:476
 #: adminpages/affiliates.php:494
 #: adminpages/affiliates.php:498
+#: adminpages/affiliates.php:497
 msgid "Documentation"
 msgstr ""
 
@@ -377,6 +426,8 @@ msgstr ""
 #: pmpro-affiliates.php:873
 #: adminpages/affiliates.php:498
 #: pmpro-affiliates.php:901
+#: adminpages/affiliates.php:497
+#: pmpro-affiliates.php:955
 msgid "Support"
 msgstr ""
 
@@ -394,15 +445,19 @@ msgid "for Code"
 msgstr ""
 
 #: adminpages/report.php:35
+#: adminpages/report.php:47
 msgid "Export to CSV"
 msgstr ""
 
 #: adminpages/report.php:40
+#: adminpages/report.php:51
+#, php-format
 msgid "View All %s Report"
 msgstr ""
 
 #: adminpages/report.php:55
 #: adminpages/report.php:59
+#: adminpages/report.php:70
 msgid "User:"
 msgstr ""
 
@@ -411,6 +466,8 @@ msgstr ""
 #: adminpages/report.php:86
 #: pages/report.php:246
 #: pages/report.php:286
+#: adminpages/report.php:76
+#, php-format
 msgid "No %s signups have been tracked yet."
 msgstr ""
 
@@ -426,6 +483,7 @@ msgstr ""
 #: blocks/build/pmpro_affiliates_report/index.js:128
 #: blocks/src/pmpro_affiliates_report/edit.js:57
 #: blocks/build/pmpro_affiliates_report/index.js:57
+#: includes/functions.php:222
 msgid "Sub-ID"
 msgstr ""
 
@@ -436,6 +494,7 @@ msgstr ""
 #: adminpages/report.php:94
 #: pages/report.php:203
 #: pages/report.php:235
+#: includes/functions.php:177
 msgid "Member"
 msgstr ""
 
@@ -448,6 +507,7 @@ msgstr ""
 #: blocks/build/pmpro_affiliates_report/index.js:164
 #: blocks/src/pmpro_affiliates_report/edit.js:81
 #: blocks/build/pmpro_affiliates_report/index.js:81
+#: includes/functions.php:180
 msgid "Membership Level"
 msgstr ""
 
@@ -463,6 +523,7 @@ msgstr ""
 #: blocks/build/pmpro_affiliates_report/index.js:155
 #: blocks/src/pmpro_affiliates_report/edit.js:75
 #: blocks/build/pmpro_affiliates_report/index.js:75
+#: includes/functions.php:183
 msgid "Date"
 msgstr ""
 
@@ -473,6 +534,7 @@ msgstr ""
 #: adminpages/report.php:99
 #: pages/report.php:215
 #: pages/report.php:265
+#: includes/functions.php:192
 msgid "Order Total"
 msgstr ""
 
@@ -581,11 +643,13 @@ msgstr ""
 
 #: pmpro-affiliates.php:55
 #: pmpro-affiliates.php:57
+#: pmpro-affiliates.php:71
 msgid "affiliate"
 msgstr ""
 
 #: pmpro-affiliates.php:56
 #: pmpro-affiliates.php:58
+#: pmpro-affiliates.php:72
 msgid "affiliates"
 msgstr ""
 
@@ -605,6 +669,8 @@ msgstr ""
 #: pmpro-affiliates.php:339
 #: pmpro-affiliates.php:341
 #: pmpro-affiliates.php:361
+#: pmpro-affiliates.php:355
+#: pmpro-affiliates.php:375
 msgid "Affiliates"
 msgstr ""
 
@@ -613,6 +679,8 @@ msgstr ""
 #: pmpro-affiliates.php:601
 #: pmpro-affiliates.php:609
 #: pmpro-affiliates.php:602
+#: pmpro-affiliates.php:628
+#, php-format
 msgid "Check this if you want to automatically create the %s code for members of this level."
 msgstr ""
 
@@ -621,6 +689,7 @@ msgstr ""
 #: pmpro-affiliates.php:827
 #: pmpro-affiliates.php:860
 #: pmpro-affiliates.php:888
+#: pmpro-affiliates.php:942
 msgid "Manage Affiliates"
 msgstr ""
 
@@ -629,6 +698,7 @@ msgstr ""
 #: pmpro-affiliates.php:839
 #: pmpro-affiliates.php:872
 #: pmpro-affiliates.php:900
+#: pmpro-affiliates.php:954
 msgid "View Documentation"
 msgstr ""
 
@@ -637,6 +707,7 @@ msgstr ""
 #: pmpro-affiliates.php:839
 #: pmpro-affiliates.php:872
 #: pmpro-affiliates.php:900
+#: pmpro-affiliates.php:954
 msgid "Docs"
 msgstr ""
 
@@ -645,87 +716,111 @@ msgstr ""
 #: pmpro-affiliates.php:840
 #: pmpro-affiliates.php:873
 #: pmpro-affiliates.php:901
+#: pmpro-affiliates.php:955
 msgid "Visit Customer Support Forum"
 msgstr ""
 
 #: adminpages/affiliates.php:203
 #: adminpages/affiliates.php:213
+#: adminpages/affiliates.php:212
+#, php-format
 msgid "Edit %s"
 msgstr ""
 
 #: adminpages/affiliates.php:205
 #: adminpages/affiliates.php:215
+#: adminpages/affiliates.php:214
+#, php-format
 msgid "Add New %s"
 msgstr ""
 
 #: adminpages/affiliates.php:248
 #: adminpages/affiliates.php:258
+#: adminpages/affiliates.php:257
 msgid "Commission Rate (%)"
 msgstr ""
 
 #: adminpages/affiliates.php:251
 #: adminpages/affiliates.php:261
+#: adminpages/affiliates.php:260
 msgid "Enter the percentage value of the commission to be earned."
 msgstr ""
 
 #: adminpages/affiliates.php:295
 #: adminpages/affiliates.php:305
+#: adminpages/affiliates.php:304
 msgid "Commission Earned (All time):"
 msgstr ""
 
 #: adminpages/affiliates.php:302
 #: adminpages/affiliates.php:312
+#: adminpages/affiliates.php:311
 msgid "Commission Paid (All time):"
 msgstr ""
 
 #: adminpages/affiliates.php:309
 #: adminpages/affiliates.php:319
+#: adminpages/affiliates.php:318
 msgid "Commission Due:"
 msgstr ""
 
 #: adminpages/affiliates.php:314
 #: adminpages/affiliates.php:324
+#: adminpages/affiliates.php:323
 msgid "view report"
 msgstr ""
 
 #: adminpages/affiliates.php:361
 #: adminpages/affiliates.php:366
 #: adminpages/affiliates.php:376
+#: adminpages/affiliates.php:375
+#, php-format
 msgid "Search %s:"
 msgstr ""
 
 #: adminpages/affiliates.php:380
 #: adminpages/affiliates.php:385
 #: adminpages/affiliates.php:395
+#: adminpages/affiliates.php:394
+#: includes/functions.php:186
 msgid "Commission %"
 msgstr ""
 
 #: adminpages/affiliates.php:383
 #: adminpages/affiliates.php:388
 #: adminpages/affiliates.php:398
+#: adminpages/affiliates.php:397
 msgid "Revenue Contributed"
 msgstr ""
 
 #: adminpages/affiliates.php:393
 #: adminpages/affiliates.php:403
 #: adminpages/affiliates.php:413
+#: adminpages/affiliates.php:412
 msgid "No affiliates found."
 msgstr ""
 
 #: adminpages/report.php:31
+#: adminpages/report.php:42
+#, php-format
 msgid "for All %s"
 msgstr ""
 
 #: adminpages/report.php:33
+#: adminpages/report.php:44
+#, php-format
 msgid "for Code %s"
 msgstr ""
 
 #: adminpages/report.php:54
+#: adminpages/report.php:65
+#, php-format
 msgid "Business/Contact Name: %s"
 msgstr ""
 
 #: adminpages/report.php:90
 #: adminpages/report.php:92
+#: includes/functions.php:171
 msgid "Order"
 msgstr ""
 
@@ -736,11 +831,13 @@ msgstr ""
 
 #: adminpages/report.php:96
 #: adminpages/report.php:98
+#: includes/functions.php:189
 msgid "Commission Earned"
 msgstr ""
 
 #: adminpages/report.php:98
 #: adminpages/report.php:100
+#: includes/functions.php:195
 msgid "Status"
 msgstr ""
 
@@ -750,16 +847,20 @@ msgstr ""
 #: adminpages/report.php:118
 #: pmpro-affiliates.php:656
 #: pmpro-affiliates.php:649
+#: includes/functions.php:208
+#: pmpro-affiliates.php:675
 msgid "Paid"
 msgstr ""
 
 #: adminpages/report.php:112
 #: adminpages/report.php:119
+#: includes/functions.php:209
 msgid "Reset Payment Status"
 msgstr ""
 
 #: adminpages/report.php:115
 #: adminpages/report.php:122
+#: includes/functions.php:212
 msgid "Mark as Paid"
 msgstr ""
 
@@ -771,6 +872,8 @@ msgstr ""
 #: adminpages/report.php:155
 #: pages/report.php:240
 #: pages/report.php:254
+#: includes/functions.php:250
+#: includes/functions.php:261
 msgid "deleted"
 msgstr ""
 
@@ -784,6 +887,7 @@ msgstr ""
 #: pages/report.php:149
 #: pages/report.php:168
 #: pages/report.php:175
+#: classes/class-pmpro-affiliates-member-edit-panel.php:59
 msgid "Commission Earned (All Time)"
 msgstr ""
 
@@ -796,6 +900,7 @@ msgstr ""
 #: pages/report.php:151
 #: pages/report.php:170
 #: pages/report.php:177
+#: classes/class-pmpro-affiliates-member-edit-panel.php:68
 msgid "Commission Due"
 msgstr ""
 
@@ -818,14 +923,19 @@ msgstr ""
 
 #: pages/report.php:257
 #: pages/report.php:304
+#, php-format
 msgid "Add the string %1$1s (first parameter) or %2$2s (second or later parameter) to any link to this site. If you would like to track against specific campaigns, you can add the parameter %3$3s or %4$4s to your URL. Some example links are included below."
 msgstr ""
 
 #: pmpro-affiliates.php:71
+#: pmpro-affiliates.php:85
+#, php-format
 msgid "%s Report"
 msgstr ""
 
 #: pmpro-affiliates.php:73
+#: pmpro-affiliates.php:87
+#, php-format
 msgid "Include the shortcode %s or Affiliate Report block."
 msgstr ""
 
@@ -833,6 +943,8 @@ msgstr ""
 #: pmpro-affiliates.php:594
 #: pmpro-affiliates.php:602
 #: pmpro-affiliates.php:595
+#: pmpro-affiliates.php:609
+#, php-format
 msgid "%s Settings"
 msgstr ""
 
@@ -840,6 +952,8 @@ msgstr ""
 #: pmpro-affiliates.php:598
 #: pmpro-affiliates.php:606
 #: pmpro-affiliates.php:599
+#: pmpro-affiliates.php:625
+#, php-format
 msgid "Automatically create %s code?"
 msgstr ""
 
@@ -847,6 +961,7 @@ msgstr ""
 #: pmpro-affiliates.php:650
 #: pmpro-affiliates.php:658
 #: pmpro-affiliates.php:651
+#: pmpro-affiliates.php:677
 msgid "Payment status reset."
 msgstr ""
 
@@ -854,6 +969,7 @@ msgstr ""
 #: pmpro-affiliates.php:787
 #: pmpro-affiliates.php:795
 #: pmpro-affiliates.php:823
+#: pmpro-affiliates.php:849
 msgid "Affiliate Information"
 msgstr ""
 
@@ -861,6 +977,7 @@ msgstr ""
 #: pmpro-affiliates.php:800
 #: pmpro-affiliates.php:808
 #: pmpro-affiliates.php:836
+#: pmpro-affiliates.php:862
 msgid "Create Affiliate"
 msgstr ""
 
@@ -868,6 +985,7 @@ msgstr ""
 #: pmpro-affiliates.php:802
 #: pmpro-affiliates.php:810
 #: pmpro-affiliates.php:838
+#: pmpro-affiliates.php:864
 msgid "View Report"
 msgstr ""
 
@@ -875,6 +993,8 @@ msgstr ""
 #: pmpro-affiliates.php:803
 #: pmpro-affiliates.php:811
 #: pmpro-affiliates.php:839
+#: classes/class-pmpro-affiliates-member-edit-panel.php:14
+#: pmpro-affiliates.php:865
 msgid "Edit Affiliate"
 msgstr ""
 
@@ -882,6 +1002,7 @@ msgstr ""
 #: pmpro-affiliates.php:811
 #: pmpro-affiliates.php:819
 #: pmpro-affiliates.php:847
+#: pmpro-affiliates.php:873
 msgid "Affiliate Status"
 msgstr ""
 
@@ -982,6 +1103,8 @@ msgstr ""
 
 #: adminpages/affiliates.php:240
 #: adminpages/affiliates.php:250
+#: adminpages/affiliates.php:249
+#, php-format
 msgid "%s User:"
 msgstr ""
 
@@ -1003,11 +1126,98 @@ msgstr ""
 #: blocks/build/pmpro_affiliates_report/index.js:96
 #: blocks/src/pmpro_affiliates_report/edit.js:35
 #: blocks/build/pmpro_affiliates_report/index.js:35
+#: blocks/build/pmpro_affiliates_report/index.js:1
 msgid "Show Conversion Table"
 msgstr ""
 
 #: blocks/build/pmpro_affiliates_report/index.js:103
 #: blocks/src/pmpro_affiliates_report/edit.js:38
 #: blocks/build/pmpro_affiliates_report/index.js:38
+#: blocks/build/pmpro_affiliates_report/index.js:1
 msgid "Show the conversion table"
+msgstr ""
+
+#: adminpages/affiliates.php:196
+msgid "Affiliates Area Menu"
+msgstr ""
+
+#: adminpages/settings.php:45
+msgid "Settings successfully saved."
+msgstr ""
+
+#: adminpages/settings.php:50
+#: pmpro-affiliates.php:612
+msgid "Affiliate Settings"
+msgstr ""
+
+#: classes/class-pmpro-affiliates-member-edit-panel.php:8
+msgid "Affiliate"
+msgstr ""
+
+#: classes/class-pmpro-affiliates-member-edit-panel.php:14
+msgid "View Full Report"
+msgstr ""
+
+#: classes/class-pmpro-affiliates-member-edit-panel.php:27
+msgid "This member is not an affiliate."
+msgstr ""
+
+#: classes/class-pmpro-affiliates-member-edit-panel.php:77
+msgid "Commission Paid"
+msgstr ""
+
+#: classes/class-pmpro-affiliates-member-edit-panel.php:86
+msgid "Conversion Rate"
+msgstr ""
+
+#: classes/class-pmpro-affiliates-member-edit-panel.php:94
+msgid "Recent Referral Orders"
+msgstr ""
+
+#: classes/class-pmpro-affiliates-member-edit-panel.php:101
+msgid "No referral orders have been tracked yet."
+msgstr ""
+
+#: includes/functions.php:332
+msgid "First page"
+msgstr ""
+
+#: includes/functions.php:336
+msgid "Previous page"
+msgstr ""
+
+#: includes/functions.php:341
+msgid "Current Page"
+msgstr ""
+
+#. translators: 1: Current page number, 2: Total pages.
+#: includes/functions.php:347
+#, php-format
+msgid "%1$s of %2$s"
+msgid_plural "%1$s of %2$s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/functions.php:360
+msgid "Next page"
+msgstr ""
+
+#: includes/functions.php:364
+msgid "Last page"
+msgstr ""
+
+#: pmpro-affiliates.php:612
+msgid "Lightweight Affiliate Tracking Documentation"
+msgstr ""
+
+#. translators: %s: Affiliate Settings link.
+#: pmpro-affiliates.php:616
+#, php-format
+msgid "Learn more about %s."
+msgstr ""
+
+#: blocks/build/pmpro_affiliates_report/block.json
+#: blocks/src/pmpro_affiliates_report/block.json
+msgctxt "block description"
+msgid "Frontend affiliates report for PMPro."
 msgstr ""
