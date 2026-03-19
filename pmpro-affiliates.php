@@ -894,6 +894,34 @@ function pmpro_affiliates_get_commission_calculation_source() {
 	return $source;
 }
 
+/**
+ * Adds an Affiliate member panel.
+ * 
+ * @since TBD
+ *
+ * @param array $panels The existing member edit panels.
+ * @return array The modified member edit panels.
+ */
+function pmpro_affiliates_pmpro_member_edit_panels( $panels ) {
+
+	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
+
+	// Let's check if the member is an affiliate before we add the panel.
+	$affiliates = pmpro_affiliates_getAffiliatesForUser( $user_id );
+	if ( empty( $affiliates ) ) {
+		return $panels;
+	}
+
+	// If the class doesn't exist and the abstract class does, require the class.
+	require_once( PMPRO_AFFILIATES_DIR . '/classes/class-pmpro-affiliates-member-edit-panel.php' );
+	$panels[] = new PMPRO_AFFILIATES_Member_Edit_Panel();
+	
+
+	return $panels;
+}
+add_filter( 'pmpro_member_edit_panels', 'pmpro_affiliates_pmpro_member_edit_panels' );
+
+
 /*
 Function to add links to the plugin action links
 */
