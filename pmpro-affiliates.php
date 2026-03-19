@@ -14,8 +14,9 @@ define( 'PMPRO_AFFILIATES_VERSION', '0.7' );
 define( 'PMPRO_AFFILIATES_DIR', dirname( __FILE__ ) );
 
 require_once dirname( __FILE__ ) . '/pages/report.php';
-require_once dirname( __FILE__ ) . '/includes/functions.php';
 require_once dirname( __FILE__ ) . '/includes/blocks.php';
+require_once dirname( __FILE__ ) . '/includes/scheduled-actions.php';
+require_once dirname( __FILE__ ) . '/includes/functions.php';
 
 /**
  * Load the languages folder for translations.
@@ -24,21 +25,6 @@ function pmpro_affiliates_load_textdomain() {
 	load_plugin_textdomain( 'pmpro-affiliates', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 add_action( 'plugins_loaded', 'pmpro_affiliates_load_textdomain' );
-
-/**
- * Enqueue admin styles.
- *
- * @since TBD
- */
-function pmpro_affiliates_admin_enqueue_styles() {
-	wp_enqueue_style(
-		'pmpro-affiliates-admin',
-		plugins_url( 'includes/css/admin.css', __FILE__ ),
-		array(),
-		PMPRO_AFFILIATES_VERSION
-	);
-}
-add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_admin_enqueue_styles' );
 
 // require Paid Memberships Pro
 function pmpro_affiliates_dependencies() {
@@ -51,6 +37,19 @@ function pmpro_affiliates_dependencies() {
 	}
 }
 add_action( 'init', 'pmpro_affiliates_dependencies' );
+
+/**
+ * Enqueue admin styles for the Affiliates add on.
+ */
+function pmpro_affiliates_admin_enqueue_styles() {
+	wp_enqueue_style(
+		'pmpro-affiliates-admin',
+		plugins_url( 'includes/css/admin.css', __FILE__ ),
+		array(),
+		PMPRO_AFFILIATES_VERSION
+	);
+}
+add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_admin_enqueue_styles' );
 
 // setup options
 function pmpro_affiliates_set_wpdb() {
@@ -608,18 +607,6 @@ function pmpro_affiliates_pmpro_membership_level_after_other_settings() {
 	}
 	?>
 <h2 class="topborder"><?php echo esc_html( sprintf( esc_html__( '%s Settings', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_singular_name ) ) ); ?></h2>
-<p>
-	<?php
-	$affiliate_settings_link = '<a title="' . esc_attr__( 'Lightweight Affiliate Tracking Documentation', 'pmpro-affiliates' ) . '" target="_blank" rel="nofollow noopener" href="https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/?utm_source=plugin&utm_medium=pmpro-affiliates&utm_campaign=add-ons">' . esc_html__( 'Affiliate Settings', 'pmpro-affiliates' ) . '</a>';
-	echo wp_kses_post(
-		sprintf(
-			/* translators: %s: Affiliate Settings link. */
-			__( 'Learn more about %s.', 'pmpro-affiliates' ),
-			$affiliate_settings_link
-		)
-	);
-	?>
-</p>
 <table>
 <tbody class="form-table">
 	<tr>
@@ -663,8 +650,8 @@ add_action( 'wp_enqueue_scripts', 'pmpro_affiliates_enqueue_scripts' );
  * Register scripts needed for admin area.
  */
 function pmpro_affiliates_register_scripts_styles() {
-	// Only load script on PMPro affiliates pages and member edit page.
-	if ( ! isset( $_REQUEST['page'] ) || ( $_REQUEST['page'] != 'pmpro-affiliates' && $_REQUEST['page'] != 'pmpro-member' ) ) {
+	// Only load script on PMPro affiliates pages.
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) {
 		return;
 	}
 
@@ -906,33 +893,6 @@ function pmpro_affiliates_get_commission_calculation_source() {
 
 	return $source;
 }
-
-/**
- * Adds an Affiliate member panel.
- * 
- * @since TBD
- *
- * @param array $panels The existing member edit panels.
- * @return array The modified member edit panels.
- */
-function pmpro_affiliates_pmpro_member_edit_panels( $panels ) {
-
-	$user_id = PMPro_Member_Edit_Panel::get_user()->ID;
-
-	// Let's check if the member is an affiliate before we add the panel.
-	$affiliates = pmpro_affiliates_getAffiliatesForUser( $user_id );
-	if ( empty( $affiliates ) ) {
-		return $panels;
-	}
-
-	// If the class doesn't exist and the abstract class does, require the class.
-	require_once( PMPRO_AFFILIATES_DIR . '/classes/class-pmpro-affiliates-member-edit-panel.php' );
-	$panels[] = new PMPRO_AFFILIATES_Member_Edit_Panel();
-	
-
-	return $panels;
-}
-add_filter( 'pmpro_member_edit_panels', 'pmpro_affiliates_pmpro_member_edit_panels' );
 
 /*
 Function to add links to the plugin action links
