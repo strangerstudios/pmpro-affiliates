@@ -1,10 +1,14 @@
 <?php	
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 	$pmpro_affiliates_plural_name = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
 
-	if ( isset( $_REQUEST['report'] ) ) {	
-		$report = sanitize_text_field( $_REQUEST['report'] );
+	if ( isset( $_REQUEST['report'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only report view.
+		$report = sanitize_text_field( wp_unslash( $_REQUEST['report'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only report view.
 	} else {
 		$report = false;
 	}
@@ -12,7 +16,7 @@
 	if ( $report && $report != "all" ) {
 		//get values from DB
 		$affiliate_id = $report;		
-		$affiliate = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . intval( $affiliate_id ) . "' LIMIT 1" );
+		$affiliate = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . intval( $affiliate_id ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value is intval() inside quotes.
 		if ( ! empty( $affiliate ) && ! empty( $affiliate->id ) ) {
 			$code = $affiliate->code;
 			$name = $affiliate->name;
@@ -24,7 +28,7 @@
 	}	
 
 	// Get current page for pagination.
-	$paged = isset( $_REQUEST['paged'] ) ? max( 1, intval( $_REQUEST['paged'] ) ) : 1;
+	$paged = isset( $_REQUEST['paged'] ) ? max( 1, intval( $_REQUEST['paged'] ) ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only pagination.
 
 	/**
 	 * Filter the number of orders to show per page.

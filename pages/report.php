@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /*
 	Preheader
 */
@@ -16,7 +20,7 @@ function pmpro_affiliates_report_preheader() {
 
 			// no affiliates, get out of here
 			if ( empty( $pmpro_affiliates ) ) {
-				wp_redirect( pmpro_url( 'account' ) );
+				wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite (e.g. Network Subsite).
 				exit;
 			}
 		}
@@ -80,8 +84,8 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 	$pmpro_affiliates_plural_name   = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
 
-	if ( ! empty( $_REQUEST['report'] ) ) {
-		$report = intval( $_REQUEST['report'] );
+	if ( ! empty( $_REQUEST['report'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only report view; access is checked below.
+		$report = intval( $_REQUEST['report'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only report view; access is checked below.
 	} else {
 		$report = null;
 	}
@@ -92,17 +96,17 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 
 	if ( $report ) {
 		// show report
-		$affiliate = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . $report . "' LIMIT 1" );
+		$affiliate = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . $report . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- $report is intval().
 
 		// no affiliate found?
 		if ( empty( $affiliate ) ) {
-			wp_redirect( pmpro_url( 'account' ) );
+			wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite (e.g. Network Subsite).
 			exit;
 		}
 
 		// make sure admin or affiliate user
 		if ( ! current_user_can( 'manage_options' ) && $current_user->user_login != $affiliate->affiliateuser ) {
-			wp_redirect( pmpro_url( 'account' ) );
+			wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite (e.g. Network Subsite).
 			exit;
 		}
 	}
@@ -125,7 +129,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 					if ( $report != 'all' ) {
 						$sqlQuery .= " AND a.id = '" . esc_sql( $report ) . "' ";
 					}
-					$affiliate_orders = $wpdb->get_results( $sqlQuery );
+					$affiliate_orders = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Column whitelisted to total/subtotal; $report is intval().
 
 					if ( ! empty( $affiliate_orders ) ) {
 
@@ -147,7 +151,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 											<tr>
 												<td data-title="<?php esc_html_e( 'Commission Rate', 'pmpro-affiliates' ); ?>"><?php echo esc_html( $affiliate->commissionrate * 100 . "%" ); ?></td>
 												<td data-title="<?php esc_html_e( 'Visits (All Time)', 'pmpro-affiliates' ); ?>"><?php echo esc_html( $affiliate->visits ); ?></td>
-												<td data-title="<?php esc_html_e( 'Conversion Rating (All Time)', 'pmpro-affiliates' ); ?>"><?php echo pmpro_affiliates_get_conversion_rate( $affiliate ); ?></td>
+												<td data-title="<?php esc_html_e( 'Conversion Rating (All Time)', 'pmpro-affiliates' ); ?>"><?php echo esc_html( pmpro_affiliates_get_conversion_rate( $affiliate ) ); ?></td>
 											</tr>
 										</tbody>
 									</table> <!-- end pmpro_table -->

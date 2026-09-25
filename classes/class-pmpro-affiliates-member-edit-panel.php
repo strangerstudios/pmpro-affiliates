@@ -86,7 +86,7 @@ class PMPRO_AFFILIATES_Member_Edit_Panel extends PMPro_Member_Edit_Panel {
 						<h2 class="pmpro-affiliates-stat-title"><?php esc_html_e( 'Conversion Rate', 'pmpro-affiliates' ); ?></h2>
 					</div>
 					<div class="inside">
-						<p class="pmpro-affiliates-stat-value"><?php echo pmpro_affiliates_get_conversion_rate( $affiliate ); ?></p>
+						<p class="pmpro-affiliates-stat-value"><?php echo esc_html( pmpro_affiliates_get_conversion_rate( $affiliate ) ); ?></p>
 					</div>
 				</div>
 			</div>		

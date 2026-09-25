@@ -1,8 +1,12 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 	global $wpdb, $pmpro_currency_symbol, $current_user;
 
-if ( isset( $_REQUEST['report'] ) ) {
-	$report = sanitize_text_field( $_REQUEST['report'] );
+if ( isset( $_REQUEST['report'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only CSV export; no state change.
+	$report = sanitize_text_field( wp_unslash( $_REQUEST['report'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only CSV export; no state change.
 } else {
 	$report = false;
 }
@@ -10,7 +14,7 @@ if ( isset( $_REQUEST['report'] ) ) {
 if ( $report && $report !== 'all' ) {
 	// Get values from DB.
 	$affiliate_id = $report;
-	$affiliate    = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . intval( $affiliate_id ) . "' LIMIT 1" );
+	$affiliate    = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . intval( $affiliate_id ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value is intval() inside quotes.
 	if ( ! empty( $affiliate ) && ! empty( $affiliate->id ) ) {
 		$code          = $affiliate->code;
 		$name          = $affiliate->name;
@@ -46,7 +50,7 @@ if ( ! function_exists( 'current_user_can' )
 if ( $report !== 'all' ) {
 	$sql_query .= " AND a.id = '" . esc_sql( $report ) . "' ";
 }
-	$affiliate_orders = $wpdb->get_results( $sql_query );
+	$affiliate_orders = $wpdb->get_results( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Column whitelisted to total/subtotal; report ID escaped with esc_sql() inside quotes.
 
 	// Begin output.
 	header( 'Content-type: text/csv' );
@@ -74,7 +78,7 @@ if ( $report !== 'all' ) {
 	 */
 	$headings = apply_filters( 'pmpro_affiliate_list_csv_extra_columns', $headings ); // Add to the string.
 
-	echo implode( ',', $headings ) . "\n";
+	echo implode( ',', $headings ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV download (text/csv), not HTML.
 
 	if ( ! empty( $affiliate_orders ) ) {
 		global $pmpro_currency_symbol;
@@ -103,7 +107,7 @@ if ( $report !== 'all' ) {
 			 */
 			$pmpro_affiliate_report_data = apply_filters( 'pmpro_affiliate_list_csv_extra_column_data', $pmpro_affiliate_report_data, $order, $level );
 
-			echo implode( ',', $pmpro_affiliate_report_data ) . "\n";
+			echo implode( ',', $pmpro_affiliate_report_data ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV download (text/csv), not HTML.
 		}
 	}
 

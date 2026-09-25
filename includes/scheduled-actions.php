@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Finds every membership level that has "Automatically create affiliate code"
  * enabled and dispatches the per-level backfill for it.
@@ -9,7 +13,7 @@ function pmpro_affiliates_backfill_missing() {
 	global $wpdb;
 
 	// Query the options table directly so we don't need to loop over every level.
-	$options = $wpdb->get_results(
+	$options = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query; batch backfill runs hourly.
 		"SELECT option_name, option_value
 		 FROM {$wpdb->options}
 		 WHERE option_name LIKE 'pmpro_create_affiliate_level_%'
@@ -55,7 +59,7 @@ function pmpro_affiliates_backfill_for_level( $level_id ) {
 	 */
 	$limit = intval( apply_filters( 'pmpro_affiliates_backfill_batch_size', 50 ) );
 
-	$users = $wpdb->get_results(
+	$users = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Prepared; batch backfill runs hourly.
 		$wpdb->prepare(
 			"SELECT u.ID, u.display_name, u.user_login
 			 FROM {$wpdb->users} u
@@ -100,7 +104,7 @@ function pmpro_affiliates_backfill_for_level( $level_id ) {
 		 */
 		$commissionrate = intval( apply_filters( 'pmpro_affiliate_default_commission_rate', 5 ) ) / 100;
 
-		$wpdb->insert(
+		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Plugin custom table insert.
 			$wpdb->pmpro_affiliates,
 			array(
 				'code'           => $code,

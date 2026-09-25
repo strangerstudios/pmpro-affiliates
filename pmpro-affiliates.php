@@ -10,6 +10,10 @@ Text Domain: pmpro-affiliates
 Domain Path: /languages
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define( 'PMPRO_AFFILIATES_VERSION', '0.8' );
 define( 'PMPRO_AFFILIATES_DIR', dirname( __FILE__ ) );
 
@@ -118,7 +122,7 @@ function pmpro_affiliates_checkDB() {
 	global $wpdb, $table_prefix;
 	$wpdb->hide_errors();
 	$wpdb->pmpro_affiliates = $table_prefix . 'pmpro_affiliates';
-	$table_exists           = $wpdb->query( "SHOW TABLES LIKE '" . $wpdb->pmpro_affiliates . "'" );
+	$table_exists           = $wpdb->query( "SHOW TABLES LIKE '" . $wpdb->pmpro_affiliates . "'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema check on the plugin's own table; name comes from $table_prefix.
 	if ( ! $table_exists ) {
 		$db_version = 0;
 	}
@@ -162,18 +166,20 @@ add_action( 'admin_init', 'pmpro_affiliates_checkDB', 20 );
 // check for affiliate code
 function pmpro_affiliates_wp_head() {
 	global $pmpro_affiliate_code, $pmpro_affiliate_subid;
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Public referral link parameters; read-only tracking, no nonce is possible.
 	if ( ! empty( $_REQUEST['pa'] ) ) {
-		$pmpro_affiliate_code = preg_replace( '[^a-zA-Z0-9]', '', $_REQUEST['pa'] );
+		$pmpro_affiliate_code = preg_replace( '[^a-zA-Z0-9]', '', sanitize_text_field( wp_unslash( $_REQUEST['pa'] ) ) );
 	}
 	if ( ! empty( $_REQUEST['subid'] ) ) {
-		$pmpro_affiliate_subid = preg_replace( '[^a-zA-Z0-9]', '', $_REQUEST['subid'] );
+		$pmpro_affiliate_subid = preg_replace( '[^a-zA-Z0-9]', '', sanitize_text_field( wp_unslash( $_REQUEST['subid'] ) ) );
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	if ( ! empty( $pmpro_affiliate_code ) ) {
 		global $wpdb;
 
 		// check that the code is enabled
-		$affiliate_enabled = $wpdb->get_var( "SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $pmpro_affiliate_code ) . "' LIMIT 1" );
+		$affiliate_enabled = $wpdb->get_var( "SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $pmpro_affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 		if ( ! empty( $affiliate_enabled ) ) {
 			// build cookie string
 			$cookiestring = $pmpro_affiliate_code;
@@ -183,11 +189,11 @@ function pmpro_affiliates_wp_head() {
 
 			// track the visit
 			if ( empty( $_COOKIE['pmpro_affiliate'] ) ) {
-				$wpdb->query( "UPDATE $wpdb->pmpro_affiliates SET visits = visits + 1 WHERE code = '" . esc_sql( $pmpro_affiliate_code ) . "' LIMIT 1" );
+				$wpdb->query( "UPDATE $wpdb->pmpro_affiliates SET visits = visits + 1 WHERE code = '" . esc_sql( $pmpro_affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 			}
 
 			// how long?
-			$cookielength = $wpdb->get_var( "SELECT cookiedays FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $pmpro_affiliate_code ) . "' LIMIT 1" );
+			$cookielength = $wpdb->get_var( "SELECT cookiedays FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $pmpro_affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 			?>
 			<script type="text/javascript" language="javascript">
 					var today = new Date();
@@ -217,25 +223,25 @@ function pmpro_affiliates_pmpro_added_order( $order, $savefirst = false ) {
 			$affiliate_id    = $first_order->affiliate_id;
 			$affiliate_subid = $first_order->affiliate_subid;
 
-			$affiliate_code = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_affiliates WHERE id = '" . esc_sql( $affiliate_id ) . "' LIMIT 1" );
+			$affiliate_code = $wpdb->get_var( "SELECT code FROM $wpdb->pmpro_affiliates WHERE id = '" . esc_sql( $affiliate_id ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 		}
 	}
 
 	// check for cookie
 	if ( empty( $affiliate_code ) && ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
-		$parts          = explode( ',', $_COOKIE['pmpro_affiliate'] );
+		$parts          = explode( ',', sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) ) );
 		$affiliate_code = sanitize_text_field( $parts[0] );
 		if ( isset( $parts[1] ) ) {
 			$affiliate_subid = sanitize_text_field( $parts[1] );
 		} else {
 			$affiliate_subid = '';
 		}
-		$affiliate_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
+		$affiliate_id = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 	}
 
 	if ( ! empty( $affiliate_code ) ) {
 		// check that it is enabled
-		$affiliate_enabled = $wpdb->get_var( "SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
+		$affiliate_enabled = $wpdb->get_var( "SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 		if ( ! $affiliate_enabled ) {
 			return; // don't do anything
 		} else {
@@ -246,8 +252,7 @@ function pmpro_affiliates_pmpro_added_order( $order, $savefirst = false ) {
 
 			// update order in the database
 			if ( ! empty( $order->id ) ) {
-				$sqlQuery = "UPDATE $wpdb->pmpro_membership_orders SET affiliate_id = '" . esc_sql( $affiliate_id ) . "', affiliate_subid = '" . esc_sql( $affiliate_subid ) . "' WHERE id = " . esc_sql( $order->id ) . ' LIMIT 1';
-				$wpdb->query( $sqlQuery );
+				$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->pmpro_membership_orders SET affiliate_id = %s, affiliate_subid = %s WHERE id = %d LIMIT 1", $affiliate_id, $affiliate_subid, $order->id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro orders table; prepared.
 			}
 		}
 	}
@@ -297,7 +302,7 @@ function pmpro_affiliates_generate_affiliate_after_checkout( $user_id, $morder )
 		 */
 		$days     = intval( apply_filters( 'pmproaf_default_cookie_duration', 30, $user_id, $pmpro_level ) );
 		$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql( $code ) . "', '" . esc_sql( $user->display_name ) . "', '" . esc_sql( $user->user_login ) . "', '', $days, '1')";
-		$wpdb->query( $sqlQuery );
+		$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- All values escaped with esc_sql() inside quotes; $days is intval().
 	}
 }
 add_action( 'pmpro_after_checkout', 'pmpro_affiliates_generate_affiliate_after_checkout', 10, 2 );
@@ -306,15 +311,15 @@ add_action( 'pmpro_after_checkout', 'pmpro_affiliates_generate_affiliate_after_c
 function pmpro_affiliates_pmpro_confirmation_message( $message ) {
 	global $current_user, $wpdb, $pmpro_affiliates, $pmpro_pages;
 	if ( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
-		$parts          = explode( ',', $_COOKIE['pmpro_affiliate'] );
+		$parts          = explode( ',', sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) ) );
 		$affiliate_code = sanitize_text_field( $parts[0] );
 
 		if ( ! empty( $affiliate_code ) ) {
 			global $current_user, $wpdb;
 
-			$affiliate_enabled = $wpdb->get_var( "SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
+			$affiliate_enabled = $wpdb->get_var( "SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 			if ( $affiliate_enabled ) {
-				$tracking_code = $wpdb->get_var( "SELECT trackingcode FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
+				$tracking_code = $wpdb->get_var( "SELECT trackingcode FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 				if ( ! empty( $tracking_code ) ) {
 					// filter
 					$order = new MemberOrder();
@@ -431,16 +436,17 @@ function pmpro_affiliates_set_discount_code() {
 		return;
 	}
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Checkout page routing; only reads referral/discount code parameters.
 	//checkout page
 	if(  !isset( $_REQUEST['discount_code'] ) && ( ! empty( $_COOKIE['pmpro_affiliate'] ) || ! empty( $_REQUEST['pa'] ) ) ) {
 		if( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
-			$affiliate_code = sanitize_text_field( $_COOKIE['pmpro_affiliate'] );
+			$affiliate_code = sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) );
 		} else {
-			$affiliate_code = sanitize_text_field( $_REQUEST['pa'] );
+			$affiliate_code = sanitize_text_field( wp_unslash( $_REQUEST['pa'] ) );
 		}
 
 		//set the discount code if there is an affiliate cookie
-		$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
+		$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 		if( ! empty( $exists ) ) {
 			//check that the code is applicable for this level
 			if( ! empty( $pmpro_level ) ) {
@@ -460,18 +466,19 @@ function pmpro_affiliates_set_discount_code() {
 		}
 	} elseif( ! empty( $_REQUEST['discount_code'] ) && empty( $_REQUEST['pa'] ) && empty( $_COOKIE['pmpro_affiliate'] ) ) {
 		//set the affiliate id to the discount code
-		$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $_REQUEST['discount_code'] ) . "' LIMIT 1" );
+		$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( sanitize_text_field( wp_unslash( $_REQUEST['discount_code'] ) ) ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 		if( ! empty( $exists ) ) {
 			//set the affiliate id passed in to the discount code
-			$_REQUEST['pa'] = sanitize_text_field( $_REQUEST['discount_code'] );
+			$_REQUEST['pa'] = sanitize_text_field( $_REQUEST['discount_code'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Written back to a superglobal, so it stays slashed; readers call wp_unslash().
 
 			// set the cookie to the discount code
-			$_COOKIE['pmpro_affiliate'] = sanitize_text_field( $_REQUEST['discount_code'] );
+			$_COOKIE['pmpro_affiliate'] = sanitize_text_field( $_REQUEST['discount_code'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Written back to a superglobal, so it stays slashed; readers call wp_unslash().
 			
 			//prevent caching of this page load
 			add_action( 'send_headers', 'nocache_headers' );
 		}
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 add_action( 'init', 'pmpro_affiliates_set_discount_code', 30 );
 
@@ -489,16 +496,16 @@ function pmpro_affiliates_default_discount_code( $code, $level_id ) {
 
 	// Get the affiliate code.
 	if( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
-		$affiliate_code = sanitize_text_field( $_COOKIE['pmpro_affiliate'] );
-	} elseif ( ! empty( $_REQUEST['pa'] ) ) {
-		$affiliate_code = sanitize_text_field( $_REQUEST['pa'] );
+		$affiliate_code = sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) );
+	} elseif ( ! empty( $_REQUEST['pa'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public referral link parameter; read-only.
+		$affiliate_code = sanitize_text_field( wp_unslash( $_REQUEST['pa'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public referral link parameter; read-only.
 	} else {
 		// No affiliate set. Return the code that was passed.
 		return $code;
 	}
 
 	// Check if the affiliate code exists.
-	$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" );
+	$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 	if ( empty( $exists ) ) {
 		// The discount code for this affiliate does not exist. Return the code that was passed.
 		return $code;
@@ -538,7 +545,7 @@ function pmpro_affiliates_discount_code_level( $level ) {
 	}
 
 	// Check if the affiliate exists.
-	$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $level->discount_code ) . "' LIMIT 1" );
+	$exists = $wpdb->get_var( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $level->discount_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 	if ( empty( $exists ) ) {
 		// The discount code for this affiliate does not exist. Return the level object.
 		return $level;
@@ -582,7 +589,7 @@ function pmpro_affiliates_getAffiliatesForUser( $user_id = null ) {
 	}
 
 	global $wpdb;
-	$affiliates = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_affiliates WHERE affiliateuser = '" . esc_sql( $user_login ) . "' and enabled = '1' " );
+	$affiliates = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_affiliates WHERE affiliateuser = '" . esc_sql( $user_login ) . "' and enabled = '1' " ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 
 	if ( ! empty( $affiliates ) ) {
 		return $affiliates;
@@ -599,7 +606,7 @@ function pmpro_affiliates_pmpro_membership_level_after_other_settings() {
 	$pmpro_affiliates_settings      = pmpro_affiliates_get_settings();
 	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
 
-	$level_id = intval( $_REQUEST['edit'] );
+	$level_id = isset( $_REQUEST['edit'] ) ? intval( $_REQUEST['edit'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only; level ID for display on the PMPro edit level page.
 	if ( $level_id > 0 ) {
 		$pmpro_create_affiliate_level = get_option( 'pmpro_create_affiliate_level_' . $level_id );
 	} else {
@@ -636,11 +643,13 @@ add_action( 'pmpro_membership_level_after_other_settings', 'pmpro_affiliates_pmp
 
 // save affiliate auto-creationg setting when the level is saved/added
 function pmpro_affiliate_pmpro_save_membership_level( $level_id ) {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- PMPro core verifies pmpro_membershiplevels_nonce (adminpages/membershiplevels.php) before firing pmpro_save_membership_level.
 	if ( isset( $_REQUEST['pmpro_create_affiliate_level'] ) ) {
 		$pmpro_create_affiliate_level = intval( $_REQUEST['pmpro_create_affiliate_level'] );
 	} else {
 		$pmpro_create_affiliate_level = 0;
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	update_option( 'pmpro_create_affiliate_level_' . $level_id, $pmpro_create_affiliate_level );
 }
 add_action( 'pmpro_save_membership_level', 'pmpro_affiliate_pmpro_save_membership_level' );
@@ -663,7 +672,7 @@ add_action( 'wp_enqueue_scripts', 'pmpro_affiliates_enqueue_scripts' );
  */
 function pmpro_affiliates_register_scripts_styles() {
 	// Only load script on PMPro affiliates pages.
-	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) {
+	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin page check for enqueueing assets.
 		return;
 	}
 
@@ -691,12 +700,12 @@ add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_register_scripts_styles' 
 function pmpro_affiliates_mark_as_paid() {
 
 	// check the nonce, if it's not valid bail.
-	$nonce = $_REQUEST['_wpnonce'];
+	$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This is the nonce; it is verified on the next line.
 	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_mark_as_paid') ) {
 		return;
 	}
 
-	$order_id = (int) $_REQUEST['order_id'];
+	$order_id = isset( $_REQUEST['order_id'] ) ? (int) $_REQUEST['order_id'] : 0;
 	update_pmpro_membership_order_meta( $order_id, 'pmpro_affiliate_paid', true );
 	exit;
 }
@@ -711,12 +720,12 @@ add_action( 'wp_ajax_pmpro_affiliates_mark_as_paid', 'pmpro_affiliates_mark_as_p
 function pmpro_affiliates_reset_paid_status() {
 
 	// check the nonce, if it's not valid bail.
-	$nonce = $_REQUEST['_wpnonce'];
+	$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This is the nonce; it is verified on the next line.
 	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_reset_paid_status' ) ) {
 		return;
 	}
 
-	$order_id = (int) $_REQUEST['order_id'];
+	$order_id = isset( $_REQUEST['order_id'] ) ? (int) $_REQUEST['order_id'] : 0;
 	delete_pmpro_membership_order_meta( $order_id, 'pmpro_affiliate_paid', NULL );
 	exit;
 }
@@ -731,9 +740,9 @@ add_action( 'wp_ajax_pmpro_affiliates_reset_paid_status', 'pmpro_affiliates_rese
 function pmpro_affiliates_autocomplete_user_search() {
 
 	// Verify the nonce for this action.
-	wp_verify_nonce( $_REQUEST['search_nonce'], 'pmpro_affiliates_search_nonce' );
+	wp_verify_nonce( isset( $_REQUEST['search_nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['search_nonce'] ) ) : '', 'pmpro_affiliates_search_nonce' );
 
-	$search = sanitize_text_field( $_REQUEST['search'] );
+	$search = isset( $_REQUEST['search'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['search'] ) ) : '';
 	$search_limit = apply_filters( 'pmpro_affiliates_autocomplete_user_search_limit', 25 );
 
 	$user_query = new WP_User_Query( 
@@ -789,7 +798,7 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 
 	$sql_query .= " GROUP BY o.code";
 
-	$commission_data = $wpdb->get_results( $sql_query );
+	$commission_data = $wpdb->get_results( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Column is whitelisted to total/subtotal; code escaped with esc_sql() inside quotes.
 
 	// Loop through commission data and calculate the total paid commissions.
 	if ( ! empty( $commission_data ) ) {
@@ -818,7 +827,7 @@ function pmpro_affiliates_get_conversion_rate( $affiliate ) {
 	}
 
 	// Calculate the number of orders for this affiliate.
-	$norders = $wpdb->get_var( 
+	$norders = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro orders table; prepared.
 		$wpdb->prepare( 
 			"SELECT COUNT(%s) FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = %d AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')", 
 			pmpro_affiliates_get_commission_calculation_source(), 

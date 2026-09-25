@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Upgrade for version 0.6
  * Update the database to support commission rates.
@@ -22,7 +26,7 @@ function pmpro_affiliates_upgrade_0_6() {
 	$sqlQuery = "
 		ALTER TABLE  `" . $wpdb->pmpro_affiliates . "` ADD  `commissionrate` decimal(10,2) NOT NULL DEFAULT '0.00' AFTER  `enabled`;
 	";
-	$wpdb->query( $sqlQuery );
+	$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Static schema upgrade on the plugin's own table.
 
     $affiliate_options['db_version'] = '0.6';
     update_option( 'pmpro_affiliates_options', $affiliate_options, false );
