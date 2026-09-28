@@ -699,9 +699,9 @@ add_action( 'admin_enqueue_scripts', 'pmpro_affiliates_register_scripts_styles' 
  */
 function pmpro_affiliates_mark_as_paid() {
 
-	// check the nonce, if it's not valid bail.
+	// check the nonce and the user's capability, if either is not valid bail.
 	$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This is the nonce; it is verified on the next line.
-	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_mark_as_paid') ) {
+	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_mark_as_paid') || ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 
@@ -719,9 +719,9 @@ add_action( 'wp_ajax_pmpro_affiliates_mark_as_paid', 'pmpro_affiliates_mark_as_p
  */
 function pmpro_affiliates_reset_paid_status() {
 
-	// check the nonce, if it's not valid bail.
+	// check the nonce and the user's capability, if either is not valid bail.
 	$nonce = isset( $_REQUEST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This is the nonce; it is verified on the next line.
-	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_reset_paid_status' ) ) {
+	if ( ! wp_verify_nonce( $nonce, 'pmpro_affiliates_reset_paid_status' ) || ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 

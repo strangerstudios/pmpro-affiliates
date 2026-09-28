@@ -34,6 +34,16 @@ if ( isset( $_REQUEST['pmpro_affiliates_recurring'] ) ) {
 	$pmpro_affiliates_recurring = sanitize_text_field( $pmpro_affiliates_settings['pmpro_affiliates_recurring'] );
 }
 
+// Verify the nonce before saving. On failure, keep the submitted values in the form so they can be saved again.
+if ( ! empty( $save ) && ( empty( $_REQUEST['pmpro_affiliates_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['pmpro_affiliates_nonce'] ) ), 'pmpro_affiliates_save_settings' ) ) ) {
+	$save = false;
+	?>
+		<div id="message" class="error">
+			<p><?php esc_html_e( 'Your session has expired. Please try again.', 'pmpro-affiliates' ); ?></p>
+		</div>
+	<?php
+}
+
 //get form values
 if(!empty($save))
 {
@@ -84,6 +94,7 @@ if(!empty($save))
 
 	<p class="submit">
 		<input name="save" type="hidden" value="1" />
+		<?php wp_nonce_field( 'pmpro_affiliates_save_settings', 'pmpro_affiliates_nonce' ); ?>
 		<input type="submit" class="button button-primary" value="<?php esc_html_e('Save Settings', 'pmpro-affiliates'); ?>" />
 	</p>
 </form>
