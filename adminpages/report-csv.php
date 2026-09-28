@@ -5,8 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	global $wpdb, $pmpro_currency_symbol, $current_user;
 
-if ( isset( $_REQUEST['report'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only CSV export; no state change.
-	$report = sanitize_text_field( wp_unslash( $_REQUEST['report'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only CSV export; no state change.
+if ( isset( $_REQUEST['report'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- The nonce is verified below, before any data is exported.
+	$report = sanitize_text_field( wp_unslash( $_REQUEST['report'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- The nonce is verified below, before any data is exported.
 } else {
 	$report = false;
 }
@@ -25,10 +25,21 @@ if ( $report && $report !== 'all' ) {
 	}
 }
 
-	// Only admins can get this.
-if ( ! function_exists( 'current_user_can' )
-	|| ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_affiliates_report_csv' ) && ( $report != 'all' && $current_user->user_login != $affiliate->affiliateuser ) )
-) {
+// Verify the nonce.
+if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'pmpro_affiliates_report_csv' ) ) {
+	die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-affiliates' ) );
+}
+
+// Admins and users with the pmpro_affiliates_report_csv capability can export any report, including all affiliates.
+// Other users can only export the report for a single affiliate that is assigned to them.
+$can_export = false;
+if ( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_affiliates_report_csv' ) ) {
+	$can_export = true;
+} elseif ( ! empty( $report ) && $report !== 'all' && ! empty( $affiliate ) && ! empty( $affiliate->affiliateuser ) && $current_user->user_login === $affiliate->affiliateuser ) {
+	$can_export = true;
+}
+
+if ( ! $can_export ) {
 	die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-affiliates' ) );
 }
 

@@ -739,8 +739,10 @@ add_action( 'wp_ajax_pmpro_affiliates_reset_paid_status', 'pmpro_affiliates_rese
  */
 function pmpro_affiliates_autocomplete_user_search() {
 
-	// Verify the nonce for this action.
-	wp_verify_nonce( isset( $_REQUEST['search_nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['search_nonce'] ) ) : '', 'pmpro_affiliates_search_nonce' );
+	// Verify the nonce for this action and make sure the user can manage affiliates.
+	if ( empty( $_REQUEST['search_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['search_nonce'] ) ), 'pmpro_affiliates_search_nonce' ) || ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error();
+	}
 
 	$search = isset( $_REQUEST['search'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['search'] ) ) : '';
 	$search_limit = apply_filters( 'pmpro_affiliates_autocomplete_user_search_limit', 25 );

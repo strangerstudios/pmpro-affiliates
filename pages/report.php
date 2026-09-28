@@ -8,21 +8,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 */
 function pmpro_affiliates_report_preheader() {
 	if ( ! is_admin() ) {
-		global $post, $current_user;
-		if ( ( ! empty( $post->post_content ) && strpos( $post->post_content, '[pmpro_affiliates_report]' ) !== false )
-			|| ( ! empty( $post->post_content_filtered ) && strpos( $post->post_content_filtered, '[pmpro_affiliates_report]' ) !== false ) ) {
-			/*
-				Preheader operations here.
-			*/
-			// get affiliates
-			global $pmpro_affiliates;
-			$pmpro_affiliates = pmpro_affiliates_getAffiliatesForUser();
+		global $pmpro_pages;
 
-			// no affiliates, get out of here
-			if ( empty( $pmpro_affiliates ) ) {
-				wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite (e.g. Network Subsite).
-				exit;
-			}
+		// Return if this is not the assigned affiliate report page.
+		if ( empty( $pmpro_pages['affiliate_report'] ) || ! is_page( $pmpro_pages['affiliate_report'] ) ) {
+			return;
+		}
+
+		/*
+			Preheader operations here.
+		*/
+		// get affiliates
+		global $pmpro_affiliates;
+		$pmpro_affiliates = pmpro_affiliates_getAffiliatesForUser();
+
+		// no affiliates, get out of here
+		if ( empty( $pmpro_affiliates ) ) {
+			wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite (e.g. Network Subsite).
+			exit;
 		}
 	}
 }
@@ -34,8 +37,26 @@ add_action( 'wp', 'pmpro_affiliates_report_preheader', 1 );
 function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' ) {
 	global $post, $wpdb, $current_user, $pmpro_pages;
 
+	// Make sure that PMPro is enabled.
+	if ( ! function_exists( 'pmpro_get_element_class' ) ) {
+		return '<p>' . esc_html__( 'Paid Memberships Pro must be enabled to use the Affiliates Add On.', 'pmpro-affiliates' ) . '</p>';
+	}
+
 	$pmpro_affiliates          = pmpro_affiliates_getAffiliatesForUser();
 	$pmpro_affiliates_settings = pmpro_affiliates_get_settings();
+
+	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
+
+	// No affiliate codes for this user. The preheader redirects on the assigned
+	// affiliate report page; this covers the shortcode used anywhere else.
+	if ( empty( $pmpro_affiliates ) ) {
+		return '<p>' . sprintf(
+			// translators: %1$s is the singular affiliate label, %2$s is a link to the membership account page.
+			esc_html__( 'You do not have any %1$s codes. %2$s', 'pmpro-affiliates' ),
+			esc_html( $pmpro_affiliates_singular_name ),
+			'<a href="' . esc_url( pmpro_url( 'account' ) ) . '">' . esc_html__( 'View Your Membership Account &rarr;', 'pmpro-affiliates' ) . '</a>'
+		) . '</p>';
+	}
 
 	// Default values from shortcode attribute. Block defaults are set in the block's register_block_type() function.
 	extract(
@@ -76,13 +97,11 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 	$show_commissions_table = filter_var( $show_commissions_table, FILTER_VALIDATE_BOOLEAN );
 
 
-	ob_start();
 	/*
 		Page Template HTML/ETC
 	*/
 
-	$pmpro_affiliates_singular_name = $pmpro_affiliates_settings['pmpro_affiliates_singular_name'];
-	$pmpro_affiliates_plural_name   = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
+	$pmpro_affiliates_plural_name = $pmpro_affiliates_settings['pmpro_affiliates_plural_name'];
 
 	if ( ! empty( $_REQUEST['report'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only report view; access is checked below.
 		$report = intval( $_REQUEST['report'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only report view; access is checked below.
@@ -100,16 +119,16 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 
 		// no affiliate found?
 		if ( empty( $affiliate ) ) {
-			wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite (e.g. Network Subsite).
-			exit;
+			return '<p>' . esc_html__( 'You do not have permission to view this report.', 'pmpro-affiliates' ) . '</p>';
 		}
 
 		// make sure admin or affiliate user
 		if ( ! current_user_can( 'manage_options' ) && $current_user->user_login != $affiliate->affiliateuser ) {
-			wp_redirect( pmpro_url( 'account' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite (e.g. Network Subsite).
-			exit;
+			return '<p>' . esc_html__( 'You do not have permission to view this report.', 'pmpro-affiliates' ) . '</p>';
 		}
 	}
+
+	ob_start();
 	?>
 	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
 		<?php
@@ -277,7 +296,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 							</div> <!-- end pmpro_card_content -->
 							<?php if ( ! empty( $export ) ) { ?>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn-plain pmpro_btn-export' ) ); ?>"><a href="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=affiliates_report_csv&report=<?php echo esc_html( $affiliate->id ); ?>"><?php esc_html_e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
+									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn-plain pmpro_btn-export' ) ); ?>"><a href="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=affiliates_report_csv&report=<?php echo esc_html( $affiliate->id ); ?>&_wpnonce=<?php echo esc_attr( wp_create_nonce( 'pmpro_affiliates_report_csv' ) ); ?>"><?php esc_html_e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
 								</div> <!-- end pmpro_card_actions -->
 							<?php } ?>
 						</div> <!-- end pmpro_card -->
