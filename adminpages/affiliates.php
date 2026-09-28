@@ -1,34 +1,40 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 	//vars
 	global $wpdb, $pmpro_currency_symbol;
 
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only routing parameters for the admin page (manage_options menu).
 	if(isset($_REQUEST['edit']))
-		$edit = sanitize_text_field( $_REQUEST['edit'] );
+		$edit = sanitize_text_field( wp_unslash( $_REQUEST['edit'] ) );
 	else
 		$edit = false;
 
 	if(isset($_REQUEST['report']))
-		$report = sanitize_text_field( $_REQUEST['report'] );
+		$report = sanitize_text_field( wp_unslash( $_REQUEST['report'] ) );
 	else
 		$report = false;
 
 	if(isset($_REQUEST['settings']))
-		$settings = sanitize_text_field( $_REQUEST['settings'] );
+		$settings = sanitize_text_field( wp_unslash( $_REQUEST['settings'] ) );
 	else
 		$settings = false;
 
 	if(isset($_REQUEST['s']))
-		$s = sanitize_text_field( $_REQUEST['s'] );
+		$s = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 	else
 		$s = false;
 
 	if(isset($_REQUEST['copy']))
-		$copy = sanitize_text_field( $_REQUEST['copy'] );
+		$copy = sanitize_text_field( wp_unslash( $_REQUEST['copy'] ) );
 	else
 		$copy = false;
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 	if(isset($_REQUEST['delete']))
-		$delete = sanitize_text_field( $_REQUEST['delete'] );
+		$delete = sanitize_text_field( wp_unslash( $_REQUEST['delete'] ) );
 	else
 		$delete = false;
 
@@ -40,19 +46,19 @@
 	//get form values
 	if ( ! empty( $save ) ) {
 		if ( isset( $_REQUEST['code'] ) ) {
-			$code = sanitize_text_field( preg_replace("[^a-zA-Z0-9]", "", $_REQUEST['code']) );
+			$code = preg_replace( "[^a-zA-Z0-9]", "", sanitize_text_field( wp_unslash( $_REQUEST['code'] ) ) );
 		}
 
 		if ( isset( $_REQUEST['name'] ) ) {
-			$name = sanitize_text_field( $_REQUEST['name'] );
+			$name = sanitize_text_field( wp_unslash( $_REQUEST['name'] ) );
 		}
 
 		if ( isset( $_REQUEST['affiliateuser'] ) ) {
-			$affiliateuser = sanitize_text_field( $_REQUEST['affiliateuser'] );
+			$affiliateuser = sanitize_text_field( wp_unslash( $_REQUEST['affiliateuser'] ) );
 		}
 
 		if ( isset( $_REQUEST['trackingcode'] ) ) {
-			$trackingcode = sanitize_text_field( $_REQUEST['trackingcode'] );
+			$trackingcode = sanitize_text_field( wp_unslash( $_REQUEST['trackingcode'] ) );
 		}
 
 		if ( isset( $_REQUEST['commissionrate'] ) ) {
@@ -66,11 +72,11 @@
 		}
 
 		if ( isset( $_REQUEST['cookiedays'] ) ) {
-			$cookiedays = sanitize_text_field( preg_replace( "[^0-9]", "", $_REQUEST['cookiedays'] ) );
+			$cookiedays = preg_replace( "[^0-9]", "", sanitize_text_field( wp_unslash( $_REQUEST['cookiedays'] ) ) );
 		}
 
 		if ( isset( $_REQUEST['enabled'] ) ) {
-			$enabled = sanitize_text_field( $_REQUEST['enabled'] );
+			$enabled = sanitize_text_field( wp_unslash( $_REQUEST['enabled'] ) );
 		}
 
 	} elseif ( $edit > 0 || ($report && $report != "all" ) || $copy ) {
@@ -81,7 +87,7 @@
 			$affiliate_id = $report;
 		elseif($copy)
 			$affiliate_id = $copy;
-		$affiliate = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . intval($affiliate_id) . "' LIMIT 1");
+		$affiliate = $wpdb->get_row("SELECT * FROM $wpdb->pmpro_affiliates WHERE id = '" . intval($affiliate_id) . "' LIMIT 1"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; values escaped with esc_sql()/intval() inside quotes.
 		if(!empty($affiliate->id))
 		{
 			$code = $affiliate->code;
@@ -131,7 +137,7 @@
 		if($edit > 0)
 		{
 			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', commissionrate = '" . esc_sql( $commissionrate ) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . esc_sql( $edit ) . "' LIMIT 1";
-			if($wpdb->query($sqlQuery) !== false)
+			if($wpdb->query($sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- All values escaped with esc_sql() inside quotes.
 			{
 				//all good
 				$edit = false;
@@ -148,7 +154,7 @@
 		else
 		{
 			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled, commissionrate) VALUES('" . esc_sql($code) . "', '" . esc_sql($name) . "', '" . esc_sql($affiliateuser) . "', '" . esc_sql($trackingcode) . "', '" . esc_sql($cookiedays) . "', '" . esc_sql($enabled) . "', '" . esc_sql( $commissionrate ) . "')";
-			if($wpdb->query($sqlQuery) !== false)
+			if($wpdb->query($sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- All values escaped with esc_sql() inside quotes.
 			{
 				//all good
 				$edit = false;
@@ -168,8 +174,7 @@
 	//are we deleting?
 	if(!empty($delete))
 	{
-		$sqlQuery = "DELETE FROM $wpdb->pmpro_affiliates WHERE id=" . esc_sql($delete) . " LIMIT 1";
-		if($wpdb->query($sqlQuery) !== false)
+		if($wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->pmpro_affiliates WHERE id = %d LIMIT 1", $delete ) ) !== false) // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; prepared.
 		{
 			//all good
 			$delete = false;
@@ -367,14 +372,14 @@
 		<?php } ?>
 
 		<?php
-			$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates");
+			$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; static query.
 			if ( empty( $affiliates ) ) { ?>
 				<p><?php echo esc_html( sprintf( __('Use %s to track orders coming in from different sales campaigns and partners.', 'pmpro-affiliates'), $pmpro_affiliates_plural_name ) ); ?> <a href="admin.php?page=pmpro-affiliates&edit=-1"><?php echo esc_html( sprintf( esc_html__( 'Create your first %s now', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ) ); ?></a>.</p>
 			<?php } else { ?>
 				<p class="search-box">
 					<label class="screen-reader-text" for="post-search-input"><?php echo esc_html( sprintf( esc_html__( 'Search %s:', 'pmpro-affiliates' ), ucwords( $pmpro_affiliates_plural_name ) ) ); ?></label>
 					<input type="hidden" name="page" value="pmpro-affiliates" />
-					<input id="post-search-input" type="text" value="<?php echo esc_attr( wp_unslash( $s ) ); ?>" name="s" size="30" />
+					<input id="post-search-input" type="text" value="<?php echo esc_attr( $s ); ?>" name="s" size="30" />
 					<input class="button" type="submit" value="Search" id="search-submit "/>
 				</p>
 
@@ -407,7 +412,7 @@
 					<?php
 						// Is there a search term?
 						if ( ! empty( $s ) ) {
-							$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates WHERE code LIKE '%" . esc_sql( $s ) . "%' OR name LIKE '%" . esc_sql( $s ) . "%' OR affiliateuser LIKE '%" . esc_sql( $s ) . "%'");
+							$affiliates = $wpdb->get_results("SELECT * FROM $wpdb->pmpro_affiliates WHERE code LIKE '%" . esc_sql( $s ) . "%' OR name LIKE '%" . esc_sql( $s ) . "%' OR affiliateuser LIKE '%" . esc_sql( $s ) . "%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; values escaped with esc_sql()/intval() inside quotes.
 							if ( empty( $affiliates ) ) {
 								echo '<tr><td colspan="100%">' . esc_html__( 'No affiliates found.', 'pmpro-affiliates' ) . '</td></tr>';
 							}
@@ -460,11 +465,11 @@
 								?>
 							</td>
 							<td>
-								<?php echo pmpro_affiliates_get_conversion_rate( $affiliate ); ?>
+								<?php echo esc_html( pmpro_affiliates_get_conversion_rate( $affiliate ) ); ?>
 							</td>
 							<?php
 							// Calculate earnings so we can show commission earned and total earnings.
-								$earnings = $wpdb->get_var("SELECT SUM(" . esc_sql( pmpro_affiliates_get_commission_calculation_source() ) . ") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')");
+								$earnings = $wpdb->get_var("SELECT SUM(" . esc_sql( pmpro_affiliates_get_commission_calculation_source() ) . ") FROM $wpdb->pmpro_membership_orders WHERE affiliate_id = '" . esc_sql($affiliate->id) . "' AND status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; values escaped with esc_sql()/intval() inside quotes.
 								
 							?>
 							

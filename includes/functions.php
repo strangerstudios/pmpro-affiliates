@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Get affiliate orders from the database.
  *
@@ -56,7 +60,7 @@ function pmpro_affiliates_get_orders( $affiliate_id = 'all', $args = array() ) {
 		$sql_query .= $wpdb->prepare( " LIMIT %d, %d", $offset, $limit );
 	}
 
-	return $wpdb->get_results( $sql_query );
+	return $wpdb->get_results( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static SQL; column whitelisted to total/subtotal; dynamic parts built with $wpdb->prepare().
 }
 
 /**
@@ -84,7 +88,7 @@ function pmpro_affiliates_get_orders_count( $affiliate_id = 'all' ) {
 		$sql_query .= $wpdb->prepare( " AND a.id = %d", (int) $affiliate_id );
 	}
 
-	return (int) $wpdb->get_var( $sql_query );
+	return (int) $wpdb->get_var( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static SQL; dynamic part built with $wpdb->prepare().
 }
 
 /**
@@ -278,7 +282,7 @@ function pmpro_affiliates_display_orders_table( $args = array() ) {
 						<td><?php echo esc_html( pmpro_formatPrice( $order->total ) ); ?></td>
 					<?php endif; ?>
 					<?php if ( $args['show_status'] ) : ?>
-						<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>'; ?></td>
+						<td><?php echo '<span class="pmpro_affiliate_paid_status" id="order_' . esc_attr( $order->order_id ) . '">' . $affiliate_paid . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $affiliate_paid is built from escaped strings above. ?></td>
 					<?php endif; ?>
 					<?php do_action( 'pmpro_affiliate_report_extra_cols_body', $order ); ?>
 				</tr>
@@ -342,12 +346,14 @@ function pmpro_affiliates_display_pagination( $current_page, $total_items, $per_
 				<span id="table-paging" class="paging-input">
 					<span class="tablenav-paging-text">
 						<?php
+						// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- Static spans around number_format_i18n() output.
 						printf(
 							/* translators: 1: Current page number, 2: Total pages. */
-							_n( '%1$s of %2$s', '%1$s of %2$s', $total_pages, 'pmpro-affiliates' ),
+							esc_html( _n( '%1$s of %2$s', '%1$s of %2$s', $total_pages, 'pmpro-affiliates' ) ),
 							'<span class="current-page">' . number_format_i18n( $current_page ) . '</span>',
 							'<span class="total-pages">' . number_format_i18n( $total_pages ) . '</span>'
 						);
+						// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 						?>
 					</span>
 				</span>

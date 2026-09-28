@@ -1,4 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function register_pmpro_affiliates_settings() {
 	//register our settings
 	register_setting( 'pmpro-affiliates-settings-group', 'pmpro_affiliates_singular_name' );
@@ -15,17 +19,17 @@ else
 	$save = false;
 
 if(!empty($_REQUEST['pmpro_affiliates_singular_name']))
-	$pmpro_affiliates_singular_name = sanitize_text_field( $_REQUEST['pmpro_affiliates_singular_name'] );
+	$pmpro_affiliates_singular_name = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_affiliates_singular_name'] ) );
 else
 	$pmpro_affiliates_singular_name = sanitize_text_field( $pmpro_affiliates_settings['pmpro_affiliates_singular_name'] );
 
 if(!empty($_REQUEST['pmpro_affiliates_plural_name']))
-	$pmpro_affiliates_plural_name = sanitize_text_field( $_REQUEST['pmpro_affiliates_plural_name'] );
+	$pmpro_affiliates_plural_name = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_affiliates_plural_name'] ) );
 else
 	$pmpro_affiliates_plural_name = sanitize_text_field( $pmpro_affiliates_settings['pmpro_affiliates_plural_name'] );
 
 if ( isset( $_REQUEST['pmpro_affiliates_recurring'] ) ) {
-	$pmpro_affiliates_recurring = sanitize_text_field( $_REQUEST['pmpro_affiliates_recurring'] );
+	$pmpro_affiliates_recurring = sanitize_text_field( wp_unslash( $_REQUEST['pmpro_affiliates_recurring'] ) );
 } else {
 	$pmpro_affiliates_recurring = sanitize_text_field( $pmpro_affiliates_settings['pmpro_affiliates_recurring'] );
 }
