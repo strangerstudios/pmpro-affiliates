@@ -131,6 +131,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$enabled = true;
 	}
 
+	// Verify the nonce before saving. On failure, keep the submitted values in the form so they can be saved again.
+	if ( $edit && $save && ( empty( $_REQUEST['pmpro_affiliates_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['pmpro_affiliates_nonce'] ) ), 'pmpro_affiliates_save_affiliate' ) ) ) {
+		$save = false;
+		$pmpro_msg = __( 'Your session has expired. Please try again.', 'pmpro-affiliates' );
+		$pmpro_msgt = 'error';
+	}
+
 	if($edit && $save)
 	{
 		//updating or new?
@@ -169,6 +176,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 			}
 		}
 
+	}
+
+	// Verify the nonce before deleting.
+	if ( ! empty( $delete ) && ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_REQUEST['_wpnonce'] ) ), 'pmpro_affiliates_delete_affiliate_' . intval( $delete ) ) ) ) {
+		$delete = false;
+		$pmpro_msg = __( 'Your session has expired. Please try again.', 'pmpro-affiliates' );
+		$pmpro_msgt = 'error';
 	}
 
 	//are we deleting?
@@ -344,6 +358,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<p class="submit topborder">
 				<input name="edit" type="hidden" value="<?php if(!empty($edit)) echo esc_attr( $edit ); ?>" />
 				<input name="save" type="hidden" value="1" />
+				<?php wp_nonce_field( 'pmpro_affiliates_save_affiliate', 'pmpro_affiliates_nonce' ); ?>
 				<input type="submit" class="button-primary" value="<?php echo esc_html( sprintf(__('Save %s','pmpro-affiliates'), ucwords($pmpro_affiliates_singular_name) ) ); ?>" />
 				<input name="cancel" class="button" type="button" value="Cancel" onclick="location.href='<?php echo esc_url( get_admin_url( NULL, '/admin.php?page=pmpro-affiliates' ) ); ?>';" />
 			</p>
@@ -439,7 +454,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<a target="_blank" href="<?php echo esc_url( pmpro_url("levels", "?pa=" . $affiliate->code) );?>"><?php esc_html_e('Link', 'pmpro-affiliates'); ?></a>
 									</span> |
 									<span class="delete">
-										<a href="javascript:askfirst('<?php echo esc_html( str_replace("'", "\'", sprintf( esc_html__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", 'pmpro-affiliates'), str_replace("'", "", $affiliate->id))));?>', 'admin.php?page=pmpro-affiliates&delete=<?php echo esc_attr( $affiliate->id );?>'); void(0);"><?php esc_html_e('Delete', 'pmpro-affiliates'); ?></a>
+										<a href="javascript:askfirst('<?php echo esc_html( str_replace("'", "\'", sprintf( esc_html__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", 'pmpro-affiliates'), str_replace("'", "", $affiliate->id))));?>', '<?php echo esc_js( wp_nonce_url( admin_url( 'admin.php?page=pmpro-affiliates&delete=' . intval( $affiliate->id ) ), 'pmpro_affiliates_delete_affiliate_' . intval( $affiliate->id ) ) ); ?>'); void(0);"><?php esc_html_e('Delete', 'pmpro-affiliates'); ?></a>
 									</span>
 								</div>
 							</td>
