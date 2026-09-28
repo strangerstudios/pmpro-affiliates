@@ -21,10 +21,21 @@ if ( $report && $report !== 'all' ) {
 	}
 }
 
-	// Only admins can get this.
-if ( ! function_exists( 'current_user_can' )
-	|| ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'pmpro_affiliates_report_csv' ) && ( $report != 'all' && $current_user->user_login != $affiliate->affiliateuser ) )
-) {
+// Verify the nonce.
+if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_REQUEST['_wpnonce'] ), 'pmpro_affiliates_report_csv' ) ) {
+	die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-affiliates' ) );
+}
+
+// Admins and users with the pmpro_affiliates_report_csv capability can export any report, including all affiliates.
+// Other users can only export the report for a single affiliate that is assigned to them.
+$can_export = false;
+if ( current_user_can( 'manage_options' ) || current_user_can( 'pmpro_affiliates_report_csv' ) ) {
+	$can_export = true;
+} elseif ( ! empty( $report ) && $report !== 'all' && ! empty( $affiliate ) && ! empty( $affiliate->affiliateuser ) && $current_user->user_login === $affiliate->affiliateuser ) {
+	$can_export = true;
+}
+
+if ( ! $can_export ) {
 	die( esc_html__( 'You do not have permissions to perform this action.', 'pmpro-affiliates' ) );
 }
 

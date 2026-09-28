@@ -273,7 +273,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 							</div> <!-- end pmpro_card_content -->
 							<?php if ( ! empty( $export ) ) { ?>
 								<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn-plain pmpro_btn-export' ) ); ?>"><a href="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=affiliates_report_csv&report=<?php echo esc_html( $affiliate->id ); ?>"><?php esc_html_e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
+									<span class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn-plain pmpro_btn-export' ) ); ?>"><a href="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>?action=affiliates_report_csv&report=<?php echo esc_html( $affiliate->id ); ?>&_wpnonce=<?php echo esc_attr( wp_create_nonce( 'pmpro_affiliates_report_csv' ) ); ?>"><?php esc_html_e( 'Export CSV', 'pmpro-affiliates' ); ?></a></span>
 								</div> <!-- end pmpro_card_actions -->
 							<?php } ?>
 						</div> <!-- end pmpro_card -->

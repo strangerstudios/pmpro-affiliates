@@ -44,7 +44,7 @@
 				echo esc_html( sprintf( esc_html__("for Code %s", 'pmpro-affiliates' ), stripslashes( $code ) ) );
 			}
 		?>
-		<a href="<?php echo esc_url( admin_url('admin-ajax.php') );?>?action=affiliates_report_csv&report=<?php echo esc_attr( $report );?>" class="add-new-h2"><?php esc_html_e('Export to CSV', 'pmpro-affiliates' ); ?></a>
+		<a href="<?php echo esc_url( admin_url('admin-ajax.php') );?>?action=affiliates_report_csv&report=<?php echo esc_attr( $report );?>&_wpnonce=<?php echo esc_attr( wp_create_nonce( 'pmpro_affiliates_report_csv' ) ); ?>" class="add-new-h2"><?php esc_html_e('Export to CSV', 'pmpro-affiliates' ); ?></a>
 		<?php 
 			if ( ! empty( $affiliate_id ) ) {
 				?>
