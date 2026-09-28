@@ -68,7 +68,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				$rate = intval( $_REQUEST['commissionrate'] );
 			}
 
-			$commissionrate = $rate / 100; //convert to decimal
+			$commissionrate = $rate; // Percent, like the other branches. Converted to a decimal when saving.
 		}
 
 		if ( isset( $_REQUEST['cookiedays'] ) ) {
@@ -143,7 +143,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		//updating or new?
 		if($edit > 0)
 		{
-			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', commissionrate = '" . esc_sql( $commissionrate ) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . esc_sql( $edit ) . "' LIMIT 1";
+			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', commissionrate = '" . esc_sql( $commissionrate / 100 ) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . esc_sql( $edit ) . "' LIMIT 1";
 			if($wpdb->query($sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- All values escaped with esc_sql() inside quotes.
 			{
 				//all good
@@ -160,7 +160,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 		else
 		{
-			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled, commissionrate) VALUES('" . esc_sql($code) . "', '" . esc_sql($name) . "', '" . esc_sql($affiliateuser) . "', '" . esc_sql($trackingcode) . "', '" . esc_sql($cookiedays) . "', '" . esc_sql($enabled) . "', '" . esc_sql( $commissionrate ) . "')";
+			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled, commissionrate) VALUES('" . esc_sql($code) . "', '" . esc_sql($name) . "', '" . esc_sql($affiliateuser) . "', '" . esc_sql($trackingcode) . "', '" . esc_sql($cookiedays) . "', '" . esc_sql($enabled) . "', '" . esc_sql( $commissionrate / 100 ) . "')";
 			if($wpdb->query($sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- All values escaped with esc_sql() inside quotes.
 			{
 				//all good
