@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	/**
 	 * Filter the number of orders to show per page.
 	 *
-	 * @since TBD
+	 * @since 0.8
 	 *
 	 * @param int $limit The number of orders per page. Default 20.
 	 */

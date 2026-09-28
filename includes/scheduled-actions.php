@@ -53,7 +53,7 @@ function pmpro_affiliates_backfill_for_level( $level_id ) {
 	 * Allow sites to manipulate their default batch sizes to run per hourly event.
 	 * Defaults to 50.
 	 * 
-	 * @since TBD
+	 * @since 0.8
 	 * 
 	 * @param int $limit Number of records per batch process.
 	 */

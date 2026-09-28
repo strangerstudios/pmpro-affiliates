@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Get affiliate orders from the database.
  *
- * @since TBD
+ * @since 0.8
  *
  * @param int|string $affiliate_id The affiliate ID or 'all' for all affiliates.
  * @param array      $args {
@@ -66,7 +66,7 @@ function pmpro_affiliates_get_orders( $affiliate_id = 'all', $args = array() ) {
 /**
  * Get the total count of affiliate orders.
  *
- * @since TBD
+ * @since 0.8
  *
  * @param int|string $affiliate_id The affiliate ID or 'all' for all affiliates.
  * @return int The total number of affiliate orders.
@@ -94,7 +94,7 @@ function pmpro_affiliates_get_orders_count( $affiliate_id = 'all' ) {
 /**
  * Display the affiliate orders table.
  *
- * @since TBD
+ * @since 0.8
  *
  * @param array $args {
  *     Optional. Arguments for displaying the affiliate orders table.
@@ -302,7 +302,7 @@ function pmpro_affiliates_display_orders_table( $args = array() ) {
 /**
  * Display WP List Table style pagination.
  *
- * @since TBD
+ * @since 0.8
  *
  * @param int    $current_page Current page number.
  * @param int    $total_items  Total number of items.

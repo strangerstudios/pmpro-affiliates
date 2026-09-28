@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 6.0
-Tested up to: 6.9
-Stable tag: 0.8
+Tested up to: 7.1
+Stable tag: 0.8.1
 
 Create affiliate accounts with unique referrer URLs to track membership checkouts.
 
@@ -11,7 +11,7 @@ Create affiliate accounts with unique referrer URLs to track membership checkout
 
 Create affiliate accounts and codes. If a code is passed to a page as a parameter, a cookie is set. If a cookie is present after checkout, the order is awarded to the affiliate account.
 
-You must have the latest version of Paid Memberships Pro installed (currently 1.4.7).
+You must have the latest version of Paid Memberships Pro installed.
 
 Story
 * Admin creates affiliate account and code.
@@ -45,6 +45,17 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 0.8.1 - 2026-09-28 =
+* SECURITY: Now requiring an administrator capability (or the `pmpro_affiliates_report_csv` capability) to export the report for all affiliates, and a nonce for all affiliate report CSV exports. #78 (@dparker1005)
+* SECURITY: Now requiring a valid nonce and the `manage_options` capability for the affiliate user autocomplete search. #78 (@dparker1005)
+* SECURITY: Now requiring a nonce to add, edit, or delete affiliates and to save the Affiliates settings. #79 (@dparker1005)
+* SECURITY: Now requiring the `manage_options` capability to mark affiliate orders as paid or reset their paid status. #79 (@dparker1005)
+* SECURITY: Prepared the admin delete affiliate query and improved sanitization, escaping and direct file access protection. #77 (@dparker1005)
+* BUG FIX: Fixed the affiliate report not redirecting members without an affiliate code when the page uses the block or shortcode attributes. #76 (@dwanjuki)
+* BUG FIX: Fixed the affiliate report page being cut off when viewing an invalid report or another user's report. #76 (@dwanjuki)
+* BUG FIX: Fixed affiliate names and settings with apostrophes being saved with a stray backslash. #77 (@dparker1005)
+* BUG FIX: Fixed the commission rate showing as a decimal after a failed affiliate save, which could save it as 0% if saved again. #79 (@dparker1005)
+
 = 0.8 - 2026-03-19 =
 * ENHANCEMENT: Retroactively create affiliates for any member that belongs to a level with the "Automatically create affiliate code?" option enabled. (@andrewlimaza)
 * ENHANCEMENT: Added an Affiliate Edit Member Panel screen for all affiliate users with pagination. (@andrewlimaza, @jahidhasan018)

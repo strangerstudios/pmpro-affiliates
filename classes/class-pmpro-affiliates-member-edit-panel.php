@@ -46,7 +46,7 @@ class PMPRO_AFFILIATES_Member_Edit_Panel extends PMPro_Member_Edit_Panel {
 		/**
 		 * Filter the number of orders to show per page in the member edit panel.
 		 *
-		 * @since TBD
+		 * @since 0.8
 		 *
 		 * @param int $limit The number of orders per page. Default 5.
 		 */
