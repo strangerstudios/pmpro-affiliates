@@ -144,7 +144,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 					</h2>
 
 					<?php
-					$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, UNIX_TIMESTAMP(o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
+					$sqlQuery = "SELECT a.code, o.affiliate_subid as subid, a.name, u.user_login, TIMESTAMPDIFF(SECOND, '1970-01-01 00:00:00', o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.membership_id, o.status FROM $wpdb->pmpro_membership_orders o LEFT JOIN $wpdb->pmpro_affiliates a ON o.affiliate_id = a.id LEFT JOIN $wpdb->users u ON o.user_id = u.ID WHERE o.affiliate_id <> '' AND o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review') ";
 					if ( $report != 'all' ) {
 						$sqlQuery .= " AND a.id = '" . esc_sql( $report ) . "' ";
 					}
@@ -266,7 +266,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 												</td>
 											<?php } ?>
 											<?php if ( in_array( 'date', $fields ) ) { ?>
-												<td data-title="<?php esc_html_e( 'Date', 'pmpro-affiliates' ); ?>"><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->timestamp ) ); ?></td>
+												<td data-title="<?php esc_html_e( 'Date', 'pmpro-affiliates' ); ?>"><?php echo esc_html( empty( $order->timestamp ) ? '' : wp_date( get_option( 'date_format' ), $order->timestamp ) ); ?></td>
 											<?php } ?>
 											<?php if ( in_array( 'membership_level', $fields ) ) { ?>
 												<td data-title="<?php esc_html_e( 'Level', 'pmpro-affiliates' ); ?>">

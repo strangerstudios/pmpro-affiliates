@@ -30,7 +30,7 @@ function pmpro_affiliates_get_orders( $affiliate_id = 'all', $args = array() ) {
 	$args = wp_parse_args( $args, $defaults );
 
 	$sql_query = 
-		"SELECT o.id as order_id, o.code as order_code, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, UNIX_TIMESTAMP(o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.status, om.meta_value as affiliate_paid
+		"SELECT o.id as order_id, o.code as order_code, a.id as affiliate_id, a.code, a.commissionrate, o.affiliate_subid as subid, a.name, u.ID as user_id, u.user_login, o.membership_id, TIMESTAMPDIFF(SECOND, '1970-01-01 00:00:00', o.timestamp) as timestamp, " . esc_sql( 'o.' . pmpro_affiliates_get_commission_calculation_source() ) . " as total, o.status, om.meta_value as affiliate_paid
 		FROM $wpdb->pmpro_membership_orders o 
 		LEFT JOIN $wpdb->pmpro_affiliates a 
 		ON o.affiliate_id = a.id 
@@ -270,7 +270,7 @@ function pmpro_affiliates_display_orders_table( $args = array() ) {
 						</td>
 					<?php endif; ?>
 					<?php if ( $args['show_date'] ) : ?>
-						<td><?php echo esc_html( date_i18n( get_option( 'date_format' ), $order->timestamp ) ); ?></td>
+						<td><?php echo esc_html( empty( $order->timestamp ) ? '' : wp_date( get_option( 'date_format' ), $order->timestamp ) ); ?></td>
 					<?php endif; ?>
 					<?php if ( $args['show_commission_pct'] ) : ?>
 						<td><?php echo esc_html( $order->commissionrate * 100 ); ?>%</td>
