@@ -79,6 +79,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$enabled = sanitize_text_field( wp_unslash( $_REQUEST['enabled'] ) );
 		}
 
+		if ( isset( $_REQUEST['payout_method'] ) ) {
+			$payout_method = pmpro_affiliates_sanitize_payout_method( sanitize_text_field( wp_unslash( $_REQUEST['payout_method'] ) ) );
+		}
+
+		if ( isset( $_REQUEST['payout_email'] ) ) {
+			$payout_email = sanitize_text_field( wp_unslash( $_REQUEST['payout_email'] ) );
+		}
+
 	} elseif ( $edit > 0 || ($report && $report != "all" ) || $copy ) {
 		//get values from DB
 		if($edit > 0)
@@ -97,6 +105,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$cookiedays = $affiliate->cookiedays;
 			$enabled = $affiliate->enabled;
 			$commissionrate = $affiliate->commissionrate * 100; //Stored as decimal, but we want to show as percent.
+			$payout_method  = isset( $affiliate->payout_method ) ? $affiliate->payout_method : '';
+			$payout_email   = isset( $affiliate->payout_email ) ? $affiliate->payout_email : '';
 		}
 	}
 	else
@@ -128,7 +138,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		 */
 		$cookiedays = apply_filters( 'pmpro_affiliate_default_cookie_duration' , $cookiedays );
 		$cookiedays = intval( $cookiedays );
-		$enabled = true;
+		$enabled       = true;
+		$payout_method = '';
+		$payout_email  = '';
 	}
 
 	// Verify the nonce before saving. On failure, keep the submitted values in the form so they can be saved again.
@@ -143,7 +155,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		//updating or new?
 		if($edit > 0)
 		{
-			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', commissionrate = '" . esc_sql( $commissionrate / 100 ) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "' WHERE id = '" . esc_sql( $edit ) . "' LIMIT 1";
+			$sqlQuery = "UPDATE $wpdb->pmpro_affiliates SET code = '" . esc_sql($code) . "', name = '" . esc_sql($name) . "', affiliateuser = '" . esc_sql($affiliateuser) . "', trackingcode = '" . esc_sql($trackingcode) . "', commissionrate = '" . esc_sql( $commissionrate / 100 ) . "', cookiedays = '" . esc_sql($cookiedays) . "', enabled = '" . esc_sql($enabled) . "', payout_method = '" . esc_sql( $payout_method ) . "', payout_email = '" . esc_sql( $payout_email ) . "' WHERE id = '" . esc_sql( $edit ) . "' LIMIT 1";
 			if($wpdb->query($sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- All values escaped with esc_sql() inside quotes.
 			{
 				//all good
@@ -160,7 +172,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 		else
 		{
-			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled, commissionrate) VALUES('" . esc_sql($code) . "', '" . esc_sql($name) . "', '" . esc_sql($affiliateuser) . "', '" . esc_sql($trackingcode) . "', '" . esc_sql($cookiedays) . "', '" . esc_sql($enabled) . "', '" . esc_sql( $commissionrate / 100 ) . "')";
+			$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled, commissionrate, payout_method, payout_email) VALUES('" . esc_sql($code) . "', '" . esc_sql($name) . "', '" . esc_sql($affiliateuser) . "', '" . esc_sql($trackingcode) . "', '" . esc_sql($cookiedays) . "', '" . esc_sql($enabled) . "', '" . esc_sql( $commissionrate / 100 ) . "', '" . esc_sql( $payout_method ) . "', '" . esc_sql( $payout_email ) . "')";
 			if($wpdb->query($sqlQuery) !== false) // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- All values escaped with esc_sql() inside quotes.
 			{
 				//all good
@@ -217,6 +229,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<li><a href="admin.php?page=pmpro-affiliates"<?php if(empty($report) && empty($settings)) { ?> class="current"<?php } ?>><?php esc_html_e('Manage', 'pmpro-affiliates' ); ?> <?php echo esc_html( ucwords($pmpro_affiliates_plural_name ) ); ?></a></li>
 			<li><a href="admin.php?page=pmpro-affiliates&report=all"<?php if(!empty($report)) { ?> class="current"<?php } ?>><?php esc_html_e('Reports', 'pmpro-affiliates' ); ?></a></li>
 			<li><a href="admin.php?page=pmpro-affiliates&settings=1"<?php if(!empty($settings)) { ?> class="current"<?php } ?>><?php esc_html_e('Settings', 'pmpro-affiliates' ); ?></a></li>
+			<li><a href="admin.php?page=pmpro-affiliates-payouts"><?php esc_html_e('Payouts', 'pmpro-affiliates' ); ?></a></li>
 		</ul>
 	</nav>
 	<br class="clear" />
@@ -344,7 +357,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 							
 							?>
 						</td>
-					</tr>	
+					</tr>
+
+					<tr>
+						<th scope="row" valign="top"><label for="payout_method"><?php esc_html_e( 'Payout Method:', 'pmpro-affiliates' ); ?></label></th>
+						<td>
+							<select id="payout_method" name="payout_method">
+								<option value="" <?php selected( $payout_method, '' ); ?>><?php esc_html_e( '— Not Set —', 'pmpro-affiliates' ); ?></option>
+								<option value="paypal" <?php selected( $payout_method, 'paypal' ); ?>><?php esc_html_e( 'PayPal', 'pmpro-affiliates' ); ?></option>
+								<option value="venmo" <?php selected( $payout_method, 'venmo' ); ?>><?php esc_html_e( 'Venmo', 'pmpro-affiliates' ); ?></option>
+								<option value="check" <?php selected( $payout_method, 'check' ); ?>><?php esc_html_e( 'Check', 'pmpro-affiliates' ); ?></option>
+								<option value="wire" <?php selected( $payout_method, 'wire' ); ?>><?php esc_html_e( 'Wire Transfer', 'pmpro-affiliates' ); ?></option>
+								<option value="other" <?php selected( $payout_method, 'other' ); ?>><?php esc_html_e( 'Other', 'pmpro-affiliates' ); ?></option>
+							</select>
+						</td>
+					</tr>
+
+					<tr>
+						<th scope="row" valign="top"><label for="payout_email" id="payout_email_label"><?php esc_html_e( 'Payout Account:', 'pmpro-affiliates' ); ?></label></th>
+						<td>
+							<input id="payout_email" name="payout_email" type="text" size="40" value="<?php echo esc_attr( $payout_email ); ?>" />
+							<small><?php esc_html_e( 'PayPal email, Venmo handle, payee name, or other payout identifier.', 'pmpro-affiliates' ); ?></small>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 
@@ -415,6 +450,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<th><?php esc_html_e( 'Conversion %', 'pmpro-affiliates' ); ?></th>
 						<th><?php esc_html_e( 'Commission Earned', 'pmpro-affiliate' ); ?></th>
 						<th><?php esc_html_e( 'Revenue Contributed', 'pmpro-affiliates' ); ?></th>
+						<th><?php esc_html_e( 'Payout Info', 'pmpro-affiliates' ); ?></th>
 						<?php
 							/**
 							 * Action to add additional columns to the affiliates table.
@@ -495,6 +531,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 							</td>
 							<td>
 								<?php echo esc_html( pmpro_formatPrice( $earnings ) ); ?>
+							</td>
+							<td>
+								<?php
+								if ( ! empty( $affiliate->payout_method ) ) {
+									$method_labels = array(
+										'paypal' => __( 'PayPal', 'pmpro-affiliates' ),
+										'venmo'  => __( 'Venmo', 'pmpro-affiliates' ),
+										'check'  => __( 'Check', 'pmpro-affiliates' ),
+										'wire'   => __( 'Wire', 'pmpro-affiliates' ),
+										'other'  => __( 'Other', 'pmpro-affiliates' ),
+									);
+									$method_label = isset( $method_labels[ $affiliate->payout_method ] ) ? $method_labels[ $affiliate->payout_method ] : esc_html( $affiliate->payout_method );
+									echo esc_html( $method_label );
+									if ( ! empty( $affiliate->payout_email ) ) {
+										echo ': ' . esc_html( $affiliate->payout_email );
+									}
+								} else {
+									echo '&#8212;';
+								}
+								?>
 							</td>
 							<?php
 								/**

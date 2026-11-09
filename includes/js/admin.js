@@ -79,4 +79,16 @@ jQuery(document).ready(function () {
             }
         });
     });
+    // Dynamic label update when payout method changes.
+    var payoutMethodSelect = jQuery('#payout_method');
+    if ( payoutMethodSelect.length ) {
+        function updatePayoutAccountLabel() {
+            var method = payoutMethodSelect.val();
+            var labels = ( pmpro_affiliates_admin.payout_method_labels ) ? pmpro_affiliates_admin.payout_method_labels : {};
+            var label  = labels[ method ] || pmpro_affiliates_admin.payout_account_label || 'Payout Account';
+            jQuery('#payout_email_label').text( label + ':' );
+        }
+        payoutMethodSelect.on( 'change', updatePayoutAccountLabel );
+        updatePayoutAccountLabel();
+    }
 }); //end of document ready
