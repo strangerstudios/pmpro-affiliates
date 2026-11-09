@@ -28,11 +28,11 @@ $preview_error = '';
 if ( 'preview' === $action ) {
 	check_admin_referer( 'pmpro_affiliates_process_payouts' );
 
-	$date_start      = sanitize_text_field( $_POST['date_start'] ?? '' );
-	$date_end        = sanitize_text_field( $_POST['date_end'] ?? '' );
+	$date_start      = sanitize_text_field( wp_unslash( $_POST['date_start'] ?? '' ) );
+	$date_end        = sanitize_text_field( wp_unslash( $_POST['date_end'] ?? '' ) );
 	$affiliate_id    = (int) ( $_POST['affiliate_id'] ?? 0 );
 	$minimum         = max( 0, (float) ( $_POST['minimum'] ?? 0 ) );
-	$method_override = sanitize_text_field( $_POST['method_override'] ?? '' );
+	$method_override = pmpro_affiliates_sanitize_payout_method( sanitize_text_field( wp_unslash( $_POST['method_override'] ?? '' ) ) );
 
 	$preview_data = pmpro_affiliates_get_unpaid_commissions_for_payout( $affiliate_id, $date_start, $date_end, $minimum );
 
@@ -85,7 +85,21 @@ if ( 'preview' === $action ) :
 	);
 	$preview_total     = 0.0;
 	$preview_order_ids = array();
-	foreach ( $preview_data as $d ) {
+	$payable_count     = 0;
+	$blocked_count     = 0;
+	foreach ( $preview_data as $aid => $d ) {
+		$method = ! empty( $method_override ) ? $method_override : pmpro_affiliates_sanitize_payout_method( $d['affiliate']->payout_method );
+
+		$preview_data[ $aid ]['method']        = $method;
+		$preview_data[ $aid ]['account_error'] = pmpro_affiliates_get_payout_account_error( $method, $d['affiliate']->payout_email );
+
+		// Affiliates without a usable account are shown but not paid.
+		if ( '' !== $preview_data[ $aid ]['account_error'] ) {
+			$blocked_count++;
+			continue;
+		}
+
+		$payable_count++;
 		$preview_total    += $d['amount'];
 		$preview_order_ids = array_merge( $preview_order_ids, $d['order_ids'] );
 	}
@@ -95,10 +109,25 @@ if ( 'preview' === $action ) :
 printf(
 	/* translators: 1: affiliate count, 2: total amount */
 	esc_html__( 'Ready to pay %1$d affiliate(s) a total of %2$s.', 'pmpro-affiliates' ),
-	count( $preview_data ),
+	(int) $payable_count,
 	esc_html( pmpro_formatPrice( $preview_total ) )
 );
 ?></p>
+
+<?php if ( $blocked_count > 0 ) : ?>
+	<div class="notice notice-warning inline"><p><?php
+	printf(
+		/* translators: %d: number of affiliates that will not be paid */
+		esc_html( _n(
+			'%d affiliate will not be paid because their payout account is missing or does not match the payout method. Update the affiliate, then process payouts again.',
+			'%d affiliates will not be paid because their payout accounts are missing or do not match the payout method. Update the affiliates, then process payouts again.',
+			$blocked_count,
+			'pmpro-affiliates'
+		) ),
+		(int) $blocked_count
+	);
+	?></p></div>
+<?php endif; ?>
 
 <table class="wp-list-table widefat striped">
 	<thead>
@@ -113,8 +142,9 @@ printf(
 	<tbody>
 		<?php foreach ( $preview_data as $data ) :
 			$aff          = $data['affiliate'];
-			$method       = ! empty( $method_override ) ? $method_override : $aff->payout_method;
-			$method_label = isset( $method_labels[ $method ] ) ? $method_labels[ $method ] : esc_html( $method );
+			$method       = $data['method'];
+			$method_label = isset( $method_labels[ $method ] ) ? $method_labels[ $method ] : $method;
+			$saved_method = pmpro_affiliates_sanitize_payout_method( $aff->payout_method );
 		?>
 		<tr>
 			<td>
@@ -126,15 +156,35 @@ printf(
 			<td>
 				<?php if ( ! empty( $aff->payout_email ) ) : ?>
 					<?php echo esc_html( $aff->payout_email ); ?>
-				<?php else : ?>
+				<?php endif; ?>
+				<?php if ( '' !== $data['account_error'] ) : ?>
+					<br />
 					<span class="pmpro-affiliates-no-payout-email">
-						&#9888; <?php esc_html_e( 'No payout account set', 'pmpro-affiliates' ); ?>
+						&#9888; <?php echo esc_html( $data['account_error'] ); ?> &mdash; <?php esc_html_e( 'will not be paid', 'pmpro-affiliates' ); ?>
 					</span>
 				<?php endif; ?>
 			</td>
-			<td><?php echo esc_html( $method_label ?: '—' ); ?></td>
+			<td>
+				<?php echo esc_html( $method_label ?: '—' ); ?>
+				<?php if ( ! empty( $method_override ) && $saved_method !== $method_override ) : ?>
+					<br />
+					<span class="pmpro-affiliates-no-payout-email">
+						&#9888; <?php
+						if ( ! empty( $saved_method ) && isset( $method_labels[ $saved_method ] ) ) {
+							printf(
+								/* translators: %s: the affiliate's saved payout method */
+								esc_html__( 'Overrides saved method (%s)', 'pmpro-affiliates' ),
+								esc_html( $method_labels[ $saved_method ] )
+							);
+						} else {
+							esc_html_e( 'Overrides saved method (none set)', 'pmpro-affiliates' );
+						}
+						?>
+					</span>
+				<?php endif; ?>
+			</td>
 			<td><?php echo (int) count( $data['order_ids'] ); ?></td>
-			<td><?php echo esc_html( pmpro_formatPrice( $data['amount'] ) ); ?></td>
+			<td><?php echo '' !== $data['account_error'] ? '<del>' . esc_html( pmpro_formatPrice( $data['amount'] ) ) . '</del>' : esc_html( pmpro_formatPrice( $data['amount'] ) ); ?></td>
 		</tr>
 		<?php endforeach; ?>
 	</tbody>
@@ -146,7 +196,7 @@ printf(
 	</tfoot>
 </table>
 
-<form method="post" action="">
+<form method="post" action="" id="pmpro-affiliates-confirm-payouts-form">
 	<?php wp_nonce_field( 'pmpro_affiliates_process_payouts' ); ?>
 	<input type="hidden" name="action" value="confirm" />
 	<input type="hidden" name="date_start" value="<?php echo esc_attr( $date_start ); ?>" />
@@ -157,9 +207,19 @@ printf(
 	<input type="hidden" name="order_ids" value="<?php echo esc_attr( implode( ',', $preview_order_ids ) ); ?>" />
 	<p class="submit topborder">
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-affiliates-payouts&action=process' ) ); ?>" class="button"><?php esc_html_e( '&larr; Back', 'pmpro-affiliates' ); ?></a>
-		<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Confirm Payouts', 'pmpro-affiliates' ); ?>" />
+		<?php if ( $payable_count > 0 ) : ?>
+			<input type="submit" class="button button-primary" value="<?php esc_attr_e( 'Confirm Payouts', 'pmpro-affiliates' ); ?>" />
+		<?php endif; ?>
 	</p>
 </form>
+<script>
+document.getElementById( 'pmpro-affiliates-confirm-payouts-form' ).addEventListener( 'submit', function() {
+	var button = this.querySelector( 'input[type=submit]' );
+	if ( button ) {
+		button.disabled = true;
+	}
+} );
+</script>
 
 <?php else : ?>
 <p>

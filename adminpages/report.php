@@ -104,11 +104,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 		);
 	}
 
-	// Output the table, shows pagination by default.
-	pmpro_affiliates_display_orders_table( array(
-		'affiliate_id'  => $report,
-		'order_ids'     => $payout_order_ids,
-		'empty_message' => sprintf( esc_html__( 'No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ),
-		'limit'         => $payout_id ? 0 : (int) $limit, // No pagination for payout view (payouts are typically small).
-		'paged'         => (int) $paged,
-	) );
+	// A payout with no order IDs would otherwise drop the filter and show every order.
+	if ( $payout_id && empty( $payout_order_ids ) ) {
+		echo '<p>' . esc_html__( 'This payout has no orders.', 'pmpro-affiliates' ) . '</p>';
+	} else {
+		// Output the table, shows pagination by default.
+		pmpro_affiliates_display_orders_table( array(
+			'affiliate_id'  => $report,
+			'order_ids'     => $payout_order_ids,
+			'empty_message' => sprintf( esc_html__( 'No %s signups have been tracked yet.', 'pmpro-affiliates' ), $pmpro_affiliates_singular_name ),
+			'limit'         => $payout_id ? 0 : (int) $limit, // No pagination for payout view (payouts are typically small).
+			'paged'         => (int) $paged,
+		) );
+	}

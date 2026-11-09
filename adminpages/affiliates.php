@@ -80,12 +80,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 
 		if ( isset( $_REQUEST['payout_method'] ) ) {
-			$allowed_methods = array( 'paypal', 'venmo', 'check', 'wire', 'other', '' );
-			$payout_method   = in_array( $_REQUEST['payout_method'], $allowed_methods, true ) ? $_REQUEST['payout_method'] : '';
+			$payout_method = pmpro_affiliates_sanitize_payout_method( sanitize_text_field( wp_unslash( $_REQUEST['payout_method'] ) ) );
 		}
 
 		if ( isset( $_REQUEST['payout_email'] ) ) {
-			$payout_email = sanitize_text_field( $_REQUEST['payout_email'] );
+			$payout_email = sanitize_text_field( wp_unslash( $_REQUEST['payout_email'] ) );
 		}
 
 	} elseif ( $edit > 0 || ($report && $report != "all" ) || $copy ) {

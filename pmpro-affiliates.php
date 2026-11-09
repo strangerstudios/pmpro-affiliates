@@ -370,9 +370,22 @@ function pmpro_affiliates_add_pages() {
 		add_submenu_page( 'pmpro-membershiplevels', __( 'Affiliates', 'pmpro-affiliates' ), __( 'Affiliates', 'pmpro-affiliates' ), 'manage_options', 'pmpro-affiliates', 'pmpro_affiliates_adminpage' );
 	}
 	// Hidden payouts page. Parent is '' rather than null, which triggers PHP 8 deprecation notices.
-	add_submenu_page( '', __( 'Affiliate Payouts', 'pmpro-affiliates' ), __( 'Affiliate Payouts', 'pmpro-affiliates' ), 'manage_options', 'pmpro-affiliates-payouts', 'pmpro_affiliates_payouts_adminpage' );
+	$payouts_hook = add_submenu_page( '', __( 'Affiliate Payouts', 'pmpro-affiliates' ), __( 'Affiliate Payouts', 'pmpro-affiliates' ), 'manage_options', 'pmpro-affiliates-payouts', 'pmpro_affiliates_payouts_adminpage' );
+	if ( $payouts_hook ) {
+		add_action( 'load-' . $payouts_hook, 'pmpro_affiliates_set_payouts_page_title' );
+	}
 }
 add_action( 'admin_menu', 'pmpro_affiliates_add_pages', 20 );
+
+/**
+ * Set the admin page title for the hidden payouts page, which WordPress can't look up from the menu.
+ *
+ * @since TBD
+ */
+function pmpro_affiliates_set_payouts_page_title() {
+	global $title;
+	$title = __( 'Affiliate Payouts', 'pmpro-affiliates' );
+}
 
 // affiliates page (add new)
 function pmpro_affiliates_adminpage() {
@@ -392,6 +405,8 @@ function pmpro_affiliates_payouts_adminpage() {
  * @since TBD
  */
 function pmpro_affiliates_process_payouts_confirm() {
+	global $wpdb;
+
 	if ( empty( $_REQUEST['page'] ) || 'pmpro-affiliates-payouts' !== $_REQUEST['page'] || empty( $_POST['action'] ) || 'confirm' !== $_POST['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification -- Routing check only; nonce verified below.
 		return;
 	}
@@ -406,33 +421,46 @@ function pmpro_affiliates_process_payouts_confirm() {
 	$date_end        = isset( $_POST['date_end'] ) ? sanitize_text_field( wp_unslash( $_POST['date_end'] ) ) : '';
 	$affiliate_id    = isset( $_POST['affiliate_id'] ) ? (int) $_POST['affiliate_id'] : 0;
 	$minimum         = isset( $_POST['minimum'] ) ? max( 0, (float) $_POST['minimum'] ) : 0;
-	$method_override = isset( $_POST['method_override'] ) ? sanitize_text_field( wp_unslash( $_POST['method_override'] ) ) : '';
+	$method_override = isset( $_POST['method_override'] ) ? pmpro_affiliates_sanitize_payout_method( sanitize_text_field( wp_unslash( $_POST['method_override'] ) ) ) : '';
 	$order_ids       = isset( $_POST['order_ids'] ) ? array_filter( array_map( 'intval', explode( ',', sanitize_text_field( wp_unslash( $_POST['order_ids'] ) ) ) ) ) : array();
 
-	// Pay only the previewed orders that are still eligible; amounts are recalculated here.
-	$commissions = empty( $order_ids ) ? array() : pmpro_affiliates_get_unpaid_commissions_for_payout( $affiliate_id, $date_start, $date_end, $minimum, $order_ids );
+	$redirect_args = array( 'page' => 'pmpro-affiliates-payouts' );
 
-	if ( empty( $commissions ) ) {
-		wp_safe_redirect( add_query_arg( array(
-			'page'  => 'pmpro-affiliates-payouts',
-			'error' => '1',
-		), admin_url( 'admin.php' ) ) );
+	if ( empty( $order_ids ) ) {
+		wp_safe_redirect( add_query_arg( array_merge( $redirect_args, array( 'error' => '1' ) ), admin_url( 'admin.php' ) ) );
 		exit;
 	}
+
+	// Serialize payout runs so concurrent submits can't pay the same orders twice.
+	$lock_name = $wpdb->prefix . 'pmpro_affiliates_payouts';
+	if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK( %s, %d )', $lock_name, 10 ) ) ) {
+		wp_safe_redirect( add_query_arg( array_merge( $redirect_args, array( 'error' => 'locked' ) ), admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	// Pay only the previewed orders that are still eligible; amounts are recalculated here.
+	$commissions = pmpro_affiliates_get_unpaid_commissions_for_payout( $affiliate_id, $date_start, $date_end, $minimum, $order_ids );
 
 	$payout_ids      = array();
 	$total_amount    = 0.0;
 	$affiliate_count = 0;
+	$skipped_count   = 0;
 
 	foreach ( $commissions as $data ) {
-		$aff = $data['affiliate'];
+		$aff    = $data['affiliate'];
+		$method = ! empty( $method_override ) ? $method_override : pmpro_affiliates_sanitize_payout_method( $aff->payout_method );
+
+		if ( '' !== pmpro_affiliates_get_payout_account_error( $method, $aff->payout_email ) ) {
+			$skipped_count++;
+			continue;
+		}
 
 		// Record the actual order date span when no range was entered.
 		$payout_id = pmpro_affiliates_create_payout(
 			$aff->id,
 			$data['order_ids'],
 			$data['amount'],
-			! empty( $method_override ) ? $method_override : $aff->payout_method,
+			$method,
 			$aff->payout_email,
 			! empty( $date_start ) ? $date_start : get_date_from_gmt( $data['date_first'], 'Y-m-d' ),
 			! empty( $date_end ) ? $date_end : get_date_from_gmt( $data['date_last'], 'Y-m-d' )
@@ -445,18 +473,85 @@ function pmpro_affiliates_process_payouts_confirm() {
 		}
 	}
 
+	$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK( %s )', $lock_name ) );
+
+	if ( $skipped_count > 0 ) {
+		$redirect_args['skipped'] = $skipped_count;
+	}
+
+	if ( empty( $payout_ids ) ) {
+		wp_safe_redirect( add_query_arg( array_merge( $redirect_args, array( 'error' => '1' ) ), admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
 	// Store recent payout IDs for CSV download on the success page.
 	set_transient( 'pmpro_affiliates_recent_payouts_' . get_current_user_id(), $payout_ids, HOUR_IN_SECONDS );
 
-	wp_safe_redirect( add_query_arg( array(
-		'page'            => 'pmpro-affiliates-payouts',
+	wp_safe_redirect( add_query_arg( array_merge( $redirect_args, array(
 		'success'         => '1',
 		'affiliate_count' => $affiliate_count,
 		'total_amount'    => number_format( $total_amount, 2, '.', '' ),
-	), admin_url( 'admin.php' ) ) );
+	) ), admin_url( 'admin.php' ) ) );
 	exit;
 }
 add_action( 'admin_init', 'pmpro_affiliates_process_payouts_confirm' );
+
+/**
+ * Delete one payout (GET link) or several (bulk action), then redirect back to the payouts list.
+ *
+ * Runs on admin_init so reloading the page doesn't repeat the delete.
+ *
+ * @since TBD
+ */
+function pmpro_affiliates_process_payout_deletes() {
+	// phpcs:disable WordPress.Security.NonceVerification -- Routing checks only; nonces verified below.
+	if ( empty( $_REQUEST['page'] ) || 'pmpro-affiliates-payouts' !== $_REQUEST['page'] ) {
+		return;
+	}
+
+	$is_single   = isset( $_GET['action'] ) && 'delete' === $_GET['action'] && ! empty( $_GET['payout_id'] );
+	$bulk_action = ! empty( $_POST['bulk_action'] ) ? sanitize_text_field( wp_unslash( $_POST['bulk_action'] ) ) : '';
+	if ( empty( $bulk_action ) && ! empty( $_POST['bulk_action2'] ) ) {
+		$bulk_action = sanitize_text_field( wp_unslash( $_POST['bulk_action2'] ) );
+	}
+	$is_bulk = 'bulk_delete' === $bulk_action;
+	// phpcs:enable WordPress.Security.NonceVerification
+
+	if ( ! $is_single && ! $is_bulk ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have permission to access this page.', 'pmpro-affiliates' ) );
+	}
+
+	if ( $is_single ) {
+		$payout_ids = array( (int) $_GET['payout_id'] );
+		check_admin_referer( 'pmpro_affiliates_delete_payout_' . $payout_ids[0] );
+	} else {
+		check_admin_referer( 'pmpro_affiliates_bulk_delete_payouts' );
+		$payout_ids = isset( $_POST['payout_ids'] ) && is_array( $_POST['payout_ids'] ) ? array_filter( array_map( 'intval', $_POST['payout_ids'] ) ) : array();
+	}
+
+	$redirect_args = array( 'page' => 'pmpro-affiliates-payouts' );
+
+	if ( ! empty( $payout_ids ) ) {
+		$deleted_count = 0;
+		foreach ( $payout_ids as $payout_id ) {
+			if ( pmpro_affiliates_delete_payout( $payout_id ) ) {
+				$deleted_count++;
+			}
+		}
+		$redirect_args['deleted'] = $deleted_count;
+		if ( $deleted_count < count( $payout_ids ) ) {
+			$redirect_args['delete_failed'] = count( $payout_ids ) - $deleted_count;
+		}
+	}
+
+	wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'admin.php' ) ) );
+	exit;
+}
+add_action( 'admin_init', 'pmpro_affiliates_process_payout_deletes' );
 
 // add page to admin bar
 function pmpro_affiliates_admin_bar_menu() {

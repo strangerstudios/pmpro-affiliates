@@ -51,6 +51,13 @@ function pmpro_affiliates_upgrade_0_9() {
 
 	dbDelta( $sql );
 
+	// Leave db_version alone if the schema changes didn't apply, so the upgrade runs again next time.
+	$existing_columns = $wpdb->get_col( "SHOW COLUMNS FROM {$wpdb->pmpro_affiliates}", 0 );
+	$payouts_exists   = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $payouts_table ) ) ) === $payouts_table;
+	if ( ! in_array( 'payout_email', $existing_columns, true ) || ! in_array( 'payout_method', $existing_columns, true ) || ! $payouts_exists ) {
+		return;
+	}
+
 	// Bump the DB version.
 	$affiliate_options['db_version'] = 0.9;
 	update_option( 'pmpro_affiliates_options', $affiliate_options );

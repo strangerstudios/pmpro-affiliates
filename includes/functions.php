@@ -622,6 +622,56 @@ function pmpro_affiliates_format_payout_date_range( $payout ) {
 }
 
 /**
+ * Sanitize a payout method against the list of supported methods.
+ *
+ * @since TBD
+ *
+ * @param string $method The payout method to check.
+ * @return string The method if supported, otherwise an empty string.
+ */
+function pmpro_affiliates_sanitize_payout_method( $method ) {
+	$allowed_methods = array( 'paypal', 'venmo', 'check', 'wire', 'other' );
+	return in_array( $method, $allowed_methods, true ) ? $method : '';
+}
+
+/**
+ * Check whether a payout account can be used with a payout method.
+ *
+ * @since TBD
+ *
+ * @param string $method  The payout method.
+ * @param string $account The payout account (email, handle, payee name, etc.).
+ * @return string An error message if the account can't be used, or an empty string if it can.
+ */
+function pmpro_affiliates_get_payout_account_error( $method, $account ) {
+	if ( '' === trim( (string) $account ) ) {
+		return __( 'No payout account set', 'pmpro-affiliates' );
+	}
+
+	if ( 'paypal' === $method && ! is_email( $account ) ) {
+		return __( 'Payout account is not a valid PayPal email', 'pmpro-affiliates' );
+	}
+
+	return '';
+}
+
+/**
+ * Escape a value for a CSV cell so spreadsheet apps don't run it as a formula.
+ *
+ * @since TBD
+ *
+ * @param string $value The cell value.
+ * @return string The escaped value.
+ */
+function pmpro_affiliates_escape_csv_cell( $value ) {
+	$value = (string) $value;
+	if ( '' !== $value && in_array( $value[0], array( '=', '+', '-', '@', "\t", "\r" ), true ) ) {
+		$value = "'" . $value;
+	}
+	return $value;
+}
+
+/**
  * Delete a payout record and unmark all its orders as paid (reversal).
  *
  * @since TBD

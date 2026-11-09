@@ -17,34 +17,26 @@ if ( in_array( $action, array( 'process', 'preview' ), true ) ) {
 	return;
 }
 
-// Handle single delete.
-if ( 'delete' === $action && ! empty( $_REQUEST['payout_id'] ) ) {
-	check_admin_referer( 'pmpro_affiliates_delete_payout_' . (int) $_REQUEST['payout_id'] );
-	$deleted = pmpro_affiliates_delete_payout( (int) $_REQUEST['payout_id'] );
-	if ( $deleted ) {
-		$pmpro_msg  = __( 'Payout deleted and orders unmarked as paid.', 'pmpro-affiliates' );
-		$pmpro_msgt = 'success';
-	} else {
-		$pmpro_msg  = __( 'There was an error deleting the payout.', 'pmpro-affiliates' );
-		$pmpro_msgt = 'error';
-	}
-}
+// Check for delete redirect from pmpro_affiliates_process_payout_deletes().
+if ( isset( $_REQUEST['deleted'] ) ) {
+	$deleted_count = (int) $_REQUEST['deleted'];
+	$failed_count  = (int) ( $_REQUEST['delete_failed'] ?? 0 );
 
-// Handle bulk delete.
-if ( 'bulk_delete' === $action && ! empty( $_REQUEST['payout_ids'] ) && is_array( $_REQUEST['payout_ids'] ) ) {
-	check_admin_referer( 'pmpro_affiliates_bulk_delete_payouts' );
-	$deleted_count = 0;
-	foreach ( $_REQUEST['payout_ids'] as $pid ) {
-		if ( pmpro_affiliates_delete_payout( (int) $pid ) ) {
-			$deleted_count++;
-		}
-	}
 	$pmpro_msg  = sprintf(
 		/* translators: %d: number of payouts deleted */
-		_n( '%d payout deleted.', '%d payouts deleted.', $deleted_count, 'pmpro-affiliates' ),
+		_n( '%d payout deleted and its orders unmarked as paid.', '%d payouts deleted and their orders unmarked as paid.', $deleted_count, 'pmpro-affiliates' ),
 		$deleted_count
 	);
 	$pmpro_msgt = 'success';
+
+	if ( $failed_count > 0 ) {
+		$pmpro_msg .= ' ' . sprintf(
+			/* translators: %d: number of payouts that could not be deleted */
+			_n( '%d payout could not be deleted.', '%d payouts could not be deleted.', $failed_count, 'pmpro-affiliates' ),
+			$failed_count
+		);
+		$pmpro_msgt = 'error';
+	}
 }
 
 // Check for success redirect from process-payouts.
@@ -63,8 +55,29 @@ if ( ! empty( $_REQUEST['success'] ) ) {
 
 // Check for empty-run redirect from process-payouts.
 if ( ! empty( $_REQUEST['error'] ) ) {
-	$pmpro_msg  = __( 'No unpaid commissions found for the selected criteria. No payouts were created.', 'pmpro-affiliates' );
+	if ( 'locked' === $_REQUEST['error'] ) {
+		$pmpro_msg = __( 'Another payout run is in progress. Wait a moment, then check the payout list before trying again.', 'pmpro-affiliates' );
+	} elseif ( ! empty( $_REQUEST['skipped'] ) ) {
+		$pmpro_msg = __( 'No payouts were created.', 'pmpro-affiliates' );
+	} else {
+		$pmpro_msg = __( 'No unpaid commissions found for the selected criteria. No payouts were created.', 'pmpro-affiliates' );
+	}
 	$pmpro_msgt = 'error';
+}
+
+// Note affiliates left out of a payout run because their payout account was missing or invalid.
+if ( ! empty( $_REQUEST['skipped'] ) ) {
+	$skipped_count = (int) $_REQUEST['skipped'];
+	$pmpro_msg    .= ' ' . sprintf(
+		/* translators: %d: number of affiliates skipped */
+		_n(
+			'%d affiliate was not paid because their payout account is missing or does not match the payout method.',
+			'%d affiliates were not paid because their payout accounts are missing or do not match the payout method.',
+			$skipped_count,
+			'pmpro-affiliates'
+		),
+		$skipped_count
+	);
 }
 
 // Retrieve recent payout IDs from transient (set by process-payouts.php on confirm).
@@ -139,7 +152,7 @@ require_once PMPRO_DIR . '/adminpages/admin_header.php';
 				<input type="hidden" name="format" value="paypal" />
 				<input type="hidden" name="payout_ids" value="<?php echo esc_attr( implode( ',', array_map( 'intval', $recent_payout_ids ) ) ); ?>" />
 				<?php wp_nonce_field( 'pmpro_affiliates_payout_csv' ); ?>
-				<button type="submit" class="button"><?php esc_html_e( 'Download PayPal Mass Pay CSV', 'pmpro-affiliates' ); ?></button>
+				<button type="submit" class="button"><?php esc_html_e( 'Download PayPal Payouts CSV', 'pmpro-affiliates' ); ?></button>
 			</form>
 			<?php endif; ?>
 		<?php endif; ?>
@@ -150,17 +163,16 @@ require_once PMPRO_DIR . '/adminpages/admin_header.php';
 	<p><?php esc_html_e( 'No payouts have been processed yet.', 'pmpro-affiliates' ); ?> <a href="admin.php?page=pmpro-affiliates-payouts&action=process"><?php esc_html_e( 'Process your first payout now', 'pmpro-affiliates' ); ?></a>.</p>
 <?php elseif ( ! empty( $payouts ) ) : ?>
 
-<form method="post" id="pmpro-affiliates-payouts-form">
+<form method="post" id="pmpro-affiliates-payouts-form" action="<?php echo esc_url( admin_url( 'admin.php?page=pmpro-affiliates-payouts' ) ); ?>">
 	<?php wp_nonce_field( 'pmpro_affiliates_bulk_delete_payouts' ); ?>
-	<input type="hidden" name="action" value="bulk_delete" />
 
 	<div class="tablenav top">
 		<div class="alignleft actions bulkactions">
-			<select name="_bulk_action_top">
+			<select name="bulk_action">
 				<option value=""><?php esc_html_e( 'Bulk Actions', 'pmpro-affiliates' ); ?></option>
 				<option value="bulk_delete"><?php esc_html_e( 'Delete', 'pmpro-affiliates' ); ?></option>
 			</select>
-			<button type="submit" class="button action" onclick="document.getElementById('pmpro-affiliates-payouts-form').action.value = document.querySelector('[name=_bulk_action_top]').value; return true;"><?php esc_html_e( 'Apply', 'pmpro-affiliates' ); ?></button>
+			<button type="submit" class="button action"><?php esc_html_e( 'Apply', 'pmpro-affiliates' ); ?></button>
 		</div>
 		<?php if ( $total > $per_page ) : ?>
 		<div class="tablenav-pages">
@@ -214,6 +226,14 @@ require_once PMPRO_DIR . '/adminpages/admin_header.php';
 					), admin_url( 'admin.php' ) ),
 					'pmpro_affiliates_delete_payout_' . $payout->id
 				);
+				$csv_url    = wp_nonce_url(
+					add_query_arg( array(
+						'action'     => 'pmpro_affiliates_payout_csv',
+						'format'     => 'summary',
+						'payout_ids' => $payout->id,
+					), admin_url( 'admin-ajax.php' ) ),
+					'pmpro_affiliates_payout_csv'
+				);
 				$date_range = pmpro_affiliates_format_payout_date_range( $payout );
 			?>
 			<tr id="payout-row-<?php echo (int) $payout->id; ?>">
@@ -250,13 +270,7 @@ require_once PMPRO_DIR . '/adminpages/admin_header.php';
 					<?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $payout->date ) ) ); ?>
 					<div class="row-actions">
 						<span class="csv">
-							<form method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" style="display:inline;">
-								<input type="hidden" name="action" value="pmpro_affiliates_payout_csv" />
-								<input type="hidden" name="format" value="summary" />
-								<input type="hidden" name="payout_ids" value="<?php echo (int) $payout->id; ?>" />
-								<?php wp_nonce_field( 'pmpro_affiliates_payout_csv' ); ?>
-								<button type="submit" class="button-link"><?php esc_html_e( 'CSV', 'pmpro-affiliates' ); ?></button>
-							</form>
+							<a href="<?php echo esc_url( $csv_url ); ?>"><?php esc_html_e( 'CSV', 'pmpro-affiliates' ); ?></a>
 						</span>
 						|
 						<span class="delete">
@@ -273,11 +287,11 @@ require_once PMPRO_DIR . '/adminpages/admin_header.php';
 
 	<div class="tablenav bottom">
 		<div class="alignleft actions bulkactions">
-			<select name="_bulk_action_bottom">
+			<select name="bulk_action2">
 				<option value=""><?php esc_html_e( 'Bulk Actions', 'pmpro-affiliates' ); ?></option>
 				<option value="bulk_delete"><?php esc_html_e( 'Delete', 'pmpro-affiliates' ); ?></option>
 			</select>
-			<button type="submit" class="button action" onclick="document.getElementById('pmpro-affiliates-payouts-form').action.value = document.querySelector('[name=_bulk_action_bottom]').value; return true;"><?php esc_html_e( 'Apply', 'pmpro-affiliates' ); ?></button>
+			<button type="submit" class="button action"><?php esc_html_e( 'Apply', 'pmpro-affiliates' ); ?></button>
 		</div>
 		<?php
 		pmpro_affiliates_display_pagination( $paged, $total, $per_page );

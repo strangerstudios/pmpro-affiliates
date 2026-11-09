@@ -1,11 +1,14 @@
 <?php
 /**
  * Payout CSV generation and streaming.
- * Called via wp_ajax_pmpro_affiliates_payout_csv.
+ * Called via wp_ajax_pmpro_affiliates_payout_csv (GET link or POST form).
  *
  * Accepts:
  *  - payout_ids: comma-separated string or array of payout IDs
  *  - format: 'summary' (default) or 'paypal'
+ *
+ * The 'paypal' format follows PayPal's Payouts web upload file: no header row; columns are
+ * recipient, amount, currency, customer ID, note, recipient wallet.
  */
 
 // Permissions check.
@@ -17,7 +20,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 check_ajax_referer( 'pmpro_affiliates_payout_csv' );
 
 // Parse and validate payout IDs.
-$raw_ids = isset( $_POST['payout_ids'] ) ? $_POST['payout_ids'] : '';
+$raw_ids = isset( $_REQUEST['payout_ids'] ) ? wp_unslash( $_REQUEST['payout_ids'] ) : '';
 if ( is_array( $raw_ids ) ) {
 	$payout_ids = array_map( 'intval', $raw_ids );
 } else {
@@ -29,7 +32,7 @@ if ( empty( $payout_ids ) ) {
 	wp_die( esc_html__( 'No payout IDs provided.', 'pmpro-affiliates' ) );
 }
 
-$format = isset( $_POST['format'] ) && 'paypal' === $_POST['format'] ? 'paypal' : 'summary';
+$format = isset( $_REQUEST['format'] ) && 'paypal' === $_REQUEST['format'] ? 'paypal' : 'summary';
 
 // Load payout records.
 $payouts = array();
@@ -66,15 +69,14 @@ header( 'Expires: 0' );
 
 $output = fopen( 'php://output', 'w' );
 
-// UTF-8 BOM for Excel compatibility.
-fputs( $output, "\xEF\xBB\xBF" );
-
 if ( 'paypal' === $format ) {
-	// PayPal Mass Pay CSV format.
-	fputcsv( $output, array( 'email', 'amount', 'currency', 'note' ) );
+	$currency = pmpro_getOption( 'currency' ) ?: 'USD';
+
+	// PayPal wants a comma decimal separator for these currencies.
+	$decimal_separator = in_array( $currency, array( 'EUR', 'BRL' ), true ) ? ',' : '.';
 
 	foreach ( $payouts as $payout ) {
-		if ( 'paypal' !== $payout->payout_method || empty( $payout->payout_account ) ) {
+		if ( 'paypal' !== $payout->payout_method || '' !== pmpro_affiliates_get_payout_account_error( 'paypal', $payout->payout_account ) ) {
 			continue;
 		}
 
@@ -86,13 +88,18 @@ if ( 'paypal' === $format ) {
 		);
 
 		fputcsv( $output, array(
-			$payout->payout_account,
-			number_format( (float) $payout->amount, 2, '.', '' ),
-			pmpro_getOption( 'currency' ) ?: 'USD',
-			$note,
+			pmpro_affiliates_escape_csv_cell( $payout->payout_account ),
+			number_format( (float) $payout->amount, 2, $decimal_separator, '' ),
+			$currency,
+			'',
+			pmpro_affiliates_escape_csv_cell( $note ),
+			'PAYPAL',
 		) );
 	}
 } else {
+	// UTF-8 BOM for Excel compatibility.
+	fputs( $output, "\xEF\xBB\xBF" );
+
 	// Payout Summary CSV.
 	fputcsv( $output, array(
 		'payout_id',
@@ -123,9 +130,9 @@ if ( 'paypal' === $format ) {
 		fputcsv( $output, array(
 			$payout->id,
 			$payout->affiliate_id,
-			$affiliate ? stripslashes( $affiliate->name ) : '',
-			$affiliate ? $affiliate->code : '',
-			$payout->payout_account,
+			pmpro_affiliates_escape_csv_cell( $affiliate ? stripslashes( $affiliate->name ) : '' ),
+			pmpro_affiliates_escape_csv_cell( $affiliate ? $affiliate->code : '' ),
+			pmpro_affiliates_escape_csv_cell( $payout->payout_account ),
 			$payout->payout_method,
 			number_format( (float) $payout->amount, 2, '.', '' ),
 			$order_count,
