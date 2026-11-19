@@ -97,6 +97,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			$cookiedays = $affiliate->cookiedays;
 			$enabled = $affiliate->enabled;
 			$commissionrate = $affiliate->commissionrate * 100; //Stored as decimal, but we want to show as percent.
+
+			// When copying, generate a new code instead of reusing the source affiliate's code.
+			if ( $copy && $edit <= 0 ) {
+				$code = pmpro_affiliates_getNewCode();
+			}
 		}
 	}
 	else
@@ -246,7 +251,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<tbody>
 					<tr>
 						<th scope="row" valign="top"><label><?php esc_html_e('ID:', 'pmpro-affiliates'); ?></label></th>
-						<td class="pmpro_lite"><?php if(!empty($affiliate->id)) echo esc_html( $affiliate->id ); else esc_html_e("This will be generated when you save.", 'pmpro-affiliates'); ?></td>
+						<td class="pmpro_lite"><?php if( $edit > 0 && !empty($affiliate->id)) echo esc_html( $affiliate->id ); else esc_html_e("This will be generated when you save.", 'pmpro-affiliates'); ?></td>
 					</tr>
 
 					<tr>
@@ -338,7 +343,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<td>
 							<?php 
 							echo esc_html( pmpro_formatPrice( $unpaid_commissions ) ); 
-							if ( ! empty( $affiliate_id ) ) {
+							if ( $edit > 0 && ! empty( $affiliate_id ) ) {
 								echo ' (<a href="' . esc_url( get_admin_url(NULL, '/admin.php?page=pmpro-affiliates&report=' . (int) $affiliate_id ) ).'">' . esc_html__( 'view report', 'pmpro-affiliates' ) .'</a>)';
 							}
 							
