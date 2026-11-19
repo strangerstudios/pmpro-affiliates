@@ -789,7 +789,8 @@ function pmpro_affiliates_get_commissions( $affiliate_code, $state = 'paid' ) {
 				AND om.meta_key = 'pmpro_affiliate_paid'
 				JOIN $wpdb->pmpro_affiliates a
 				ON o.affiliate_id = a.id
-				AND a.code = '" . esc_sql( $affiliate_code ) . "'";
+				AND a.code = '" . esc_sql( $affiliate_code ) . "'
+				WHERE o.status NOT IN('pending', 'error', 'refunded', 'refund', 'token', 'review')";
 
 	// Get paid or unpaid commissions.
 	if ( 'paid' === $state ) {
