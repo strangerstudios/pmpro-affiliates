@@ -58,7 +58,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		}
 
 		if ( isset( $_REQUEST['trackingcode'] ) ) {
-			$trackingcode = sanitize_text_field( wp_unslash( $_REQUEST['trackingcode'] ) );
+			// Allow HTML such as tracking pixels. PMPro core also runs the confirmation message through wp_kses_post().
+			$trackingcode = wp_kses_post( wp_unslash( $_REQUEST['trackingcode'] ) );
 		}
 
 		if ( isset( $_REQUEST['commissionrate'] ) ) {
