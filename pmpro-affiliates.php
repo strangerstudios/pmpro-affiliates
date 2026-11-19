@@ -671,8 +671,8 @@ add_action( 'wp_enqueue_scripts', 'pmpro_affiliates_enqueue_scripts' );
  * Register scripts needed for admin area.
  */
 function pmpro_affiliates_register_scripts_styles() {
-	// Only load script on PMPro affiliates pages.
-	if ( ! isset( $_REQUEST['page'] ) || $_REQUEST['page'] != 'pmpro-affiliates' ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin page check for enqueueing assets.
+	// Only load script on PMPro affiliates pages and the Edit Member page (Affiliate panel).
+	if ( ! isset( $_REQUEST['page'] ) || ! in_array( $_REQUEST['page'], array( 'pmpro-affiliates', 'pmpro-member' ), true ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin page check for enqueueing assets.
 		return;
 	}
 
