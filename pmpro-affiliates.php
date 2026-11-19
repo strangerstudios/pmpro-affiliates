@@ -182,9 +182,10 @@ function pmpro_affiliates_wp_head() {
 		$affiliate_enabled = $wpdb->get_var( "SELECT enabled FROM $wpdb->pmpro_affiliates WHERE code = '" . esc_sql( $pmpro_affiliate_code ) . "' LIMIT 1" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; value escaped with esc_sql() inside quotes.
 		if ( ! empty( $affiliate_enabled ) ) {
 			// build cookie string
-			$cookiestring = $pmpro_affiliate_code;
+			// URL-encode each part so it can't add cookie attributes or break the cookie value. PHP decodes it again when reading $_COOKIE.
+			$cookiestring = rawurlencode( $pmpro_affiliate_code );
 			if ( ! empty( $pmpro_affiliate_subid ) ) {
-				$cookiestring .= ',' . $pmpro_affiliate_subid;
+				$cookiestring .= ',' . rawurlencode( $pmpro_affiliate_subid );
 			}
 
 			// track the visit
@@ -200,7 +201,7 @@ function pmpro_affiliates_wp_head() {
 					today.setTime( today.getTime() );
 					var expires = <?php echo intval( $cookielength ); ?> * 1000 * 60 * 60 * 24;
 					var expires_date = new Date( today.getTime() + (expires) );
-					document.cookie = 'pmpro_affiliate=<?php echo esc_html( $cookiestring ); ?>;path=/;expires=' + expires_date.toGMTString() + ';';
+					document.cookie = 'pmpro_affiliate=<?php echo esc_js( $cookiestring ); ?>;path=/;expires=' + expires_date.toGMTString() + ';';
 			</script>
 			<?php
 		}
