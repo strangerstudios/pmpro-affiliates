@@ -148,6 +148,7 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 					if ( $report != 'all' ) {
 						$sqlQuery .= " AND a.id = '" . esc_sql( $report ) . "' ";
 					}
+					$sqlQuery .= " ORDER BY o.timestamp DESC";
 					$affiliate_orders = $wpdb->get_results( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Column whitelisted to total/subtotal; $report is intval().
 
 					if ( ! empty( $affiliate_orders ) ) {
