@@ -138,6 +138,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$pmpro_msgt = 'error';
 	}
 
+	// Each code must be unique and not empty. Referrals look up one affiliate by code, so a duplicate code would never be credited.
+	// Codes that are not being changed are not checked, so existing affiliates can still be edited.
+	if ( $edit && $save ) {
+		$old_code = intval( $edit ) > 0 ? $wpdb->get_var( $wpdb->prepare( "SELECT code FROM $wpdb->pmpro_affiliates WHERE id = %d LIMIT 1", intval( $edit ) ) ) : null; // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; prepared.
+		if ( $old_code !== $code ) {
+			if ( empty( $code ) ) {
+				$save = false;
+				$pmpro_msg = __( 'Please enter a code.', 'pmpro-affiliates' );
+				$pmpro_msgt = 'error';
+			} elseif ( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_affiliates WHERE code = %s AND id <> %d LIMIT 1", $code, max( 0, intval( $edit ) ) ) ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; prepared.
+				$save = false;
+				$pmpro_msg = __( 'That code is already used by another affiliate. Please enter a different code.', 'pmpro-affiliates' );
+				$pmpro_msgt = 'error';
+			}
+		}
+	}
+
 	if($edit && $save)
 	{
 		//updating or new?
