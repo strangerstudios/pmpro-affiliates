@@ -130,5 +130,10 @@ if ( $report !== 'all' ) {
 	 * @return string The enclosed string.
 	 */
 	function pmpro_enclose( $s ) {
-		return '"' . str_replace( '"', '\\"', $s ) . '"';
+		$s = (string) $s;
+		// Prefix formula-like values so spreadsheet apps don't run visitor-controlled data (like the Sub-ID) as a formula.
+		if ( ! is_numeric( $s ) && preg_match( '/^[=+\-@\t\r]/', $s ) ) {
+			$s = "'" . $s;
+		}
+		return '"' . str_replace( '"', '""', $s ) . '"';
 	}
