@@ -292,6 +292,11 @@ function pmpro_affiliates_generate_affiliate_after_checkout( $user_id, $morder )
 	$pmpro_create_affiliate_level = get_option( 'pmpro_create_affiliate_level_' . $pmpro_level->id );
 	$code                         = pmpro_affiliates_getNewCode();
 	if ( ! empty( $pmpro_create_affiliate_level ) ) {
+		// Don't create another affiliate if this user already has one.
+		$existing_affiliate = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM $wpdb->pmpro_affiliates WHERE affiliateuser = %s LIMIT 1", $user->user_login ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin custom table; prepared.
+		if ( ! empty( $existing_affiliate ) ) {
+			return;
+		}
 		/**
 		 * Filter the number of days to set the cookie for the affiliate.
 		 *
