@@ -301,7 +301,11 @@ function pmpro_affiliates_generate_affiliate_after_checkout( $user_id, $morder )
 		 * @return int The number of days to set the cookie for the affiliate.
 		 */
 		$days     = intval( apply_filters( 'pmproaf_default_cookie_duration', 30, $user_id, $pmpro_level ) );
-		$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled) VALUES('" . esc_sql( $code ) . "', '" . esc_sql( $user->display_name ) . "', '" . esc_sql( $user->user_login ) . "', '', $days, '1')";
+
+		// Use the same default commission rate as the Add New form and the backfill.
+		$commissionrate = intval( apply_filters( 'pmpro_affiliate_default_commission_rate', 5 ) ) / 100;
+
+		$sqlQuery = "INSERT INTO $wpdb->pmpro_affiliates (code, name, affiliateuser, trackingcode, cookiedays, enabled, commissionrate) VALUES('" . esc_sql( $code ) . "', '" . esc_sql( $user->display_name ) . "', '" . esc_sql( $user->user_login ) . "', '', $days, '1', '" . esc_sql( $commissionrate ) . "')";
 		$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- All values escaped with esc_sql() inside quotes; $days is intval().
 	}
 }
