@@ -325,8 +325,8 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 												// translators: variables for affiliate codes
 												echo sprintf(
 													esc_html__( 'Add the string %1$1s (first parameter) or %2$2s (second or later parameter) to any link to this site. If you would like to track against specific campaigns, you can add the parameter %3$3s or %4$4s to your URL. Some example links are included below.', 'pmpro-affiliates' ),
-													'<code>?pa=' . esc_html( $affiliate->code ) . '</code>',
-													'<code>&amp;pa=' . esc_html( $affiliate->code ) . '</code>',
+													'<code>?pa=' . esc_html( rawurlencode( $affiliate->code ) ) . '</code>',
+													'<code>&amp;pa=' . esc_html( rawurlencode( $affiliate->code ) ) . '</code>',
 													'<code>?subid=CAMPAIGN_NAME</code>',
 													'<code>&subid=CAMPAIGN_NAME</code>'
 												);
@@ -334,15 +334,15 @@ function pmpro_affiliates_report_shortcode( $atts, $content = null, $code = '' )
 										</p>
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text' ) ); ?>">
 											<label for="homepage_link" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Homepage', 'pmpro-affiliates' ); ?></label>
-											<input id="homepage_link" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" readonly value="<?php echo esc_url( site_url() ); ?>/?pa=<?php echo esc_attr( $affiliate->code ); ?>" />
+											<input id="homepage_link" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" readonly value="<?php echo esc_url( site_url() ); ?>/?pa=<?php echo esc_attr( rawurlencode( $affiliate->code ) ); ?>" />
 										</div> <!-- end pmpro_form_field -->
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text' ) ); ?>">
 											<label for="levels_link" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Membership Levels', 'pmpro-affiliates' ); ?></label>
-											<input id="levels_link" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" readonly value="<?php echo esc_attr( pmpro_url( 'levels' ) ); ?>?pa=<?php echo esc_attr( $affiliate->code ); ?>" />
+											<input id="levels_link" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" readonly value="<?php echo esc_attr( pmpro_url( 'levels' ) ); ?>?pa=<?php echo esc_attr( rawurlencode( $affiliate->code ) ); ?>" />
 										</div> <!-- end pmpro_form_field -->
 										<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_field pmpro_form_field-text' ) ); ?>">
 											<label for="checkout_link" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_label' ) ); ?>"><?php esc_html_e( 'Homepage with Campaign Tracking', 'pmpro-affiliates' ); ?></label>
-											<input id="checkout_link" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" readonly value="<?php echo esc_attr( site_url() ); ?>/?pa=<?php echo esc_attr( $affiliate->code ); ?>&subid=FACEBOOK" />
+											<input id="checkout_link" type="text" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form_input pmpro_form_input-text' ) ); ?>" readonly value="<?php echo esc_attr( site_url() ); ?>/?pa=<?php echo esc_attr( rawurlencode( $affiliate->code ) ); ?>&subid=FACEBOOK" />
 										</div> <!-- end pmpro_form_field -->
 									</div> <!-- end pmpro_form_fields -->
 								</div> <!-- end pmpro_card_content -->

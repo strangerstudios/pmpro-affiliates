@@ -451,7 +451,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 										<a href="?page=pmpro-affiliates&edit=-1&copy=<?php echo esc_attr( $affiliate->id ); ?>"><?php esc_html_e('Copy', 'pmpro-affiliates'); ?></a>
 									</span> |
 									<span class="link">
-										<a target="_blank" href="<?php echo esc_url( pmpro_url("levels", "?pa=" . $affiliate->code) );?>"><?php esc_html_e('Link', 'pmpro-affiliates'); ?></a>
+										<a target="_blank" href="<?php echo esc_url( add_query_arg( 'pa', rawurlencode( $affiliate->code ), pmpro_url( 'levels' ) ) );?>"><?php esc_html_e('Link', 'pmpro-affiliates'); ?></a>
 									</span> |
 									<span class="delete">
 										<a href="javascript:askfirst('<?php echo esc_html( str_replace("'", "\'", sprintf( esc_html__("Deleting affiliates is permanent and can affect active users. Are you sure you want to delete affiliate %s?", 'pmpro-affiliates'), str_replace("'", "", $affiliate->id))));?>', '<?php echo esc_js( wp_nonce_url( admin_url( 'admin.php?page=pmpro-affiliates&delete=' . intval( $affiliate->id ) ), 'pmpro_affiliates_delete_affiliate_' . intval( $affiliate->id ) ) ); ?>'); void(0);"><?php esc_html_e('Delete', 'pmpro-affiliates'); ?></a>
