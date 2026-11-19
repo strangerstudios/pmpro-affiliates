@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Affiliates Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-lightweight-affiliate-tracking/
 Description: Create affiliate accounts with unique referrer URLs to track membership checkouts.
-Version: 0.8.1
+Version: 0.8.2
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-affiliates
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PMPRO_AFFILIATES_VERSION', '0.8.1' );
+define( 'PMPRO_AFFILIATES_VERSION', '0.8.2' );
 define( 'PMPRO_AFFILIATES_DIR', dirname( __FILE__ ) );
 
 require_once dirname( __FILE__ ) . '/pages/report.php';

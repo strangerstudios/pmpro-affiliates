@@ -3,7 +3,7 @@ Contributors: strangerstudios
 Tags: pmpro, paid memberships pro, ecommerce, affiliates
 Requires at least: 6.0
 Tested up to: 7.1
-Stable tag: 0.8.1
+Stable tag: 0.8.2
 
 Create affiliate accounts with unique referrer URLs to track membership checkouts.
 
@@ -45,6 +45,9 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
+= 0.8.2 - 2026-11-19 =
+* BUG FIX: Fixed affiliate order dates sometimes showing the wrong day in the admin orders table, report CSV export and frontend affiliate report. `$order->timestamp` passed to the `pmpro_affiliate_report_extra_cols_body` and `pmpro_affiliate_list_csv_extra_column_data` hooks is now a true UTC Unix timestamp, so format it with `wp_date()`. #80 (@kimcoleman)
+
 = 0.8.1 - 2026-09-28 =
 * SECURITY: Now requiring an administrator capability (or the `pmpro_affiliates_report_csv` capability) to export the report for all affiliates, and a nonce for all affiliate report CSV exports. #78 (@dparker1005)
 * SECURITY: Now requiring a valid nonce and the `manage_options` capability for the affiliate user autocomplete search. #78 (@dparker1005)
