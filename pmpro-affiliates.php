@@ -21,6 +21,7 @@ require_once dirname( __FILE__ ) . '/pages/report.php';
 require_once dirname( __FILE__ ) . '/includes/blocks.php';
 require_once dirname( __FILE__ ) . '/includes/scheduled-actions.php';
 require_once dirname( __FILE__ ) . '/includes/functions.php';
+require_once dirname( __FILE__ ) . '/includes/class-pmpro-affiliates-dashboard-widget.php';
 
 /**
  * Load the languages folder for translations.
@@ -970,3 +971,7 @@ function pmpro_affiliates_plugin_row_meta( $links, $file ) {
 	return $links;
 }
 add_filter( 'plugin_row_meta', 'pmpro_affiliates_plugin_row_meta', 10, 2 );
+
+// Dashboard widget.
+add_action( 'wp_dashboard_setup', array( 'PMPRO_AFFILIATES_Dashboard_Widget', 'register_widget' ) );
+add_action( 'pmpro_added_order', array( 'PMPRO_AFFILIATES_Dashboard_Widget', 'bust_cache' ) );
