@@ -440,7 +440,9 @@ function pmpro_affiliates_set_discount_code() {
 	//checkout page
 	if(  !isset( $_REQUEST['discount_code'] ) && ( ! empty( $_COOKIE['pmpro_affiliate'] ) || ! empty( $_REQUEST['pa'] ) ) ) {
 		if( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
-			$affiliate_code = sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) );
+			// The cookie is "CODE" or "CODE,SUBID". Only the code can match a discount code.
+			$parts          = explode( ',', sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) ) );
+			$affiliate_code = $parts[0];
 		} else {
 			$affiliate_code = sanitize_text_field( wp_unslash( $_REQUEST['pa'] ) );
 		}
@@ -496,7 +498,9 @@ function pmpro_affiliates_default_discount_code( $code, $level_id ) {
 
 	// Get the affiliate code.
 	if( ! empty( $_COOKIE['pmpro_affiliate'] ) ) {
-		$affiliate_code = sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) );
+		// The cookie is "CODE" or "CODE,SUBID". Only the code can match a discount code.
+		$parts          = explode( ',', sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) ) );
+		$affiliate_code = $parts[0];
 	} elseif ( ! empty( $_REQUEST['pa'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public referral link parameter; read-only.
 		$affiliate_code = sanitize_text_field( wp_unslash( $_REQUEST['pa'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public referral link parameter; read-only.
 	} else {
@@ -551,9 +555,12 @@ function pmpro_affiliates_discount_code_level( $level ) {
 		return $level;
 	}
 
-	// Set the affiliate cookie and 'pa' parameter.
-	$_COOKIE['pmpro_affiliate'] = sanitize_text_field( $level->discount_code );
-	$_REQUEST['pa']             = sanitize_text_field( $level->discount_code );
+	// Set the affiliate cookie and 'pa' parameter, unless the cookie is already for this affiliate. That keeps its Sub-ID.
+	$cookie_parts = ! empty( $_COOKIE['pmpro_affiliate'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_COOKIE['pmpro_affiliate'] ) ) ) : array( '' );
+	if ( 0 !== strcasecmp( $cookie_parts[0], $level->discount_code ) ) {
+		$_COOKIE['pmpro_affiliate'] = sanitize_text_field( $level->discount_code );
+		$_REQUEST['pa']             = sanitize_text_field( $level->discount_code );
+	}
 
 	// Prevent caching of this page load.
 	add_action( 'send_headers', 'nocache_headers' );
